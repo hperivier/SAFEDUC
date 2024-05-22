@@ -1,6 +1,6 @@
 
 
-#Variable I_ETAB, pour l'etablissement de rattachement 
+#Variable I_ETAB, pour l'etablissement de rattachement (Sciences Po/Upcite)
 
 d$I_ETAB_RC[d$I_ETAB==1]="Sciences Po"
 d$I_ETAB_RC[d$I_ETAB==2]="UPCite"
