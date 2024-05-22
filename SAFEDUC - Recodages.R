@@ -1,6 +1,24 @@
-library(readr)
+##Import de la base
+#packages utiles
+
+library(readr) #Utile pour importer la base de donnees
+library(labelled) #Utile pour importer la description des variables
+
+# Rechercher et telecharger le fichier
+safeduc_num <- read_csv("safeduc_num.csv")
+safeduc_let <- read_csv("safeduc_let.csv")
 
 
+dv <- c(safeduc_num[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
+safeduc_num <- safeduc_num[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
+safeduc_num <- set_variable_labels(safeduc_num,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
+
+
+dv <- c(safeduc_let[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
+safeduc_let <- safeduc_let[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
+safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
+
+##DEBUT DES RECODAGES
 #Pour aller au niveau du dernier recodage verifie, chercher [REPRISE]
 
 d <- safeduc_num
