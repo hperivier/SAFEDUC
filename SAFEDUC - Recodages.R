@@ -1,3 +1,5 @@
+library(readr)
+
 
 #Pour aller au niveau du dernier recodage verifie, chercher [REPRISE]
 
