@@ -1,13 +1,12 @@
-##Import de la base
-#packages utiles
+#import packages 
+source("packages.R")
 
-library(readr) #Utile pour importer la base de donnees
-library(labelled) #Utile pour importer la description des variables
+#import fonctions
+source("fonctions.R")
 
-# Rechercher et telecharger le fichier
+# import des bases
 safeduc_num <- read_csv("safeduc_num.csv")
 safeduc_let <- read_csv("safeduc_let.csv")
-
 
 dv <- c(safeduc_num[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
 safeduc_num <- safeduc_num[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
@@ -18,10 +17,49 @@ dv <- c(safeduc_let[1,]) #on cree un vecteur texte, qui comprend la premiere lig
 safeduc_let <- safeduc_let[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
 safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
 
-##DEBUT DES RECODAGES
+
+##########     DEBUT DES RECODAGES    ##########
+
+
 #Pour aller au niveau du dernier recodage verifie, chercher [REPRISE]
 
 d <- safeduc_num
+
+#Initialement, toutes les variables sont de type character
+
+#### Transformation en variables numériques ####
+
+d$Progress <- as.numeric(as.character(d$Progress))
+
+d$`Duration (in seconds)` <- as.numeric(as.character(d$`Duration (in seconds)`))
+
+### Transformation en datetime ###
+
+d$StartDate <- as.POSIXct(d$StartDate, format="%Y-%m-%d %H:%M:%S")
+d$EndDate <- as.POSIXct(d$EndDate, format="%Y-%m-%d %H:%M:%S")
+d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
+
+### Fusionner safeduc_num et safeduc_let afin de labelliser les variables ###
+
+#d_label <- merge_with_labels(safeduc_num, safeduc_let)
+
+### Création de variables regroupant les modalités à choix multiples (reverse one hot encoding) ### 
+
+#### EN COURS #####
+
+d<- reverse_one_hot_encoding(
+  d, 
+  c(
+    "I_NATIONALITE", "I_NATIO_HORS_UE", "I_S_ANNEE",
+    "I_S_AUTRE_ETAB_TYPE", "I_U_FACULTE", "I_U_FACULTE_SANTE", 
+    "I_U_FACULTE_SCIENCES", "I_U_FACULTE_SOCIETES", "I_U_AUTRE_ETAB_TYPE",
+    "C_ACTI_UNI", "C_ACTI_HORS"
+  )
+)
+
+    
+
+###### Création de nouvelles variables recodées ######
 
 #Variable I_ETAB, pour l'etablissement de rattachement (Sciences Po/Upcite)
 
@@ -1571,7 +1609,7 @@ d$P_FAITS_PSY_5_BIN[d$P_FAITS_PSY_5==1 | d$P_FAITS_PSY_5==2]=1
 d$P_FAITS_PSY_5_BIN[d$P_FAITS_PSY_5==3]=0
 d$P_FAITS_PSY_5_BIN[d$P_FAITS_PSY_5==99 | d$P_FAITS_PSY_5==98]=NA
 
-#On creer une variable P_FAITS_PSY_GEN, qui comptabilise le nombre de faits de violence phychologiques declares par les repondant(e)s
+#On cree une variable P_FAITS_PSY_GEN, qui comptabilise le nombre de faits de violence psychologiques declares par les repondant(e)s
 
 d$P_FAITS_PSY_GEN= rowSums(d[,c("P_FAITS_PSY_1_BIN","P_FAITS_PSY_2_BIN","P_FAITS_PSY_3_BIN","P_FAITS_PSY_4_BIN","P_FAITS_PSY_5_BIN")],na.rm=T)
 
@@ -1794,7 +1832,7 @@ d$P_FAITS_SEX_8_BIN[d$P_FAITS_SEX_8==1 | d$P_FAITS_SEX_8==2]=1
 d$P_FAITS_SEX_8_BIN[d$P_FAITS_SEX_8==3]=0
 d$P_FAITS_SEX_8_BIN[d$P_FAITS_SEX_8==99 | d$P_FAITS_SEX_8==98]=NA
 
-#On cree une variable P_FAITS_SEX_GEN, qui comptabilise le nombre de faits de violence phychologiques declares par les repondant(e)s
+#On cree une variable P_FAITS_SEX_GEN, qui comptabilise le nombre de faits de violence sexuelle declares par les repondant(e)s
 
 d$P_FAITS_SEX_GEN= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
 
