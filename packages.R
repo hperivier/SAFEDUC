@@ -4,3 +4,4 @@ library(labelled) #Utile pour importer la description des variables
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(gmodels)

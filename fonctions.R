@@ -1,6 +1,12 @@
 #import packages 
 source("packages.R")
 
+##### Fonction pour vérifier si une colonne de type character peut être convertie en integer ou factor #####
+
+is_convertible_to_integer <- function(x) {
+  all(is.na(x) | grepl("^-?\\d+$", x))  # Vérifie si toutes les valeurs sont des nombres entiers ou NA
+}
+
 ##### Fonction qui crée une variable_label pour chaque variable concernée #####
 
 # Cette fonction fusionne les bases identiques dont l'une des versions a ses modalités en num et l'autre en character
@@ -69,13 +75,22 @@ reverse_one_hot_encoding <- function(df, prefixes) {
 }
 
 
-# Fonction pour filtrer les lignes avec progress > 54 (réponses exploitables)
+##### Fonction pour filtrer les lignes avec progress > 54 (réponses exploitables) #####
 filter_exploitable <- function(df) {
   df %>% filter(Progress > 54)
 }
 
-# Fonction pour filtrer les lignes avec progress == 100 (réponses complètes)
+###### Fonction pour filtrer les lignes avec progress == 100 (réponses complètes) #####
 filter_complete <- function(df) {
   df %>% filter(Progress == 100)
+}
+
+##### Fonction pour conserver seulement le premier élément des listes
+get_first_element <- function(x) {
+  if (is.list(x)) {
+    return(x[[1]])
+  } else {
+    return(x)
+  }
 }
 

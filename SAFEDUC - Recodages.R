@@ -26,23 +26,30 @@ d <- safeduc_num
 
 #Initialement, toutes les variables sont de type character
 
-#### Transformation en variables numériques ####
+#### Transformation en integer ####
 
-d$Progress <- as.numeric(as.character(d$Progress))
+#Appliquer la transformation sur les colonnes qui peuvent être converties en integer
 
-d$`Duration (in seconds)` <- as.numeric(as.character(d$`Duration (in seconds)`))
+d <- as.data.frame(lapply(d, function(x) {
+  if (is.character(x) && is_convertible_to_integer(x)) {
+    as.integer(x)  # Convertir en factor
+  } else {
+    x  # Laisser la colonne telle quelle
+  }
+}))
 
-### Transformation en datetime ###
+
+#### Transformation en datetime#### 
 
 d$StartDate <- as.POSIXct(d$StartDate, format="%Y-%m-%d %H:%M:%S")
 d$EndDate <- as.POSIXct(d$EndDate, format="%Y-%m-%d %H:%M:%S")
 d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
 
-### Fusionner safeduc_num et safeduc_let afin de labelliser les variables ###
+#### Fusionner safeduc_num et safeduc_let afin de labelliser les variables #### 
 
 #d_label <- merge_with_labels(safeduc_num, safeduc_let)
 
-### Création de variables regroupant les modalités à choix multiples (reverse one hot encoding) ### 
+#### Création de variables regroupant les modalités à choix multiples (reverse one hot encoding#### 
 
 d<- reverse_one_hot_encoding(
   d, 
@@ -78,6 +85,14 @@ d<- reverse_one_hot_encoding(
   )
 )
 
+d<- reverse_one_hot_encoding(
+  d, 
+  c(
+    "Q_CONSQ", "Q_PARLE_PROFIL", "Q_PARLE_ETAB","Q_PARLE_RAIS_NO_ETA",
+    "Q_PARLE_EXT", "Q_PARLE_RAIS_PLAINT", "Q_PARLE_RAIS_NO_EXT"
+  )
+)
+
 
 
 ###### Création de nouvelles variables recodées ######
@@ -90,6 +105,7 @@ d$I_ETAB_RC[d$I_ETAB==2]="UPCite"
 d$I_ETAB_RC <- factor(d$I_ETAB_RC, levels=c("Sciences Po","UPCite"))
 
 var_label(d$I_ETAB_RC) <- "Etablissement de rattachement"
+var_label(d$I_ETAB) <- "Etablissement de rattachement"
 
 #Variable I_ECHANGE, pour le fait ou non d'etre en echange dans l'etablissement
 
@@ -101,6 +117,7 @@ d$I_ECHANGE_RC[d$I_ECHANGE==98]="Refus"
 d$I_ECHANGE_RC <- factor(d$I_ECHANGE_RC, levels= c("Oui","Non",NA))
 
 var_label(d$I_ECHANGE_RC) <- "En echange (ou non) au sein de l'etablissement"
+var_label(d$I_ECHANGE) <- "En echange (ou non) au sein de l'etablissement"
 
 #Variable I_IDGENRE, pour l'identite de genre declaree
 
@@ -112,6 +129,7 @@ d$I_IDGENRE_RC[d$I_IDGENRE==98]="Refus"
 
 d$I_IDGENRE_RC <- factor(d$I_IDGENRE_RC, levels=c("Une femme","Un homme","Une personne non-binaire","Vous utilisez un autre terme", NA))
 var_label(d$I_IDGENRE_RC) <- "Identite de genre declaree"
+var_label(d$I_IDGENRE) <- "Identite de genre declaree"
 
 
 #Variable I_SEX_NAIS, pour les repondants ayant choisi "homme" ou "femme" ==> demande si c'etait la categorie a la naissance
@@ -122,6 +140,7 @@ d$I_SEX_NAIS_RC[d$I_SEX_NAIS==98]="Refus"
 
 d$I_SEX_NAIS_RC <- factor(d$I_SEX_NAIS_RC, levels=c("Oui","Non",NA))
 var_label(d$I_SEX_NAIS_RC) <- "Sexe a la naissance identique a identite de genre"
+var_label(d$I_SEX_NAIS) <- "Sexe a la naissance identique a identite de genre"
 
 #Variable I_NAIS_FR, pour oui/non naissance en France
 
@@ -131,6 +150,7 @@ d$I_NAIS_FR_RC[d$I_NAIS_FR==98]="Refus"
 
 d$I_NAIS_FR_RC <- factor(d$I_NAIS_FR_RC, levels=c("Oui, en France (metropolitaine ou departement d'Outre-mer)","Non", NA))
 var_label(d$I_NAIS_FR_RC) <- "Naissance (ou non) en France"
+var_label(d$I_NAIS_FR) <- "Naissance (ou non) en France"
 
 #Variables I_NATIONALITE pour nationalite francaise ou autre (choix multiple)
 #Variable I_NATIONALITE_FR pour nationalite francaise en binaire
@@ -140,6 +160,7 @@ d$I_NATIONALITE_FR[d$I_NATIONALITE_1==0]="Non"
 
 d$I_NATIONALITE_FR <- factor(d$I_NATIONALITE_FR,levels=c("Oui","Non"))
 var_label(d$I_NATIONALITE_FR) <- "Nationalite francaise"
+var_label(d$I_NATIONALITE_1) <- "Nationalite francaise"
 
 #Variable I_NATIONALITE_UE pour nationalite dans l'union europeenne
 
@@ -148,6 +169,7 @@ d$I_NATIONALITE_UE[d$I_NATIONALITE_2==0]="Non"
 
 d$I_NATIONALITE_UE <- factor(d$I_NATIONALITE_UE,levels=c("Oui","Non"))
 var_label(d$I_NATIONALITE_UE) <- "Autre nationalite (que francaise) dans l'Union Europenne"
+var_label(d$I_NATIONALITE_2) <- "Autre nationalite (que francaise) dans l'Union Europenne"
 
 #Variable I_NATIONALITE_HUE pour nationalite hors union europeenne
 
@@ -156,6 +178,7 @@ d$I_NATIONALITE_HUE[d$I_NATIONALITE_3==0]="Non"
 
 d$I_NATIONALITE_HUE <- factor(d$I_NATIONALITE_HUE,levels=c("Oui","Non"))
 var_label(d$I_NATIONALITE_HUE) <- "Autre nationalite hors Union Europenne"
+var_label(d$I_NATIONALITE_3) <- "Autre nationalite hors Union Europenne"
 
 #A verifier avec nouveau recodage
 
@@ -164,6 +187,7 @@ d$I_NATIONALITE_REFUS[d$I_NATIONALITE_98==0]="Pas de refus"
 
 d$I_NATIONALITE_REFUS <- factor(d$I_NATIONALITE_HUE,levels=c("Refus","Pas de refus de répondre"))
 var_label(d$I_NATIONALITE_REFUS) <- "Nationalite(s) - Refus de repondre"
+var_label(d$I_NATIONALITE_98) <- "Nationalite(s) - Refus de repondre"
 
 #Variable I_NATIO_HORS_UE, pour la zone de nationalite hors UE (choix multiples)
 #Variable I_NATIO_HUE_EUR pour nationalite en europe non UE
@@ -172,6 +196,7 @@ d$I_NATIONALITE_EUR_HORS_UE[d$I_NATIO_HORS_UE_1==0]="Non, pas de nationalite Eur
 
 d$I_NATIONALITE_EUR_HORS_UE <- factor(d$I_NATIONALITE_EUR_HORS_UE,levels=c("Oui, nationalite Europe hors UE","Non, pas de nationalite Europe hors UE"))
 var_label(d$I_NATIONALITE_EUR_HORS_UE) <- "Nationalite europeenne hors UE"
+var_label(d$I_NATIO_HORS_UE_1) <- "Nationalite europeenne hors UE"
 
 #Variable I_NATIO_HUE_AMN pour nationalite en amerique du Nord
 d$I_NATIONALITE_AMN[d$I_NATIO_HORS_UE_2==1]="Oui, nationalite Amerique du Nord"
@@ -179,6 +204,7 @@ d$I_NATIONALITE_AMN[d$I_NATIO_HORS_UE_2==0]="Non, pas de nationalite Amerique du
 
 d$I_NATIONALITE_AMN <- factor(d$I_NATIONALITE_AMN,levels=c("Oui, nationalite Amerique du Nord","Non, pas de nationalite Amerique du Nord"))
 var_label(d$I_NATIONALITE_AMN) <- "Nationalite nord-americaine"
+var_label(d$I_NATIO_HORS_UE_2) <- "Nationalite nord-americaine"
 
 #Variable I_NATIO_HUE_AMSC pour nationalite en amerique du sud ou Centrale
 d$I_NATIONALITE_AMSC[d$I_NATIO_HORS_UE_3==1]="Oui, nationalite Amerique du Sud ou Centrale"
@@ -186,6 +212,7 @@ d$I_NATIONALITE_AMSC[d$I_NATIO_HORS_UE_3==0]="Non, pas de nationalite Amerique d
 
 d$I_NATIONALITE_AMSC <- factor(d$I_NATIONALITE_AMSC,levels=c("Oui, nationalite Amerique du Sud ou Centrale","Non, pas de nationalite Amerique du Sud ou Centrale"))
 var_label(d$I_NATIONALITE_AMSC) <- "Nationalite d'amerique du sud ou centrale"
+var_label(d$I_NATIO_HORS_UE_3) <- "Nationalite d'amerique du sud ou centrale"
 
 #Variable I_NATIO_HUE_ASSE pour nationalite en asie du sud et sud-est
 d$I_NATIONALITE_ASSE[d$I_NATIO_HORS_UE_4==1]="Oui, nationalite Asie du Sud et Sud-Est"
@@ -193,6 +220,7 @@ d$I_NATIONALITE_ASSE[d$I_NATIO_HORS_UE_4==0]="Non, pas de nationalite Asie du Su
 
 d$I_NATIONALITE_ASSE <- factor(d$I_NATIONALITE_ASSE,levels=c("Oui, nationalite Asie du Sud et Sud-Est","Non, pas de nationalite Asie du Sud et Sud-Est"))
 var_label(d$I_NATIONALITE_ASSE) <- "Nationalite d'amerique du sud ou centrale"
+var_label(d$I_NATIO_HORS_UE_4) <- "Nationalite d'amerique du sud ou centrale"
 
 #Variable I_NATIO_HUE_EAC pour nationalite en Eurasie ou asie centrale
 d$I_NATIONALITE_EAC[d$I_NATIO_HORS_UE_5==1]="Oui, nationalite Eurasie et Asie Centrale"
@@ -200,6 +228,7 @@ d$I_NATIONALITE_EAC[d$I_NATIO_HORS_UE_5==0]="Non, pas de nationalite Eurasie et 
 
 d$I_NATIONALITE_EAC <- factor(d$I_NATIONALITE_EAC,levels=c("Oui, nationalite Eurasie et Asie Centrale","Non, pas de nationalite Eurasie et Asie Centrale"))
 var_label(d$I_NATIONALITE_EAC) <- "Nationalite d'Eurasie ou asie centrale"
+var_label(d$I_NATIO_HORS_UE_5) <- "Nationalite d'Eurasie ou asie centrale"
 
 #Variable I_NATIO_HUE_MOAN pour nationalite au Moyen Orien et Afrique du Nord
 d$I_NATIONALITE_MOAN[d$I_NATIO_HORS_UE_6==1]="Oui, nationalite Moyen Orient et Afrique du Nord"
@@ -207,6 +236,7 @@ d$I_NATIONALITE_MOAN[d$I_NATIO_HORS_UE_6==0]="Non, pas de nationalite Moyen Orie
 
 d$I_NATIONALITE_MOAN <- factor(d$I_NATIONALITE_MOAN,levels=c("Oui, nationalite Moyen Orient et Afrique du Nord","Non, pas de nationalite Moyen Orient et Afrique du Nord"))
 var_label(d$I_NATIONALITE_MOAN) <- "Nationalite du Moyen-Orient ou Afrique du Nord"
+var_label(d$I_NATIO_HORS_UE_6) <- "Nationalite du Moyen-Orient ou Afrique du Nord"
 
 #Variable I_NATIO_HUE_AFSS pour nationalite en Afrique Subsaharienne
 d$I_NATIONALITE_AFSS[d$I_NATIO_HORS_UE_7==1]="Oui, nationalite Afrique Subsaharienne"
@@ -214,6 +244,7 @@ d$I_NATIONALITE_AFSS[d$I_NATIO_HORS_UE_7==0]="Non, pas de nationalite Afrique Su
 
 d$I_NATIONALITE_AFSS <- factor(d$I_NATIONALITE_AFSS,levels=c("Oui, nationalite Afrique Subsaharienne","Non, pas de nationalite Afrique Subsaharienne"))
 var_label(d$I_NATIONALITE_AFSS) <- "Nationalite d'Afrique Subsaharienne"
+var_label(d$I_NATIO_HORS_UE_7) <- "Nationalite d'Afrique Subsaharienne"
 
 #Variable I_NATIONALITE_OC pour nationalite en Oceanie 
 d$I_NATIONALITE_OC[d$I_NATIO_HORS_UE_8==1]="Oui, nationalite Oceanie"
@@ -221,6 +252,7 @@ d$I_NATIONALITE_OC[d$I_NATIO_HORS_UE_8==0]="Non, pas de nationalite Oceanie"
 
 d$I_NATIONALITE_OC <- factor(d$I_NATIONALITE_OC,levels=c("Oui, nationalite Oceanie","Non, pas de nationalite Oceanie"))
 var_label(d$I_NATIONALITE_OC) <- "Nationalite d'Oceanie"
+var_label(d$I_NATIO_HORS_UE_8) <- "Nationalite d'Oceanie"
 
 #Variable I_NATIO_HUE_AUTRE pour autre nationalite hors UE
 d$I_NATIONALITE_AUTRE[d$I_NATIO_HORS_UE_9==1]="Autre nationalite hors UE"
@@ -228,6 +260,7 @@ d$I_NATIONALITE_AUTRE[d$I_NATIO_HORS_UE_9==0]="Non, pas d'autre Nationalite hors
 
 d$I_NATIONALITE_AUTRE <- factor(d$I_NATIONALITE_AUTRE,levels=c("Autre nationalite hors UE","Non, pas d'autre Nationalite hors UE"))
 var_label(d$I_NATIONALITE_AUTRE) <- "Autre nationalite (hors UE)"
+var_label(d$I_NATIO_HORS_UE_9) <- "Autre nationalite (hors UE)"
 
 #Variable I_NATIO_HUE_REFUS pour refus de donner la nationalite
 d$I_NATIONALITE_HORS_EU_REFUS[d$I_NATIO_HORS_UE_98==1]="Refus"
@@ -235,39 +268,40 @@ d$I_NATIONALITE_HORS_EU_REFUS[d$I_NATIO_HORS_UE_98==0]="Non, pas de refus"
 
 d$I_NATIONALITE_HORS_EU_REFUS <- factor(d$I_NATIONALITE_HORS_EU_REFUS,levels=c("Refus","Non, pas de refus"))
 var_label(d$I_NATIONALITE_REFUS) <- "Nationalite (hors UE) - Refus"
+var_label(d$I_NATIO_HORS_UE_98) <- "Nationalite (hors UE) - Refus"
 
 #[REPRISE]
-#On reprend ces variables, et on en fait des binaires pour les traitements
-#Variable I_NATIO_HUE_EUR_BIN pour nationalite en europe non UE
-d$I_NATIO_HUE_EUR_BIN[d$I_NATIO_HORS_UE_1==1]=1
-d$I_NATIO_HUE_EUR_BIN[d$I_NATIO_HORS_UE_1==0]=0
-#Variable I_NATIO_HUE_AMN pour nationalite en amerique du Nord
-d$I_NATIO_HUE_AMN_BIN[d$I_NATIO_HORS_UE_2==1]=1
-d$I_NATIO_HUE_AMN_BIN[d$I_NATIO_HORS_UE_2==0]=0
-#Variable I_NATIO_HUE_AMSC pour nationalite en amerique du sud ou Centrale
-d$I_NATIO_HUE_AMSC_BIN[d$I_NATIO_HORS_UE_3==1]=1
-d$I_NATIO_HUE_AMSC_BIN[d$I_NATIO_HORS_UE_3==0]=0
-#Variable I_NATIO_HUE_ASSE pour nationalite en asie du sud et sud-est
-d$I_NATIO_HUE_ASSE_BIN[d$I_NATIO_HORS_UE_4==1]=1
-d$I_NATIO_HUE_ASSE_BIN[d$I_NATIO_HORS_UE_4==0]=0
-#Variable I_NATIO_HUE_EAC pour nationalite en Eurase ou asie centrale
-d$I_NATIO_HUE_EAC_BIN[d$I_NATIO_HORS_UE_5==1]=1
-d$I_NATIO_HUE_EAC_BIN[d$I_NATIO_HORS_UE_5==0]=0
-#Variable I_NATIO_HUE_MOAN pour nationalite au Moyen Orien et Afrique du Nord
-d$I_NATIO_HUE_MOAN_BIN[d$I_NATIO_HORS_UE_6==1]=1
-d$I_NATIO_HUE_MOAN_BIN[d$I_NATIO_HORS_UE_6==0]=0
-#Variable I_NATIO_HUE_AFSS pour nationalite en Afrique Subsaharienne
-d$I_NATIO_HUE_AFSS_BIN[d$I_NATIO_HORS_UE_7==1]=1
-d$I_NATIO_HUE_AFSS_BIN[d$I_NATIO_HORS_UE_7==0]=0
-#Variable I_NATIO_HUE_OC pour nationalite en Oceanie 
-d$I_NATIO_HUE_OC_BIN[d$I_NATIO_HORS_UE_8==1]=1
-d$I_NATIO_HUE_OC_BIN[d$I_NATIO_HORS_UE_8==0]=0
-#Variable I_NATIO_HUE_AUTRE pour autre nationalite hors UE
-d$I_NATIO_HUE_AUTRE_BIN[d$I_NATIO_HORS_UE_9==1]=1
-d$I_NATIO_HUE_AUTRE_BIN[d$I_NATIO_HORS_UE_9==0]=0
-#Variable I_NATIO_HUE_REFUS pour refus de donner la nationalite
-d$I_NATIO_HUE_REFUS_BIN[d$I_NATIO_HORS_UE_98==1]=1
-d$I_NATIO_HUE_REFUS_BIN[d$I_NATIO_HORS_UE_98==0]=0
+# #On reprend ces variables, et on en fait des binaires pour les traitements
+# #Variable I_NATIO_HUE_EUR_BIN pour nationalite en europe non UE
+# d$I_NATIO_HUE_EUR_BIN[d$I_NATIO_HORS_UE_1==1]=1
+# d$I_NATIO_HUE_EUR_BIN[d$I_NATIO_HORS_UE_1==0]=0
+# #Variable I_NATIO_HUE_AMN pour nationalite en amerique du Nord
+# d$I_NATIO_HUE_AMN_BIN[d$I_NATIO_HORS_UE_2==1]=1
+# d$I_NATIO_HUE_AMN_BIN[d$I_NATIO_HORS_UE_2==0]=0
+# #Variable I_NATIO_HUE_AMSC pour nationalite en amerique du sud ou Centrale
+# d$I_NATIO_HUE_AMSC_BIN[d$I_NATIO_HORS_UE_3==1]=1
+# d$I_NATIO_HUE_AMSC_BIN[d$I_NATIO_HORS_UE_3==0]=0
+# #Variable I_NATIO_HUE_ASSE pour nationalite en asie du sud et sud-est
+# d$I_NATIO_HUE_ASSE_BIN[d$I_NATIO_HORS_UE_4==1]=1
+# d$I_NATIO_HUE_ASSE_BIN[d$I_NATIO_HORS_UE_4==0]=0
+# #Variable I_NATIO_HUE_EAC pour nationalite en Eurase ou asie centrale
+# d$I_NATIO_HUE_EAC_BIN[d$I_NATIO_HORS_UE_5==1]=1
+# d$I_NATIO_HUE_EAC_BIN[d$I_NATIO_HORS_UE_5==0]=0
+# #Variable I_NATIO_HUE_MOAN pour nationalite au Moyen Orien et Afrique du Nord
+# d$I_NATIO_HUE_MOAN_BIN[d$I_NATIO_HORS_UE_6==1]=1
+# d$I_NATIO_HUE_MOAN_BIN[d$I_NATIO_HORS_UE_6==0]=0
+# #Variable I_NATIO_HUE_AFSS pour nationalite en Afrique Subsaharienne
+# d$I_NATIO_HUE_AFSS_BIN[d$I_NATIO_HORS_UE_7==1]=1
+# d$I_NATIO_HUE_AFSS_BIN[d$I_NATIO_HORS_UE_7==0]=0
+# #Variable I_NATIO_HUE_OC pour nationalite en Oceanie
+# d$I_NATIO_HUE_OC_BIN[d$I_NATIO_HORS_UE_8==1]=1
+# d$I_NATIO_HUE_OC_BIN[d$I_NATIO_HORS_UE_8==0]=0
+# #Variable I_NATIO_HUE_AUTRE pour autre nationalite hors UE
+# d$I_NATIO_HUE_AUTRE_BIN[d$I_NATIO_HORS_UE_9==1]=1
+# d$I_NATIO_HUE_AUTRE_BIN[d$I_NATIO_HORS_UE_9==0]=0
+# #Variable I_NATIO_HUE_REFUS pour refus de donner la nationalite
+# d$I_NATIO_HUE_REFUS_BIN[d$I_NATIO_HORS_UE_98==1]=1
+# d$I_NATIO_HUE_REFUS_BIN[d$I_NATIO_HORS_UE_98==0]=0
 
 # Recodage de d$I_CSP_PARENTS_1 en d$I_CSP_PARENTS_1_RC
 
@@ -416,7 +450,7 @@ d$I_S_ECOLE_RC <- factor(d$I_S_ECOLE_RC,levels=c(
 
 #On recode la variable I_S_Bourse
 
-d$I_S_BOURSE_RC[d$I_S_BOURSE==1]="Oui, d'une bourse du Crous (Centre regional des oeuvres universitaires et scolaires)"
+d$I_S_BOURSE_RC[d$I_S_BOURSE==1]="Oui, d'une bourse du Crous"
 d$I_S_BOURSE_RC[d$I_S_BOURSE==2]="Oui, d'une autre bourse (hors Crous)"
 d$I_S_BOURSE_RC[d$I_S_BOURSE==3]="Non"
 d$I_S_BOURSE_RC[d$I_S_BOURSE==98]="Refus"
@@ -425,7 +459,7 @@ d$I_S_BOURSE_RC[d$I_S_BOURSE==99]="NSP"
 ## Reordonnancement de d$I_S_BOURSE_RC
 
 d$I_S_BOURSE_RC <- factor(d$I_S_BOURSE_RC,
-                          levels = c("Oui, d'une bourse du Crous (Centre regional des oeuvres universitaires et scolaires)",
+                          levels = c("Oui, d'une bourse du Crous",
                                      "Oui, d'une autre bourse (hors Crous)",
                                      "Non",
                                      NA))
@@ -528,7 +562,7 @@ d$I_U_FACULTE_REFUS <- d$I_U_FACULTE_98
 #On cree la variable I_U_FACULTE_NB pour le nombre de facultes cochees
 
 table(d$I_U_FACULTE_1)
-d$I_U_FACULTE_NB <- rowSums(d[,c("I_U_FACULTE_1","I_U_FACULTE_2","I_U_FACULTE_3","I_U_FACULTE_4")], na.rm=T)
+d$I_U_FACULTE_SUM <- rowSums(d[,c("I_U_FACULTE_1","I_U_FACULTE_2","I_U_FACULTE_3","I_U_FACULTE_4")], na.rm=T)
 
 #On recode la variable d$I_U_FACULTE_SANTE
 
@@ -543,7 +577,7 @@ d$I_UFR_SANTE_NSP <- d$I_U_FACULTE_SANTE_99
 d$I_UFR_SANTE_REFUS <- d$I_U_FACULTE_SANTE_98
 
 #On cree la variable I_U_UFR_SANTE_NB pour le nombre d'UFR a la faculte de sante
-d$I_UFR_SANTE_NB <- rowSums(d[,c("I_U_FACULTE_SANTE_1","I_U_FACULTE_SANTE_2","I_U_FACULTE_SANTE_3","I_U_FACULTE_SANTE_4","I_U_FACULTE_SANTE_5","I_U_FACULTE_SANTE_6","I_UFR_FACULTE_SANTE_7")], na.rm=T)
+d$I_UFR_SANTE_SUM <- rowSums(d[,c("I_U_FACULTE_SANTE_1","I_U_FACULTE_SANTE_2","I_U_FACULTE_SANTE_3","I_U_FACULTE_SANTE_4","I_U_FACULTE_SANTE_5","I_U_FACULTE_SANTE_6","I_UFR_FACULTE_SANTE_7")], na.rm=T)
 
 #On recode la variable d$I_U_FACULTE_SCIENCES
 
@@ -561,7 +595,7 @@ d$I_UFR_SCIENCES_NSP <- d$I_U_FACULTE_SCIENCES_99
 d$I_UFR_SCIENCES_REFUS <- d$I_U_FACULTE_SCIENCES_98
 
 #On cree la variable I_UFR_SCIENCES_NB pour le nombre d'UFR a la faculte des Sciences
-d$I_UFR_SCIENCES_NB <-rowSums(d[, c("I_U_FACULTE_SCIENCES_1",
+d$I_UFR_SCIENCES_SUM <-rowSums(d[, c("I_U_FACULTE_SCIENCES_1",
                                     "I_U_FACULTE_SCIENCES_2",
                                     "I_U_FACULTE_SCIENCES_3",
                                     "I_U_FACULTE_SCIENCES_4",
@@ -592,7 +626,7 @@ d$I_UFR_SOCIETES_REFUS <- d$I_U_FACULTE_SOCIETES_98
 d$I_UFR_SOCIETES_NSP <- d$I_U_FACULTE_SOCIETES_99
 
 #On cree la variable I_UFR_SCIENCES_NB pour le nombre d'UFR a la faculte des Sciences
-d$I_UFR_SOCIETES_NB <-rowSums(d[, c("I_U_FACULTE_SOCIETES_1",
+d$I_UFR_SOCIETES_SUM <-rowSums(d[, c("I_U_FACULTE_SOCIETES_1",
                                     "I_U_FACULTE_SOCIETES_2",
                                     "I_U_FACULTE_SOCIETES_3",
                                     "I_U_FACULTE_SOCIETES_4",
@@ -608,7 +642,7 @@ d$I_UFR_SOCIETES_NB <-rowSums(d[, c("I_U_FACULTE_SOCIETES_1",
 
 #On cree la variable I_UFR_NB pour le nombre d'UFR dans l'ensemble d'UPCITE
 
-d$I_UFR_NB <- rowSums((d[,c("I_UFR_SANTE_NB","I_UFR_SCIENCES_NB","I_UFR_SOCIETES_NB")]))
+d$I_UFR_SUM <- rowSums((d[,c("I_UFR_SANTE_NB","I_UFR_SCIENCES_NB","I_UFR_SOCIETES_NB")]))
 
 #On recode la variable I_U_BOURSE
 
@@ -1136,13 +1170,13 @@ d$C_INDIC_INTE_1_RC[d$C_INDIC_INTE_1==99]="NSP"
 d$C_INDIC_INTE_1_RC <- factor(d$C_INDIC_INTE_1_RC, levels=c("Oui",
                                                             "Non",
                                                             NA))
-#d$C_INDIC_INTE_1_BIN pour la variable binomiale
-
-d$C_INDIC_INTE_1_BIN <- NA
-d$C_INDIC_INTE_1_BIN <- d$C_INDIC_INTE_1
-d$C_INDIC_INTE_1_BIN <- as.integer(d$C_INDIC_INTE_1)
-d$C_INDIC_INTE_1_BIN[d$C_INDIC_INTE_1==98]=NA
-d$C_INDIC_INTE_1_BIN[d$C_INDIC_INTE_1==99]=NA
+# #d$C_INDIC_INTE_1_BIN pour la variable binomiale
+# 
+# d$C_INDIC_INTE_1_BIN <- NA
+# d$C_INDIC_INTE_1_BIN <- d$C_INDIC_INTE_1
+# d$C_INDIC_INTE_1_BIN <- as.integer(d$C_INDIC_INTE_1)
+# d$C_INDIC_INTE_1_BIN[d$C_INDIC_INTE_1==98]=NA
+# d$C_INDIC_INTE_1_BIN[d$C_INDIC_INTE_1==99]=NA
 
 #d$C_INDIC_INTE_2 pour une version recodee
 
@@ -1157,13 +1191,13 @@ d$C_INDIC_INTE_2_RC[d$C_INDIC_INTE_2==99]="NSP"
 d$C_INDIC_INTE_2_RC <- factor(d$C_INDIC_INTE_2_RC, levels=c("Oui",
                                                             "Non",
                                                             NA))
-#d$C_INDIC_INTE_2_BIN pour la variable binomiale
-
-d$C_INDIC_INTE_2_BIN <- NA
-d$C_INDIC_INTE_2_BIN <- d$C_INDIC_INTE_2
-d$C_INDIC_INTE_2_BIN <- as.integer(d$C_INDIC_INTE_2)
-d$C_INDIC_INTE_2_BIN[d$C_INDIC_INTE_2==98]=NA
-d$C_INDIC_INTE_2_BIN[d$C_INDIC_INTE_2==99]=NA
+# #d$C_INDIC_INTE_2_BIN pour la variable binaire
+# 
+# d$C_INDIC_INTE_2_BIN <- NA
+# d$C_INDIC_INTE_2_BIN <- d$C_INDIC_INTE_2
+# d$C_INDIC_INTE_2_BIN <- as.integer(d$C_INDIC_INTE_2)
+# d$C_INDIC_INTE_2_BIN[d$C_INDIC_INTE_2==98]=NA
+# d$C_INDIC_INTE_2_BIN[d$C_INDIC_INTE_2==99]=NA
 
 #d$C_INDIC_INTE_3 pour une version recodee
 
@@ -1178,13 +1212,14 @@ d$C_INDIC_INTE_3_RC[d$C_INDIC_INTE_3==99]="NSP"
 d$C_INDIC_INTE_3_RC <- factor(d$C_INDIC_INTE_3_RC, levels=c("Oui",
                                                             "Non",
                                                             NA))
-#d$C_INDIC_INTE_3_BIN pour la variable binomiale
-
-d$C_INDIC_INTE_3_BIN <- NA
-d$C_INDIC_INTE_3_BIN <- d$C_INDIC_INTE_3
-d$C_INDIC_INTE_3_BIN <- as.integer(d$C_INDIC_INTE_3)
-d$C_INDIC_INTE_3_BIN[d$C_INDIC_INTE_3==98]=NA
-d$C_INDIC_INTE_3_BIN[d$C_INDIC_INTE_3==99]=NA
+#d$C_INDIC_INTE_3_BIN pour la variable binaire 
+# 
+# d$C_INDIC_INTE_3_BIN <- NA
+# d$C_INDIC_INTE_3_BIN <- d$C_INDIC_INTE_3
+# d$C_INDIC_INTE_3_BIN <- as.integer(d$C_INDIC_INTE_3)
+# d$C_INDIC_INTE_3_BIN[d$C_INDIC_INTE_3==98]=NA
+# d$C_INDIC_INTE_3_BIN[d$C_INDIC_INTE_3==99]=NA
+# 
 
 #d$C_INDIC_INTE_4 pour une version recodee
 
@@ -1199,13 +1234,13 @@ d$C_INDIC_INTE_4_RC[d$C_INDIC_INTE_4==99]="NSP"
 d$C_INDIC_INTE_4_RC <- factor(d$C_INDIC_INTE_4_RC, levels=c("Oui",
                                                             "Non",
                                                             NA))
-#d$C_INDIC_INTE_4_BIN pour la variable binomiale
-
-d$C_INDIC_INTE_4_BIN <- NA
-d$C_INDIC_INTE_4_BIN <- d$C_INDIC_INTE_4
-d$C_INDIC_INTE_4_BIN <- as.integer(d$C_INDIC_INTE_4)
-d$C_INDIC_INTE_4_BIN[d$C_INDIC_INTE_4==98]=NA
-d$C_INDIC_INTE_4_BIN[d$C_INDIC_INTE_4==99]=NA
+# #d$C_INDIC_INTE_4_BIN pour la variable binaire
+# 
+# d$C_INDIC_INTE_4_BIN <- NA
+# d$C_INDIC_INTE_4_BIN <- d$C_INDIC_INTE_4
+# d$C_INDIC_INTE_4_BIN <- as.integer(d$C_INDIC_INTE_4)
+# d$C_INDIC_INTE_4_BIN[d$C_INDIC_INTE_4==98]=NA
+# d$C_INDIC_INTE_4_BIN[d$C_INDIC_INTE_4==99]=NA
 
 #On cree la serie de variables pour C_INDIC_EGA
 #d$C_INDIC_EGA_1_RC
@@ -1373,11 +1408,12 @@ d$C_INDIC_BIEN_2_RC <- factor(d$C_INDIC_BIEN_2_RC, levels=c("Tres souvent",
 
 #C_INDIC_BIEN_2_CL pour la construction de l'indicateur synthetique
 
-d$C_INDIC_BIEN_2_CL <- NA
-d$C_INDIC_BIEN_2_CL <- d$C_INDIC_BIEN_2
-d$C_INDIC_BIEN_2_CL <- as.integer(d$C_INDIC_BIEN_2)
-d$C_INDIC_BIEN_2_CL[d$C_INDIC_BIEN_2==99]=NA
-d$C_INDIC_BIEN_2_CL[d$C_INDIC_BIEN_2==99]=NA
+# d$C_INDIC_BIEN_2_CL <- NA
+# d$C_INDIC_BIEN_2_CL <- d$C_INDIC_BIEN_2
+# d$C_INDIC_BIEN_2_CL <- as.integer(d$C_INDIC_BIEN_2)
+# d$C_INDIC_BIEN_2_CL[d$C_INDIC_BIEN_2==98]=NA
+# d$C_INDIC_BIEN_2_CL[d$C_INDIC_BIEN_2==99]=NA
+
 
 #C_INDIC_BIEN_3
 #C_INDIC_BIEN_3_RC
@@ -1400,11 +1436,11 @@ d$C_INDIC_BIEN_3_RC <- factor(d$C_INDIC_BIEN_3_RC, levels=c("Tres souvent",
 
 #C_INDIC_BIEN_3_CL pour la construction de l'indicateur synthetique
 
-d$C_INDIC_BIEN_3_CL <- NA
-d$C_INDIC_BIEN_3_CL <- d$C_INDIC_BIEN_3
-d$C_INDIC_BIEN_3_CL <- as.integer(d$C_INDIC_BIEN_3)
-d$C_INDIC_BIEN_3_CL[d$C_INDIC_BIEN_3==99]=NA
-d$C_INDIC_BIEN_3_CL[d$C_INDIC_BIEN_3==99]=NA
+# d$C_INDIC_BIEN_3_CL <- NA
+# d$C_INDIC_BIEN_3_CL <- d$C_INDIC_BIEN_3
+# d$C_INDIC_BIEN_3_CL <- as.integer(d$C_INDIC_BIEN_3)
+# d$C_INDIC_BIEN_3_CL[d$C_INDIC_BIEN_3==99]=NA
+# d$C_INDIC_BIEN_3_CL[d$C_INDIC_BIEN_3==99]=NA
 
 #C_INDIC_BIEN_4
 #C_INDIC_BIEN_4_RC
@@ -1427,11 +1463,11 @@ d$C_INDIC_BIEN_4_RC <- factor(d$C_INDIC_BIEN_4_RC, levels=c("Tres souvent",
 
 #C_INDIC_BIEN_4_CL pour la construction de l'indicateur synthetique
 
-d$C_INDIC_BIEN_4_CL <- NA
-d$C_INDIC_BIEN_4_CL <- d$C_INDIC_BIEN_4
-d$C_INDIC_BIEN_4_CL <- as.integer(d$C_INDIC_BIEN_4)
-d$C_INDIC_BIEN_4_CL[d$C_INDIC_BIEN_4==99]=NA
-d$C_INDIC_BIEN_4_CL[d$C_INDIC_BIEN_4==99]=NA
+# d$C_INDIC_BIEN_4_CL <- NA
+# d$C_INDIC_BIEN_4_CL <- d$C_INDIC_BIEN_4
+# d$C_INDIC_BIEN_4_CL <- as.integer(d$C_INDIC_BIEN_4)
+# d$C_INDIC_BIEN_4_CL[d$C_INDIC_BIEN_4==99]=NA
+# d$C_INDIC_BIEN_4_CL[d$C_INDIC_BIEN_4==99]=NA
 
 #C_INDIC_BIEN_5
 #C_INDIC_BIEN_5_RC
@@ -1454,11 +1490,11 @@ d$C_INDIC_BIEN_5_RC <- factor(d$C_INDIC_BIEN_5_RC, levels=c("Tres souvent",
 
 #C_INDIC_BIEN_5_CL pour la construction de l'indicateur synthetique
 
-d$C_INDIC_BIEN_5_CL <- NA
-d$C_INDIC_BIEN_5_CL <- d$C_INDIC_BIEN_5
-d$C_INDIC_BIEN_5_CL <- as.integer(d$C_INDIC_BIEN_5)
-d$C_INDIC_BIEN_5_CL[d$C_INDIC_BIEN_5==99]=NA
-d$C_INDIC_BIEN_5_CL[d$C_INDIC_BIEN_5==99]=NA
+# d$C_INDIC_BIEN_5_CL <- NA
+# d$C_INDIC_BIEN_5_CL <- d$C_INDIC_BIEN_5
+# d$C_INDIC_BIEN_5_CL <- as.integer(d$C_INDIC_BIEN_5)
+# d$C_INDIC_BIEN_5_CL[d$C_INDIC_BIEN_5==99]=NA
+# d$C_INDIC_BIEN_5_CL[d$C_INDIC_BIEN_5==99]=NA
 
 #C_INDIC_BIEN_6
 #C_INDIC_BIEN_6_RC
@@ -1481,11 +1517,11 @@ d$C_INDIC_BIEN_6_RC <- factor(d$C_INDIC_BIEN_6_RC, levels=c("Tres souvent",
 
 #C_INDIC_BIEN_6_CL pour la construction de l'indicateur synthetique
 
-d$C_INDIC_BIEN_6_CL <- NA
-d$C_INDIC_BIEN_6_CL <- d$C_INDIC_BIEN_6
-d$C_INDIC_BIEN_6_CL <- as.integer(d$C_INDIC_BIEN_6)
-d$C_INDIC_BIEN_6_CL[d$C_INDIC_BIEN_6==99]=NA
-d$C_INDIC_BIEN_6_CL[d$C_INDIC_BIEN_6==99]=NA
+# d$C_INDIC_BIEN_6_CL <- NA
+# d$C_INDIC_BIEN_6_CL <- d$C_INDIC_BIEN_6
+# d$C_INDIC_BIEN_6_CL <- as.integer(d$C_INDIC_BIEN_6)
+# d$C_INDIC_BIEN_6_CL[d$C_INDIC_BIEN_6==99]=NA
+# d$C_INDIC_BIEN_6_CL[d$C_INDIC_BIEN_6==99]=NA
 
 #C_INDIC_BIEN_7
 #C_INDIC_BIEN_7_RC
@@ -1508,11 +1544,11 @@ d$C_INDIC_BIEN_7_RC <- factor(d$C_INDIC_BIEN_7_RC, levels=c("Tres souvent",
 
 #C_INDIC_BIEN_7_CL pour la construction de l'indicateur synthetique
 
-d$C_INDIC_BIEN_7_CL <- NA
-d$C_INDIC_BIEN_7_CL <- d$C_INDIC_BIEN_7
-d$C_INDIC_BIEN_7_CL <- as.integer(d$C_INDIC_BIEN_7)
-d$C_INDIC_BIEN_7_CL[d$C_INDIC_BIEN_7==99]=NA
-d$C_INDIC_BIEN_7_CL[d$C_INDIC_BIEN_7==99]=NA
+# d$C_INDIC_BIEN_7_CL <- NA
+# d$C_INDIC_BIEN_7_CL <- d$C_INDIC_BIEN_7
+# d$C_INDIC_BIEN_7_CL <- as.integer(d$C_INDIC_BIEN_7)
+# d$C_INDIC_BIEN_7_CL[d$C_INDIC_BIEN_7==99]=NA
+# d$C_INDIC_BIEN_7_CL[d$C_INDIC_BIEN_7==99]=NA
 
 #On cree la serie de variable P_FAITS_PSY_RC
 #P_FAITS_PSY_1
@@ -1632,16 +1668,13 @@ d$P_FAITS_PSY_5_BIN[d$P_FAITS_PSY_5==99 | d$P_FAITS_PSY_5==98]=NA
 
 #On cree une variable P_FAITS_PSY_GEN, qui comptabilise le nombre de faits de violence psychologiques declares par les repondant(e)s
 
-d$P_FAITS_PSY_GEN= rowSums(d[,c("P_FAITS_PSY_1_BIN","P_FAITS_PSY_2_BIN","P_FAITS_PSY_3_BIN","P_FAITS_PSY_4_BIN","P_FAITS_PSY_5_BIN")],na.rm=T)
+d$P_FAITS_PSY_SUM= rowSums(d[,c("P_FAITS_PSY_1_BIN","P_FAITS_PSY_2_BIN","P_FAITS_PSY_3_BIN","P_FAITS_PSY_4_BIN","P_FAITS_PSY_5_BIN")],na.rm=T)
 
-table(d$P_FAITS_PSY_GEN)
 
 #On cree une variable P_FAITS_PSY_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence psychologique
 
-d$P_FAITS_PSY_GEN_BIN[d$P_FAITS_PSY_GEN==0]=0
-d$P_FAITS_PSY_GEN_BIN[d$P_FAITS_PSY_GEN>=1]=1
-
-table(d$P_FAITS_PSY_GEN_BIN)
+d$P_FAITS_PSY_SUM_BIN[d$P_FAITS_PSY_SUM==0]=0
+d$P_FAITS_PSY_SUM_BIN[d$P_FAITS_PSY_SUM>=1]=1
 
 #P_FAITS_PHYS
 #P_FAITS_PHYS_1_RC
@@ -1855,16 +1888,12 @@ d$P_FAITS_SEX_8_BIN[d$P_FAITS_SEX_8==99 | d$P_FAITS_SEX_8==98]=NA
 
 #On cree une variable P_FAITS_SEX_GEN, qui comptabilise le nombre de faits de violence sexuelle declares par les repondant(e)s
 
-d$P_FAITS_SEX_GEN= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
-
-table(d$P_FAITS_SEX_GEN)
+d$P_FAITS_SEX_SUM= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
 
 #On cree une variable P_FAITS_SEX_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence psychologique
 
-d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN==0]=0
-d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN>=1]=1
-
-table(d$P_FAITS_SEX_GEN_BIN)
+d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM==0]=0
+d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM>=1]=1
 
 #On cree la serie de variables V_PSY_DOUZE
 
@@ -1876,8 +1905,8 @@ d$V_PSY_DOUZE_1_RC[d$V_PSY_DOUZE_1==""]=NA
 d$V_PSY_DOUZE_1_RC[is.na(d$V_PSY_DOUZE_1)]=NA
 
 #V_PSY_DOUZE_1_BIN
-d$V_PSY_DOUZE_1_BIN[d$V_PSY_DOUZE_1==1]=1
-d$V_PSY_DOUZE_1_BIN[d$V_PSY_DOUZE_1==0]=0
+# d$V_PSY_DOUZE_1_BIN[d$V_PSY_DOUZE_1==1]=1
+# d$V_PSY_DOUZE_1_BIN[d$V_PSY_DOUZE_1==0]=0
 
 #V_PSY_DOUZE_2
 #V_PSY_DOUZE_2_RC pour recodage en toutes lettres
@@ -1886,9 +1915,9 @@ d$V_PSY_DOUZE_2_RC[d$V_PSY_DOUZE_2==0]="Non"
 d$V_PSY_DOUZE_2_RC[d$V_PSY_DOUZE_2==""]=NA
 d$V_PSY_DOUZE_2_RC[is.na(d$V_PSY_DOUZE_2)]=NA
 
-#V_PSY_DOUZE_2_BIN
-d$V_PSY_DOUZE_2_BIN[d$V_PSY_DOUZE_2==1]=1
-d$V_PSY_DOUZE_2_BIN[d$V_PSY_DOUZE_2==0]=0
+# #V_PSY_DOUZE_2_BIN
+# d$V_PSY_DOUZE_2_BIN[d$V_PSY_DOUZE_2==1]=1
+# d$V_PSY_DOUZE_2_BIN[d$V_PSY_DOUZE_2==0]=0
 
 #V_PSY_DOUZE_3
 #V_PSY_DOUZE_3_RC pour recodage en toutes lettres
@@ -1897,9 +1926,9 @@ d$V_PSY_DOUZE_3_RC[d$V_PSY_DOUZE_3==0]="Non"
 d$V_PSY_DOUZE_3_RC[d$V_PSY_DOUZE_3==""]=NA
 d$V_PSY_DOUZE_3_RC[is.na(d$V_PSY_DOUZE_3)]=NA
 
-#V_PSY_DOUZE_3_BIN
-d$V_PSY_DOUZE_3_BIN[d$V_PSY_DOUZE_3==1]=1
-d$V_PSY_DOUZE_3_BIN[d$V_PSY_DOUZE_3==0]=0
+# #V_PSY_DOUZE_3_BIN
+# d$V_PSY_DOUZE_3_BIN[d$V_PSY_DOUZE_3==1]=1
+# d$V_PSY_DOUZE_3_BIN[d$V_PSY_DOUZE_3==0]=0
 
 #V_PSY_DOUZE_4
 #V_PSY_DOUZE_4_RC pour recodage en toutes lettres
@@ -1908,9 +1937,9 @@ d$V_PSY_DOUZE_4_RC[d$V_PSY_DOUZE_4==0]="Non"
 d$V_PSY_DOUZE_4_RC[d$V_PSY_DOUZE_4==""]=NA
 d$V_PSY_DOUZE_4_RC[is.na(d$V_PSY_DOUZE_4)]=NA
 
-#V_PSY_DOUZE_4_BIN
-d$V_PSY_DOUZE_4_BIN[d$V_PSY_DOUZE_4==1]=1
-d$V_PSY_DOUZE_4_BIN[d$V_PSY_DOUZE_4==0]=0
+# #V_PSY_DOUZE_4_BIN
+# d$V_PSY_DOUZE_4_BIN[d$V_PSY_DOUZE_4==1]=1
+# d$V_PSY_DOUZE_4_BIN[d$V_PSY_DOUZE_4==0]=0
 
 #V_PSY_DOUZE_5
 #V_PSY_DOUZE_5_RC pour recodage en toutes lettres
@@ -1919,9 +1948,9 @@ d$V_PSY_DOUZE_5_RC[d$V_PSY_DOUZE_5==0]="Non"
 d$V_PSY_DOUZE_5_RC[d$V_PSY_DOUZE_5==""]=NA
 d$V_PSY_DOUZE_5_RC[is.na(d$V_PSY_DOUZE_5)]=NA
 
-#V_PSY_DOUZE_5_BIN
-d$V_PSY_DOUZE_5_BIN[d$V_PSY_DOUZE_5==1]=1
-d$V_PSY_DOUZE_5_BIN[d$V_PSY_DOUZE_5==0]=0
+# #V_PSY_DOUZE_5_BIN
+# d$V_PSY_DOUZE_5_BIN[d$V_PSY_DOUZE_5==1]=1
+# d$V_PSY_DOUZE_5_BIN[d$V_PSY_DOUZE_5==0]=0
 
 #V_PSY_DOUZE_6
 #V_PSY_DOUZE_6_RC pour recodage en toutes lettres
@@ -1930,9 +1959,9 @@ d$V_PSY_DOUZE_6_RC[d$V_PSY_DOUZE_6==0]="Non"
 d$V_PSY_DOUZE_6_RC[d$V_PSY_DOUZE_6==""]=NA
 d$V_PSY_DOUZE_6_RC[is.na(d$V_PSY_DOUZE_6)]=NA
 
-#V_PSY_DOUZE_6_BIN
-d$V_PSY_DOUZE_6_BIN[d$V_PSY_DOUZE_6==1]=1
-d$V_PSY_DOUZE_6_BIN[d$V_PSY_DOUZE_6==0]=0
+# #V_PSY_DOUZE_6_BIN
+# d$V_PSY_DOUZE_6_BIN[d$V_PSY_DOUZE_6==1]=1
+# d$V_PSY_DOUZE_6_BIN[d$V_PSY_DOUZE_6==0]=0
 
 #V_PSY_DOUZE_98
 #V_PSY_DOUZE_98_RC pour recodage en toutes lettres
@@ -1941,20 +1970,20 @@ d$V_PSY_DOUZE_98_RC[d$V_PSY_DOUZE_98==0]="Non"
 d$V_PSY_DOUZE_98_RC[d$V_PSY_DOUZE_98==""]=NA
 d$V_PSY_DOUZE_98_RC[is.na(d$V_PSY_DOUZE_98)]=NA
 
-#V_PSY_DOUZE_98_BIN
-d$V_PSY_DOUZE_98_BIN[d$V_PSY_DOUZE_98==1]=1
-d$V_PSY_DOUZE_98_BIN[d$V_PSY_DOUZE_98==0]=0
+# #V_PSY_DOUZE_98_BIN
+# d$V_PSY_DOUZE_98_BIN[d$V_PSY_DOUZE_98==1]=1
+# d$V_PSY_DOUZE_98_BIN[d$V_PSY_DOUZE_98==0]=0
 
 #On cree une variable V_PSY_DOUZE_GEN qui synthetise le nombre de faits declares ayant eu lieu les 12 derniers mois
 
-d$V_PSY_DOUZE_GEN <- rowSums(d[,c("V_PSY_DOUZE_1_BIN","V_PSY_DOUZE_2_BIN","V_PSY_DOUZE_3_BIN","V_PSY_DOUZE_4_BIN","V_PSY_DOUZE_5_BIN")], na.rm=T)
-d$V_PSY_DOUZE_GEN[d$P_FAITS_PSY_GEN_BIN==0]=NA #A verifier
+d$V_PSY_DOUZE_SUM <- rowSums(d[,c("V_PSY_DOUZE_1_BIN","V_PSY_DOUZE_2_BIN","V_PSY_DOUZE_3_BIN","V_PSY_DOUZE_4_BIN","V_PSY_DOUZE_5_BIN")], na.rm=T)
+d$V_PSY_DOUZE_SUM[d$P_FAITS_PSY_SUM_BIN==0]=NA #A verifier
 
 #On cree une variable V_PSY_DOUZE_GEN_BIN qui indique si l'individu a declare au moins un fait de violence psychologique au cours des 12 derniers mois
 
-d$V_PSY_DOUZE_GEN_BIN[d$V_PSY_DOUZE_GEN==0]=0
-d$V_PSY_DOUZE_GEN_BIN[is.na(d$V_PSY_DOUZE_GEN)]=NA
-d$V_PSY_DOUZE_GEN_BIN[d$V_PSY_DOUZE_GEN>=1]=1
+d$V_PSY_DOUZE_SUM_BIN[d$V_PSY_DOUZE_SUM==0]=0
+d$V_PSY_DOUZE_SUM_BIN[is.na(d$V_PSY_DOUZE_SUM)]=NA
+d$V_PSY_DOUZE_SUM_BIN[d$V_PSY_DOUZE_SUM>=1]=1
 
 #On cree une variable V_PSY_MARQ
 
@@ -1987,11 +2016,11 @@ d$V_PSY_ETAB_1_RC[d$V_PSY_ETAB_1==0]="Autre situation"
 d$V_PSY_ETAB_1_RC <- factor(d$V_PSY_ETAB_1_RC,levels=c("Vous etudiiez deja dans votre etablissement actuel",
                                                        "Autre situation"))
 
-#V_PSY_ETAB_1_BIN
-d$V_PSY_ETAB_1_BIN <- NA
-d$V_PSY_ETAB_1_BIN <- d$V_PSY_ETAB_1
-d$V_PSY_ETAB_1_BIN[d$V_PSY_ETAB_1==1]=1
-d$V_PSY_ETAB_1_BIN[d$V_PSY_ETAB_1==0]=0
+# #V_PSY_ETAB_1_BIN
+# d$V_PSY_ETAB_1_BIN <- NA
+# d$V_PSY_ETAB_1_BIN <- d$V_PSY_ETAB_1
+# d$V_PSY_ETAB_1_BIN[d$V_PSY_ETAB_1==1]=1
+# d$V_PSY_ETAB_1_BIN[d$V_PSY_ETAB_1==0]=0
 
 #V_PSY_ETAB_2
 #V_PSY_ETAB_2_RC
@@ -2002,11 +2031,11 @@ d$V_PSY_ETAB_2_RC[d$V_PSY_ETAB_2==0]="Autre situation"
 
 d$V_PSY_ETAB_2_RC <- factor(d$V_PSY_ETAB_2_RC,levels=c("vous etudiiez dans un autre etablissement dans le cadre d'un echange",
                                                        "Autre situation"))
-#V_PSY_ETAB_2_BIN
-d$V_PSY_ETAB_2_BIN <- NA
-d$V_PSY_ETAB_2_BIN <- d$V_PSY_ETAB_2
-d$V_PSY_ETAB_2_BIN[d$V_PSY_ETAB_2==1]=1
-d$V_PSY_ETAB_2_BIN[d$V_PSY_ETAB_2==0]=0
+# #V_PSY_ETAB_2_BIN
+# d$V_PSY_ETAB_2_BIN <- NA
+# d$V_PSY_ETAB_2_BIN <- d$V_PSY_ETAB_2
+# d$V_PSY_ETAB_2_BIN[d$V_PSY_ETAB_2==1]=1
+# d$V_PSY_ETAB_2_BIN[d$V_PSY_ETAB_2==0]=0
 
 #V_PSY_ETAB_3
 #V_PSY_ETAB_3_RC
@@ -2017,11 +2046,11 @@ d$V_PSY_ETAB_3_RC[d$V_PSY_ETAB_3==0]="Autre situation"
 
 d$V_PSY_ETAB_3_RC <- factor(d$V_PSY_ETAB_3_RC,levels=c("vous etudiiez dans un autre etablissement hors echange (etablissement precedent)",
                                                        "Autre situation"))
-#V_PSY_ETAB_3_BIN
-d$V_PSY_ETAB_3_BIN <- NA
-d$V_PSY_ETAB_3_BIN <- d$V_PSY_ETAB_3
-d$V_PSY_ETAB_3_BIN[d$V_PSY_ETAB_3==1]=1
-d$V_PSY_ETAB_3_BIN[d$V_PSY_ETAB_3==0]=0
+# #V_PSY_ETAB_3_BIN
+# d$V_PSY_ETAB_3_BIN <- NA
+# d$V_PSY_ETAB_3_BIN <- d$V_PSY_ETAB_3
+# d$V_PSY_ETAB_3_BIN[d$V_PSY_ETAB_3==1]=1
+# d$V_PSY_ETAB_3_BIN[d$V_PSY_ETAB_3==0]=0
 
 #V_PSY_ETAB_4
 #V_PSY_ETAB_4_RC
@@ -2032,11 +2061,11 @@ d$V_PSY_ETAB_4_RC[d$V_PSY_ETAB_4==0]="Autre situation"
 
 d$V_PSY_ETAB_4_RC <- factor(d$V_PSY_ETAB_3_RC,levels=c("Ne souhaite pas repondre",
                                                        "Autre situation"))  
-#V_PSY_ETAB_4_BIN
-d$V_PSY_ETAB_4_BIN <- NA
-d$V_PSY_ETAB_4_BIN <- d$V_PSY_ETAB_4
-d$V_PSY_ETAB_4_BIN[d$V_PSY_ETAB_4==1]=1
-d$V_PSY_ETAB_4_BIN[d$V_PSY_ETAB_4==0]=0
+# #V_PSY_ETAB_4_BIN
+# d$V_PSY_ETAB_4_BIN <- NA
+# d$V_PSY_ETAB_4_BIN <- d$V_PSY_ETAB_4
+# d$V_PSY_ETAB_4_BIN[d$V_PSY_ETAB_4==1]=1
+# d$V_PSY_ETAB_4_BIN[d$V_PSY_ETAB_4==0]=0
 
 #MODIFICATION si correction du recodage
 ##V_PSY_ETAB_98
@@ -2063,12 +2092,12 @@ d$V_PSY_LIEU_1_RC[d$V_PSY_LIEU_1==0]="Autre situation"
 
 d$V_PSY_LIEU_1_RC <- factor(d$V_PSY_LIEU_1_RC, factor("En salle de cours, amphi",
                                                       "Autre situation"))
-#V_PSY_LIEU_1_BIN
-d$V_PSY_LIEU_1_BIN <- NA
-d$V_PSY_LIEU_1_BIN <- d$V_PSY_LIEU_1
-
-d$V_PSY_LIEU_1_BIN[d$V_PSY_LIEU_1==1]=1
-d$V_PSY_LIEU_1_BIN[d$V_PSY_LIEU_1==0]=0
+# #V_PSY_LIEU_1_BIN
+# d$V_PSY_LIEU_1_BIN <- NA
+# d$V_PSY_LIEU_1_BIN <- d$V_PSY_LIEU_1
+# 
+# d$V_PSY_LIEU_1_BIN[d$V_PSY_LIEU_1==1]=1
+# d$V_PSY_LIEU_1_BIN[d$V_PSY_LIEU_1==0]=0
 
 #V_PSY_LIEU_2
 #V_PSY_LIEU_2_RC
@@ -2080,12 +2109,12 @@ d$V_PSY_LIEU_2_RC[d$V_PSY_LIEU_2==0]="Autre situation"
 
 d$V_PSY_LIEU_2_RC <- factor(d$V_PSY_LIEU_2_RC, factor("Sur un terrain ou equipement sportif",
                                                       "Autre situation"))
-#V_PSY_LIEU_2_BIN
-d$V_PSY_LIEU_2_BIN <- NA
-d$V_PSY_LIEU_2_BIN <- d$V_PSY_LIEU_2
-
-d$V_PSY_LIEU_2_BIN[d$V_PSY_LIEU_2==1]=1
-d$V_PSY_LIEU_2_BIN[d$V_PSY_LIEU_2==0]=0
+# #V_PSY_LIEU_2_BIN
+# d$V_PSY_LIEU_2_BIN <- NA
+# d$V_PSY_LIEU_2_BIN <- d$V_PSY_LIEU_2
+# 
+# d$V_PSY_LIEU_2_BIN[d$V_PSY_LIEU_2==1]=1
+# d$V_PSY_LIEU_2_BIN[d$V_PSY_LIEU_2==0]=0
 
 #V_PSY_LIEU_3
 #V_PSY_LIEU_3_RC
@@ -2097,12 +2126,12 @@ d$V_PSY_LIEU_3_RC[d$V_PSY_LIEU_3==0]="Autre situation"
 
 d$V_PSY_LIEU_3_RC <- factor(d$V_PSY_LIEU_3_RC, factor("Dans un bureau (enseignant, administration)",
                                                       "Autre situation"))
-#V_PSY_LIEU_3_BIN
-d$V_PSY_LIEU_3_BIN <- NA
-d$V_PSY_LIEU_3_BIN <- d$V_PSY_LIEU_3
-
-d$V_PSY_LIEU_3_BIN[d$V_PSY_LIEU_3==1]=1
-d$V_PSY_LIEU_3_BIN[d$V_PSY_LIEU_3==0]=0
+# #V_PSY_LIEU_3_BIN
+# d$V_PSY_LIEU_3_BIN <- NA
+# d$V_PSY_LIEU_3_BIN <- d$V_PSY_LIEU_3
+# 
+# d$V_PSY_LIEU_3_BIN[d$V_PSY_LIEU_3==1]=1
+# d$V_PSY_LIEU_3_BIN[d$V_PSY_LIEU_3==0]=0
 
 #V_PSY_LIEU_4
 #V_PSY_LIEU_4_RC
@@ -2114,12 +2143,12 @@ d$V_PSY_LIEU_4_RC[d$V_PSY_LIEU_4==0]="Autre situation"
 
 d$V_PSY_LIEU_4_RC <- factor(d$V_PSY_LIEU_4_RC, factor("Dans un autre espace collectif de la fac/ecole (cafeteria, salles communes, jardinsâ€¦)",
                                                       "Autre situation"))
-#V_PSY_LIEU_4_BIN
-d$V_PSY_LIEU_4_BIN <- NA
-d$V_PSY_LIEU_4_BIN <- d$V_PSY_LIEU_4
-
-d$V_PSY_LIEU_4_BIN[d$V_PSY_LIEU_4==1]=1
-d$V_PSY_LIEU_4_BIN[d$V_PSY_LIEU_4==0]=0
+# #V_PSY_LIEU_4_BIN
+# d$V_PSY_LIEU_4_BIN <- NA
+# d$V_PSY_LIEU_4_BIN <- d$V_PSY_LIEU_4
+# 
+# d$V_PSY_LIEU_4_BIN[d$V_PSY_LIEU_4==1]=1
+# d$V_PSY_LIEU_4_BIN[d$V_PSY_LIEU_4==0]=0
 
 #V_PSY_LIEU_5
 #V_PSY_LIEU_5_RC
@@ -2131,12 +2160,12 @@ d$V_PSY_LIEU_5_RC[d$V_PSY_LIEU_5==0]="Autre situation"
 
 d$V_PSY_LIEU_5_RC <- factor(d$V_PSY_LIEU_5_RC, factor("Sur votre lieu de travail (alternance/job etudiant)",
                                                       "Autre situation"))
-#V_PSY_LIEU_5_BIN
-d$V_PSY_LIEU_5_BIN <- NA
-d$V_PSY_LIEU_5_BIN <- d$V_PSY_LIEU_5
-
-d$V_PSY_LIEU_5_BIN[d$V_PSY_LIEU_5==1]=1
-d$V_PSY_LIEU_5_BIN[d$V_PSY_LIEU_5==0]=0
+# #V_PSY_LIEU_5_BIN
+# d$V_PSY_LIEU_5_BIN <- NA
+# d$V_PSY_LIEU_5_BIN <- d$V_PSY_LIEU_5
+# 
+# d$V_PSY_LIEU_5_BIN[d$V_PSY_LIEU_5==1]=1
+# d$V_PSY_LIEU_5_BIN[d$V_PSY_LIEU_5==0]=0
 
 #V_PSY_LIEU_6
 #V_PSY_LIEU_6_RC
@@ -2148,12 +2177,12 @@ d$V_PSY_LIEU_6_RC[d$V_PSY_LIEU_6==0]="Autre situation"
 
 d$V_PSY_LIEU_6_RC <- factor(d$V_PSY_LIEU_6_RC, factor("Sur votre lieu de stage",
                                                       "Autre situation"))
-#V_PSY_LIEU_6_BIN
-d$V_PSY_LIEU_6_BIN <- NA
-d$V_PSY_LIEU_6_BIN <- d$V_PSY_LIEU_6
-
-d$V_PSY_LIEU_6_BIN[d$V_PSY_LIEU_6==1]=1
-d$V_PSY_LIEU_6_BIN[d$V_PSY_LIEU_6==0]=0
+# #V_PSY_LIEU_6_BIN
+# d$V_PSY_LIEU_6_BIN <- NA
+# d$V_PSY_LIEU_6_BIN <- d$V_PSY_LIEU_6
+# 
+# d$V_PSY_LIEU_6_BIN[d$V_PSY_LIEU_6==1]=1
+# d$V_PSY_LIEU_6_BIN[d$V_PSY_LIEU_6==0]=0
 
 #V_PSY_LIEU_7
 #V_PSY_LIEU_7_RC
@@ -2165,12 +2194,12 @@ d$V_PSY_LIEU_7_RC[d$V_PSY_LIEU_7==0]="Autre situation"
 
 d$V_PSY_LIEU_7_RC <- factor(d$V_PSY_LIEU_7_RC, factor("Sur votre lieu de stage",
                                                       "Autre situation"))
-#V_PSY_LIEU_7_BIN
-d$V_PSY_LIEU_7_BIN <- NA
-d$V_PSY_LIEU_7_BIN <- d$V_PSY_LIEU_7
-
-d$V_PSY_LIEU_7_BIN[d$V_PSY_LIEU_7==1]=1
-d$V_PSY_LIEU_7_BIN[d$V_PSY_LIEU_7==0]=0
+# #V_PSY_LIEU_7_BIN
+# d$V_PSY_LIEU_7_BIN <- NA
+# d$V_PSY_LIEU_7_BIN <- d$V_PSY_LIEU_7
+# 
+# d$V_PSY_LIEU_7_BIN[d$V_PSY_LIEU_7==1]=1
+# d$V_PSY_LIEU_7_BIN[d$V_PSY_LIEU_7==0]=0
 
 #V_PSY_LIEU_8
 #V_PSY_LIEU_8_RC
@@ -2182,12 +2211,12 @@ d$V_PSY_LIEU_8_RC[d$V_PSY_LIEU_8==0]="Autre situation"
 
 d$V_PSY_LIEU_8_RC <- factor(d$V_PSY_LIEU_8_RC, factor("A votre domicile ou voiture",
                                                       "Autre situation"))
-#V_PSY_LIEU_8_BIN
-d$V_PSY_LIEU_8_BIN <- NA
-d$V_PSY_LIEU_8_BIN <- d$V_PSY_LIEU_8
-
-d$V_PSY_LIEU_8_BIN[d$V_PSY_LIEU_8==1]=1
-d$V_PSY_LIEU_8_BIN[d$V_PSY_LIEU_8==0]=0
+# #V_PSY_LIEU_8_BIN
+# d$V_PSY_LIEU_8_BIN <- NA
+# d$V_PSY_LIEU_8_BIN <- d$V_PSY_LIEU_8
+# 
+# d$V_PSY_LIEU_8_BIN[d$V_PSY_LIEU_8==1]=1
+# d$V_PSY_LIEU_8_BIN[d$V_PSY_LIEU_8==0]=0
 
 #V_PSY_LIEU_9
 #V_PSY_LIEU_9_RC
@@ -2199,12 +2228,12 @@ d$V_PSY_LIEU_9_RC[d$V_PSY_LIEU_9==0]="Autre situation"
 
 d$V_PSY_LIEU_9_RC <- factor(d$V_PSY_LIEU_9_RC, factor("Au domicile ou dans la voiture de la/les personne(s) ayant commis les faits",
                                                       "Autre situation"))
-#V_PSY_LIEU_9_BIN
-d$V_PSY_LIEU_9_BIN <- NA
-d$V_PSY_LIEU_9_BIN <- d$V_PSY_LIEU_9
-
-d$V_PSY_LIEU_9_BIN[d$V_PSY_LIEU_9==1]=1
-d$V_PSY_LIEU_9_BIN[d$V_PSY_LIEU_9==0]=0
+# #V_PSY_LIEU_9_BIN
+# d$V_PSY_LIEU_9_BIN <- NA
+# d$V_PSY_LIEU_9_BIN <- d$V_PSY_LIEU_9
+# 
+# d$V_PSY_LIEU_9_BIN[d$V_PSY_LIEU_9==1]=1
+# d$V_PSY_LIEU_9_BIN[d$V_PSY_LIEU_9==0]=0
 
 #V_PSY_LIEU_10
 #V_PSY_LIEU_10_RC
@@ -2216,12 +2245,12 @@ d$V_PSY_LIEU_10_RC[d$V_PSY_LIEU_10==0]="Autre situation"
 
 d$V_PSY_LIEU_10_RC <- factor(d$V_PSY_LIEU_10_RC, factor("Dans le cadre d'une soiree entre etudiants, etudiantes ou d'un evenement organise dans un cadre prive",
                                                         "Autre situation"))
-#V_PSY_LIEU_10_BIN
-d$V_PSY_LIEU_10_BIN <- NA
-d$V_PSY_LIEU_10_BIN <- d$V_PSY_LIEU_10
-
-d$V_PSY_LIEU_10_BIN[d$V_PSY_LIEU_10==1]=1
-d$V_PSY_LIEU_10_BIN[d$V_PSY_LIEU_10==0]=0
+# #V_PSY_LIEU_10_BIN
+# d$V_PSY_LIEU_10_BIN <- NA
+# d$V_PSY_LIEU_10_BIN <- d$V_PSY_LIEU_10
+# 
+# d$V_PSY_LIEU_10_BIN[d$V_PSY_LIEU_10==1]=1
+# d$V_PSY_LIEU_10_BIN[d$V_PSY_LIEU_10==0]=0
 
 #V_PSY_LIEU_11
 #V_PSY_LIEU_11_RC
@@ -2233,12 +2262,12 @@ d$V_PSY_LIEU_11_RC[d$V_PSY_LIEU_11==0]="Autre situation"
 
 d$V_PSY_LIEU_11_RC <- factor(d$V_PSY_LIEU_11_RC, factor("Dans le cadre d'un week-end/voyage entre etudiants, etudiantes (hors de tout cadre associatif ou universitaire)",
                                                         "Autre situation"))
-#V_PSY_LIEU_11_BIN
-d$V_PSY_LIEU_11_BIN <- NA
-d$V_PSY_LIEU_11_BIN <- d$V_PSY_LIEU_11
-
-d$V_PSY_LIEU_11_BIN[d$V_PSY_LIEU_11==1]=1
-d$V_PSY_LIEU_11_BIN[d$V_PSY_LIEU_11==0]=0
+# #V_PSY_LIEU_11_BIN
+# d$V_PSY_LIEU_11_BIN <- NA
+# d$V_PSY_LIEU_11_BIN <- d$V_PSY_LIEU_11
+# 
+# d$V_PSY_LIEU_11_BIN[d$V_PSY_LIEU_11==1]=1
+# d$V_PSY_LIEU_11_BIN[d$V_PSY_LIEU_11==0]=0
 
 #V_PSY_LIEU_12
 #V_PSY_LIEU_12_RC
@@ -2250,12 +2279,12 @@ d$V_PSY_LIEU_12_RC[d$V_PSY_LIEU_12==0]="Autre situation"
 
 d$V_PSY_LIEU_12_RC <- factor(d$V_PSY_LIEU_12_RC, factor("Dans le cadre d'un week-end/voyage scolaire organise par l'administration",
                                                         "Autre situation"))
-#V_PSY_LIEU_12_BIN
-d$V_PSY_LIEU_12_BIN <- NA
-d$V_PSY_LIEU_12_BIN <- d$V_PSY_LIEU_12
-
-d$V_PSY_LIEU_12_BIN[d$V_PSY_LIEU_12==1]=1
-d$V_PSY_LIEU_12_BIN[d$V_PSY_LIEU_12==0]=0
+# #V_PSY_LIEU_12_BIN
+# d$V_PSY_LIEU_12_BIN <- NA
+# d$V_PSY_LIEU_12_BIN <- d$V_PSY_LIEU_12
+# 
+# d$V_PSY_LIEU_12_BIN[d$V_PSY_LIEU_12==1]=1
+# d$V_PSY_LIEU_12_BIN[d$V_PSY_LIEU_12==0]=0
 
 #V_PSY_LIEU_13
 #V_PSY_LIEU_13_RC
@@ -2267,12 +2296,12 @@ d$V_PSY_LIEU_13_RC[d$V_PSY_LIEU_13==0]="Autre situation"
 
 d$V_PSY_LIEU_13_RC <- factor(d$V_PSY_LIEU_13_RC, factor("Dans le cadre d'une soiree ou d'un evenement organise par une association etudiante",
                                                         "Autre situation"))
-#V_PSY_LIEU_13_BIN
-d$V_PSY_LIEU_13_BIN <- NA
-d$V_PSY_LIEU_13_BIN <- d$V_PSY_LIEU_13
-
-d$V_PSY_LIEU_13_BIN[d$V_PSY_LIEU_13==1]=1
-d$V_PSY_LIEU_13_BIN[d$V_PSY_LIEU_13==0]=0
+# #V_PSY_LIEU_13_BIN
+# d$V_PSY_LIEU_13_BIN <- NA
+# d$V_PSY_LIEU_13_BIN <- d$V_PSY_LIEU_13
+# 
+# d$V_PSY_LIEU_13_BIN[d$V_PSY_LIEU_13==1]=1
+# d$V_PSY_LIEU_13_BIN[d$V_PSY_LIEU_13==0]=0
 
 #V_PSY_LIEU_14
 #V_PSY_LIEU_14_RC
@@ -2284,12 +2313,12 @@ d$V_PSY_LIEU_14_RC[d$V_PSY_LIEU_14==0]="Autre situation"
 
 d$V_PSY_LIEU_14_RC <- factor(d$V_PSY_LIEU_14_RC, factor("Dans le cadre d'une soiree ou d'un evenement organise par l'administration de votre ecole/universite/etablissement",
                                                         "Autre situation"))
-#V_PSY_LIEU_14_BIN
-d$V_PSY_LIEU_14_BIN <- NA
-d$V_PSY_LIEU_14_BIN <- d$V_PSY_LIEU_14
-
-d$V_PSY_LIEU_14_BIN[d$V_PSY_LIEU_14==1]=1
-d$V_PSY_LIEU_14_BIN[d$V_PSY_LIEU_14==0]=0
+# #V_PSY_LIEU_14_BIN
+# d$V_PSY_LIEU_14_BIN <- NA
+# d$V_PSY_LIEU_14_BIN <- d$V_PSY_LIEU_14
+# 
+# d$V_PSY_LIEU_14_BIN[d$V_PSY_LIEU_14==1]=1
+# d$V_PSY_LIEU_14_BIN[d$V_PSY_LIEU_14==0]=0
 
 #V_PSY_LIEU_15
 #V_PSY_LIEU_15_RC
@@ -2301,12 +2330,12 @@ d$V_PSY_LIEU_15_RC[d$V_PSY_LIEU_15==0]="Autre situation"
 
 d$V_PSY_LIEU_15_RC <- factor(d$V_PSY_LIEU_15_RC, factor("Dans le cadre d'un week-end/voyage organise par une association etudiante",
                                                         "Autre situation"))
-#V_PSY_LIEU_15_BIN
-d$V_PSY_LIEU_15_BIN <- NA
-d$V_PSY_LIEU_15_BIN <- d$V_PSY_LIEU_15
-
-d$V_PSY_LIEU_15_BIN[d$V_PSY_LIEU_15==1]=1
-d$V_PSY_LIEU_15_BIN[d$V_PSY_LIEU_15==0]=0
+# #V_PSY_LIEU_15_BIN
+# d$V_PSY_LIEU_15_BIN <- NA
+# d$V_PSY_LIEU_15_BIN <- d$V_PSY_LIEU_15
+# 
+# d$V_PSY_LIEU_15_BIN[d$V_PSY_LIEU_15==1]=1
+# d$V_PSY_LIEU_15_BIN[d$V_PSY_LIEU_15==0]=0
 
 #V_PSY_LIEU_16
 #V_PSY_LIEU_16_RC
@@ -2318,12 +2347,12 @@ d$V_PSY_LIEU_16_RC[d$V_PSY_LIEU_16==0]="Autre situation"
 
 d$V_PSY_LIEU_16_RC <- factor(d$V_PSY_LIEU_16_RC, factor("Dans le cadre d'une soiree ou d'un evenement organise par une autre institution (universite, entreprise, etc.)",
                                                         "Autre situation"))
-#V_PSY_LIEU_16_BIN
-d$V_PSY_LIEU_16_BIN <- NA
-d$V_PSY_LIEU_16_BIN <- d$V_PSY_LIEU_16
-
-d$V_PSY_LIEU_16_BIN[d$V_PSY_LIEU_16==1]=1
-d$V_PSY_LIEU_16_BIN[d$V_PSY_LIEU_16==0]=0
+# #V_PSY_LIEU_16_BIN
+# d$V_PSY_LIEU_16_BIN <- NA
+# d$V_PSY_LIEU_16_BIN <- d$V_PSY_LIEU_16
+# 
+# d$V_PSY_LIEU_16_BIN[d$V_PSY_LIEU_16==1]=1
+# d$V_PSY_LIEU_16_BIN[d$V_PSY_LIEU_16==0]=0
 
 #V_PSY_LIEU_17
 #V_PSY_LIEU_17_RC
@@ -2335,12 +2364,12 @@ d$V_PSY_LIEU_17_RC[d$V_PSY_LIEU_17==0]="Autre situation"
 
 d$V_PSY_LIEU_17_RC <- factor(d$V_PSY_LIEU_17_RC, factor("Lors d'un evenement sportif ou une rencontre universitaire",
                                                         "Autre situation"))
-#V_PSY_LIEU_17_BIN
-d$V_PSY_LIEU_17_BIN <- NA
-d$V_PSY_LIEU_17_BIN <- d$V_PSY_LIEU_17
-
-d$V_PSY_LIEU_17_BIN[d$V_PSY_LIEU_17==1]=1
-d$V_PSY_LIEU_17_BIN[d$V_PSY_LIEU_17==0]=0
+# #V_PSY_LIEU_17_BIN
+# d$V_PSY_LIEU_17_BIN <- NA
+# d$V_PSY_LIEU_17_BIN <- d$V_PSY_LIEU_17
+# 
+# d$V_PSY_LIEU_17_BIN[d$V_PSY_LIEU_17==1]=1
+# d$V_PSY_LIEU_17_BIN[d$V_PSY_LIEU_17==0]=0
 
 #V_PSY_LIEU_18
 #V_PSY_LIEU_18_RC
@@ -2352,12 +2381,12 @@ d$V_PSY_LIEU_18_RC[d$V_PSY_LIEU_18==0]="Autre situation"
 
 d$V_PSY_LIEU_18_RC <- factor(d$V_PSY_LIEU_18_RC, factor("Dans un espace public en dehors des lieux d'etudes",
                                                         "Autre situation"))
-#V_PSY_LIEU_18_BIN
-d$V_PSY_LIEU_18_BIN <- NA
-d$V_PSY_LIEU_18_BIN <- d$V_PSY_LIEU_18
-
-d$V_PSY_LIEU_18_BIN[d$V_PSY_LIEU_18==1]=1
-d$V_PSY_LIEU_18_BIN[d$V_PSY_LIEU_18==0]=0
+# #V_PSY_LIEU_18_BIN
+# d$V_PSY_LIEU_18_BIN <- NA
+# d$V_PSY_LIEU_18_BIN <- d$V_PSY_LIEU_18
+# 
+# d$V_PSY_LIEU_18_BIN[d$V_PSY_LIEU_18==1]=1
+# d$V_PSY_LIEU_18_BIN[d$V_PSY_LIEU_18==0]=0
 
 #V_PSY_LIEU_19
 #V_PSY_LIEU_19_RC
@@ -2369,12 +2398,12 @@ d$V_PSY_LIEU_19_RC[d$V_PSY_LIEU_19==0]="Autre situation"
 
 d$V_PSY_LIEU_19_RC <- factor(d$V_PSY_LIEU_19_RC, factor("Au telephone ou en ligne",
                                                         "Autre situation"))
-#V_PSY_LIEU_19_BIN
-d$V_PSY_LIEU_19_BIN <- NA
-d$V_PSY_LIEU_19_BIN <- d$V_PSY_LIEU_19
-
-d$V_PSY_LIEU_19_BIN[d$V_PSY_LIEU_19==1]=1
-d$V_PSY_LIEU_19_BIN[d$V_PSY_LIEU_19==0]=0
+# #V_PSY_LIEU_19_BIN
+# d$V_PSY_LIEU_19_BIN <- NA
+# d$V_PSY_LIEU_19_BIN <- d$V_PSY_LIEU_19
+# 
+# d$V_PSY_LIEU_19_BIN[d$V_PSY_LIEU_19==1]=1
+# d$V_PSY_LIEU_19_BIN[d$V_PSY_LIEU_19==0]=0
 
 #V_PSY_LIEU_20
 #V_PSY_LIEU_20_RC
@@ -2386,12 +2415,12 @@ d$V_PSY_LIEU_20_RC[d$V_PSY_LIEU_20==0]="Autre situation"
 
 d$V_PSY_LIEU_20_RC <- factor(d$V_PSY_LIEU_20_RC, factor("Autre",
                                                         "Autre situation"))
-#V_PSY_LIEU_20_BIN
-d$V_PSY_LIEU_20_BIN <- NA
-d$V_PSY_LIEU_20_BIN <- d$V_PSY_LIEU_20
-
-d$V_PSY_LIEU_20_BIN[d$V_PSY_LIEU_20==1]=1
-d$V_PSY_LIEU_20_BIN[d$V_PSY_LIEU_20==0]=0
+# #V_PSY_LIEU_20_BIN
+# d$V_PSY_LIEU_20_BIN <- NA
+# d$V_PSY_LIEU_20_BIN <- d$V_PSY_LIEU_20
+# 
+# d$V_PSY_LIEU_20_BIN[d$V_PSY_LIEU_20==1]=1
+# d$V_PSY_LIEU_20_BIN[d$V_PSY_LIEU_20==0]=0
 
 #V_PSY_LIEU_99
 #V_PSY_LIEU_99_RC
@@ -2403,12 +2432,12 @@ d$V_PSY_LIEU_99_RC[d$V_PSY_LIEU_99==0]="Autre situation"
 
 d$V_PSY_LIEU_99_RC <- factor(d$V_PSY_LIEU_99_RC, factor("NSP",
                                                         "Autre situation"))
-#V_PSY_LIEU_99_BIN
-d$V_PSY_LIEU_99_BIN <- NA
-d$V_PSY_LIEU_99_BIN <- d$V_PSY_LIEU_99
-
-d$V_PSY_LIEU_99_BIN[d$V_PSY_LIEU_99==1]=1
-d$V_PSY_LIEU_99_BIN[d$V_PSY_LIEU_99==0]=0
+# #V_PSY_LIEU_99_BIN
+# d$V_PSY_LIEU_99_BIN <- NA
+# d$V_PSY_LIEU_99_BIN <- d$V_PSY_LIEU_99
+# 
+# d$V_PSY_LIEU_99_BIN[d$V_PSY_LIEU_99==1]=1
+# d$V_PSY_LIEU_99_BIN[d$V_PSY_LIEU_99==0]=0
 
 #V_PSY_LIEU_98
 #V_PSY_LIEU_98_RC
@@ -2420,35 +2449,37 @@ d$V_PSY_LIEU_98_RC[d$V_PSY_LIEU_98==0]="Autre situation"
 
 d$V_PSY_LIEU_98_RC <- factor(d$V_PSY_LIEU_98_RC, factor("Refus",
                                                         "Autre situation"))
-#V_PSY_LIEU_98_BIN
-d$V_PSY_LIEU_98_BIN <- NA
-d$V_PSY_LIEU_98_BIN <- d$V_PSY_LIEU_98
+# #V_PSY_LIEU_98_BIN
+# d$V_PSY_LIEU_98_BIN <- NA
+# d$V_PSY_LIEU_98_BIN <- d$V_PSY_LIEU_98
+# 
+# d$V_PSY_LIEU_98_BIN[d$V_PSY_LIEU_98==1]=1
+# d$V_PSY_LIEU_98_BIN[d$V_PSY_LIEU_98==0]=0
 
-d$V_PSY_LIEU_98_BIN[d$V_PSY_LIEU_98==1]=1
-d$V_PSY_LIEU_98_BIN[d$V_PSY_LIEU_98==0]=0
+
 
 #On cree la variable V_PSY_LIEU_NB
 
-d$V_PSY_LIEU_NB <-  rowSums(d[,c("V_PSY_LIEU_1_BIN",
-                                 "V_PSY_LIEU_2_BIN",
-                                 "V_PSY_LIEU_3_BIN",
-                                 "V_PSY_LIEU_4_BIN",
-                                 "V_PSY_LIEU_5_BIN",
-                                 "V_PSY_LIEU_6_BIN",
-                                 "V_PSY_LIEU_7_BIN",
-                                 "V_PSY_LIEU_8_BIN",
-                                 "V_PSY_LIEU_9_BIN",
-                                 "V_PSY_LIEU_10_BIN",
-                                 "V_PSY_LIEU_11_BIN",
-                                 "V_PSY_LIEU_12_BIN",
-                                 "V_PSY_LIEU_13_BIN",
-                                 "V_PSY_LIEU_14_BIN",
-                                 "V_PSY_LIEU_15_BIN",
-                                 "V_PSY_LIEU_16_BIN",
-                                 "V_PSY_LIEU_17_BIN",
-                                 "V_PSY_LIEU_18_BIN",
-                                 "V_PSY_LIEU_19_BIN",
-                                 "V_PSY_LIEU_20_BIN")], na.rm=T)
+d$V_PSY_LIEU_SUM <-  rowSums(d[,c("V_PSY_LIEU_1",
+                                 "V_PSY_LIEU_2",
+                                 "V_PSY_LIEU_3",
+                                 "V_PSY_LIEU_4",
+                                 "V_PSY_LIEU_5",
+                                 "V_PSY_LIEU_6",
+                                 "V_PSY_LIEU_7",
+                                 "V_PSY_LIEU_8",
+                                 "V_PSY_LIEU_9",
+                                 "V_PSY_LIEU_10",
+                                 "V_PSY_LIEU_11",
+                                 "V_PSY_LIEU_12",
+                                 "V_PSY_LIEU_13",
+                                 "V_PSY_LIEU_14",
+                                 "V_PSY_LIEU_15",
+                                 "V_PSY_LIEU_16",
+                                 "V_PSY_LIEU_17",
+                                 "V_PSY_LIEU_18",
+                                 "V_PSY_LIEU_19",
+                                 "V_PSY_LIEU_20")], na.rm=T)
 
 #On cree la serie de variables V_PSY_INTERNET
 #V_PSY_INTERNET_1
@@ -2461,13 +2492,13 @@ d$V_PSY_INTERNET_1_RC[d$V_PSY_INTERNET_1==0]="Autres reponses"
 
 d$V_PSY_INTERNET_1_RC <- factor(d$V_PSY_INTERNET_1_RC,levels=c("En message ou dans une conversation privee",
                                                                "Autres reponses"))
-#V_PSY_INTERNET_1_BIN
-
-d$V_PSY_INTERNET_1_RC <- NA
-d$V_PSY_INTERNET_1_RC <- d$V_PSY_INTERNET_1
-
-d$V_PSY_INTERNET_1_RC[d$V_PSY_INTERNET_1==1]=1
-d$V_PSY_INTERNET_1_RC[d$V_PSY_INTERNET_1==0]=0
+# #V_PSY_INTERNET_1_BIN
+# 
+# d$V_PSY_INTERNET_1_RC <- NA
+# d$V_PSY_INTERNET_1_RC <- d$V_PSY_INTERNET_1
+# 
+# d$V_PSY_INTERNET_1_RC[d$V_PSY_INTERNET_1==1]=1
+# d$V_PSY_INTERNET_1_RC[d$V_PSY_INTERNET_1==0]=0
 
 #V_PSY_INTERNET_2
 #V_PSY_INTERNET_2_RC  
@@ -2479,13 +2510,13 @@ d$V_PSY_INTERNET_2_RC[d$V_PSY_INTERNET_2==0]="Autres reponses"
 
 d$V_PSY_INTERNET_2_RC <- factor(d$V_PSY_INTERNET_2_RC,levels=c("Dans une discussion de groupe privee",
                                                                "Autres reponses"))
-#V_PSY_INTERNET_2_BIN
-
-d$V_PSY_INTERNET_2_RC <- NA
-d$V_PSY_INTERNET_2_RC <- d$V_PSY_INTERNET_2
-
-d$V_PSY_INTERNET_2_RC[d$V_PSY_INTERNET_2==1]=1
-d$V_PSY_INTERNET_2_RC[d$V_PSY_INTERNET_2==0]=0
+# #V_PSY_INTERNET_2_BIN
+# 
+# d$V_PSY_INTERNET_2_RC <- NA
+# d$V_PSY_INTERNET_2_RC <- d$V_PSY_INTERNET_2
+# 
+# d$V_PSY_INTERNET_2_RC[d$V_PSY_INTERNET_2==1]=1
+# d$V_PSY_INTERNET_2_RC[d$V_PSY_INTERNET_2==0]=0
 
 #V_PSY_INTERNET_3
 #V_PSY_INTERNET_3_RC  
@@ -2497,13 +2528,13 @@ d$V_PSY_INTERNET_3_RC[d$V_PSY_INTERNET_3==0]="Autres reponses"
 
 d$V_PSY_INTERNET_3_RC <- factor(d$V_PSY_INTERNET_3_RC,levels=c("Sur une plateforme ou groupe public",
                                                                "Autres reponses"))
-#V_PSY_INTERNET_3_BIN
-
-d$V_PSY_INTERNET_3_RC <- NA
-d$V_PSY_INTERNET_3_RC <- d$V_PSY_INTERNET_3
-
-d$V_PSY_INTERNET_3_RC[d$V_PSY_INTERNET_3==1]=1
-d$V_PSY_INTERNET_3_RC[d$V_PSY_INTERNET_3==0]=0
+# #V_PSY_INTERNET_3_BIN
+# 
+# d$V_PSY_INTERNET_3_RC <- NA
+# d$V_PSY_INTERNET_3_RC <- d$V_PSY_INTERNET_3
+# 
+# d$V_PSY_INTERNET_3_RC[d$V_PSY_INTERNET_3==1]=1
+# d$V_PSY_INTERNET_3_RC[d$V_PSY_INTERNET_3==0]=0
 
 #V_PSY_INTERNET_99
 #V_PSY_INTERNET_99_RC  
@@ -2515,13 +2546,13 @@ d$V_PSY_INTERNET_99_RC[d$V_PSY_INTERNET_99==0]="Autres reponses"
 
 d$V_PSY_INTERNET_99_RC <- factor(d$V_PSY_INTERNET_99_RC,levels=c("NSP",
                                                                  "Autres reponses"))
-#V_PSY_INTERNET_99_BIN
-
-d$V_PSY_INTERNET_99_RC <- NA
-d$V_PSY_INTERNET_99_RC <- d$V_PSY_INTERNET_99
-
-d$V_PSY_INTERNET_99_RC[d$V_PSY_INTERNET_99==1]=1
-d$V_PSY_INTERNET_99_RC[d$V_PSY_INTERNET_99==0]=0
+# #V_PSY_INTERNET_99_BIN
+# 
+# d$V_PSY_INTERNET_99_RC <- NA
+# d$V_PSY_INTERNET_99_RC <- d$V_PSY_INTERNET_99
+# 
+# d$V_PSY_INTERNET_99_RC[d$V_PSY_INTERNET_99==1]=1
+# d$V_PSY_INTERNET_99_RC[d$V_PSY_INTERNET_99==0]=0
 
 #V_PSY_INTERNET_98
 #V_PSY_INTERNET_98_RC  
@@ -2533,18 +2564,18 @@ d$V_PSY_INTERNET_98_RC[d$V_PSY_INTERNET_98==0]="Autres reponses"
 
 d$V_PSY_INTERNET_98_RC <- factor(d$V_PSY_INTERNET_98_RC,levels=c("Refus",
                                                                  "Autres reponses"))
-#V_PSY_INTERNET_98_BIN
-
-d$V_PSY_INTERNET_98_RC <- NA
-d$V_PSY_INTERNET_98_RC <- d$V_PSY_INTERNET_98
-
-d$V_PSY_INTERNET_98_RC[d$V_PSY_INTERNET_98==1]=1
-d$V_PSY_INTERNET_98_RC[d$V_PSY_INTERNET_98==0]=0
+# #V_PSY_INTERNET_98_BIN
+# 
+# d$V_PSY_INTERNET_98_RC <- NA
+# d$V_PSY_INTERNET_98_RC <- d$V_PSY_INTERNET_98
+# 
+# d$V_PSY_INTERNET_98_RC[d$V_PSY_INTERNET_98==1]=1
+# d$V_PSY_INTERNET_98_RC[d$V_PSY_INTERNET_98==0]=0
 
 
 #On cree la variable V_PSY_INTERNET_NB
 
-d$V_PSY_INTERNET_NB <-  rowSums(d[,c("V_PSY_INTERNET_1",
+d$V_PSY_INTERNET_SUM <-  rowSums(d[,c("V_PSY_INTERNET_1",
                                      "V_PSY_INTERNET_2",
                                      "V_PSY_INTERNET_3")], na.rm=T)
 
@@ -2557,12 +2588,12 @@ d$V_PSY_AUTEUR_GENRE_1_RC <- d$V_PSY_AUTEUR_GENRE_1
 d$V_PSY_AUTEUR_GENRE_1_RC[d$V_PSY_AUTEUR_GENRE_1==1]="Une femme (seule)"
 d$V_PSY_AUTEUR_GENRE_1_RC[d$V_PSY_AUTEUR_GENRE_1==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_1_BIN
-d$V_PSY_AUTEUR_GENRE_1_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_1_BIN <- d$V_PSY_AUTEUR_GENRE_1
-
-d$V_PSY_AUTEUR_GENRE_1_BIN[d$V_PSY_AUTEUR_GENRE_1==1]=1
-d$V_PSY_AUTEUR_GENRE_1_BIN[d$V_PSY_AUTEUR_GENRE_1==0]=0
+# #V_PSY_AUTEUR_GENRE_1_BIN
+# d$V_PSY_AUTEUR_GENRE_1_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_1_BIN <- d$V_PSY_AUTEUR_GENRE_1
+# 
+# d$V_PSY_AUTEUR_GENRE_1_BIN[d$V_PSY_AUTEUR_GENRE_1==1]=1
+# d$V_PSY_AUTEUR_GENRE_1_BIN[d$V_PSY_AUTEUR_GENRE_1==0]=0
 
 #V_PSY_AUTEUR_GENRE_2
 #V_PSY_AUTEUR_GENRE_2_RC
@@ -2572,12 +2603,12 @@ d$V_PSY_AUTEUR_GENRE_2_RC <- d$V_PSY_AUTEUR_GENRE_2
 d$V_PSY_AUTEUR_GENRE_2_RC[d$V_PSY_AUTEUR_GENRE_2==1]="Un homme (seul)"
 d$V_PSY_AUTEUR_GENRE_2_RC[d$V_PSY_AUTEUR_GENRE_2==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_2_BIN
-d$V_PSY_AUTEUR_GENRE_2_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_2_BIN <- d$V_PSY_AUTEUR_GENRE_2
-
-d$V_PSY_AUTEUR_GENRE_2_BIN[d$V_PSY_AUTEUR_GENRE_2==1]=1
-d$V_PSY_AUTEUR_GENRE_2_BIN[d$V_PSY_AUTEUR_GENRE_2==0]=0  
+# #V_PSY_AUTEUR_GENRE_2_BIN
+# d$V_PSY_AUTEUR_GENRE_2_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_2_BIN <- d$V_PSY_AUTEUR_GENRE_2
+# 
+# d$V_PSY_AUTEUR_GENRE_2_BIN[d$V_PSY_AUTEUR_GENRE_2==1]=1
+# d$V_PSY_AUTEUR_GENRE_2_BIN[d$V_PSY_AUTEUR_GENRE_2==0]=0  
 
 #V_PSY_AUTEUR_GENRE_3
 #V_PSY_AUTEUR_GENRE_3_RC
@@ -2587,12 +2618,12 @@ d$V_PSY_AUTEUR_GENRE_3_RC <- d$V_PSY_AUTEUR_GENRE_3
 d$V_PSY_AUTEUR_GENRE_3_RC[d$V_PSY_AUTEUR_GENRE_3==1]="Plusieurs femmes (en groupe)"
 d$V_PSY_AUTEUR_GENRE_3_RC[d$V_PSY_AUTEUR_GENRE_3==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_3_BIN
-d$V_PSY_AUTEUR_GENRE_3_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_3_BIN <- d$V_PSY_AUTEUR_GENRE_3
-
-d$V_PSY_AUTEUR_GENRE_3_BIN[d$V_PSY_AUTEUR_GENRE_3==1]=1
-d$V_PSY_AUTEUR_GENRE_3_BIN[d$V_PSY_AUTEUR_GENRE_3==0]=0
+# #V_PSY_AUTEUR_GENRE_3_BIN
+# d$V_PSY_AUTEUR_GENRE_3_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_3_BIN <- d$V_PSY_AUTEUR_GENRE_3
+# 
+# d$V_PSY_AUTEUR_GENRE_3_BIN[d$V_PSY_AUTEUR_GENRE_3==1]=1
+# d$V_PSY_AUTEUR_GENRE_3_BIN[d$V_PSY_AUTEUR_GENRE_3==0]=0
 
 #V_PSY_AUTEUR_GENRE_4
 #V_PSY_AUTEUR_GENRE_4_RC
@@ -2602,12 +2633,12 @@ d$V_PSY_AUTEUR_GENRE_4_RC <- d$V_PSY_AUTEUR_GENRE_4
 d$V_PSY_AUTEUR_GENRE_4_RC[d$V_PSY_AUTEUR_GENRE_4==1]="Plusieurs hommes (en groupe)"
 d$V_PSY_AUTEUR_GENRE_4_RC[d$V_PSY_AUTEUR_GENRE_4==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_4_BIN
-d$V_PSY_AUTEUR_GENRE_4_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_4_BIN <- d$V_PSY_AUTEUR_GENRE_4
-
-d$V_PSY_AUTEUR_GENRE_4_BIN[d$V_PSY_AUTEUR_GENRE_4==1]=1
-d$V_PSY_AUTEUR_GENRE_4_BIN[d$V_PSY_AUTEUR_GENRE_4==0]=0   
+# #V_PSY_AUTEUR_GENRE_4_BIN
+# d$V_PSY_AUTEUR_GENRE_4_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_4_BIN <- d$V_PSY_AUTEUR_GENRE_4
+# 
+# d$V_PSY_AUTEUR_GENRE_4_BIN[d$V_PSY_AUTEUR_GENRE_4==1]=1
+# d$V_PSY_AUTEUR_GENRE_4_BIN[d$V_PSY_AUTEUR_GENRE_4==0]=0   
 
 #V_PSY_AUTEUR_GENRE_5
 #V_PSY_AUTEUR_GENRE_5_RC
@@ -2617,12 +2648,12 @@ d$V_PSY_AUTEUR_GENRE_5_RC <- d$V_PSY_AUTEUR_GENRE_5
 d$V_PSY_AUTEUR_GENRE_5_RC[d$V_PSY_AUTEUR_GENRE_5==1]="Plusieurs hommes et femmes (en groupe)"
 d$V_PSY_AUTEUR_GENRE_5_RC[d$V_PSY_AUTEUR_GENRE_5==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_5_BIN
-d$V_PSY_AUTEUR_GENRE_5_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_5_BIN <- d$V_PSY_AUTEUR_GENRE_5
-
-d$V_PSY_AUTEUR_GENRE_5_BIN[d$V_PSY_AUTEUR_GENRE_5==1]=1
-d$V_PSY_AUTEUR_GENRE_5_BIN[d$V_PSY_AUTEUR_GENRE_5==0]=0
+# #V_PSY_AUTEUR_GENRE_5_BIN
+# d$V_PSY_AUTEUR_GENRE_5_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_5_BIN <- d$V_PSY_AUTEUR_GENRE_5
+# 
+# d$V_PSY_AUTEUR_GENRE_5_BIN[d$V_PSY_AUTEUR_GENRE_5==1]=1
+# d$V_PSY_AUTEUR_GENRE_5_BIN[d$V_PSY_AUTEUR_GENRE_5==0]=0
 
 #V_PSY_AUTEUR_GENRE_6
 #V_PSY_AUTEUR_GENRE_6_RC
@@ -2632,12 +2663,12 @@ d$V_PSY_AUTEUR_GENRE_6_RC <- d$V_PSY_AUTEUR_GENRE_6
 d$V_PSY_AUTEUR_GENRE_6_RC[d$V_PSY_AUTEUR_GENRE_6==1]="Autre"
 d$V_PSY_AUTEUR_GENRE_6_RC[d$V_PSY_AUTEUR_GENRE_6==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_6_BIN
-d$V_PSY_AUTEUR_GENRE_6_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_6_BIN <- d$V_PSY_AUTEUR_GENRE_6
-
-d$V_PSY_AUTEUR_GENRE_6_BIN[d$V_PSY_AUTEUR_GENRE_6==1]=1
-d$V_PSY_AUTEUR_GENRE_6_BIN[d$V_PSY_AUTEUR_GENRE_6==0]=0
+# #V_PSY_AUTEUR_GENRE_6_BIN
+# d$V_PSY_AUTEUR_GENRE_6_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_6_BIN <- d$V_PSY_AUTEUR_GENRE_6
+# 
+# d$V_PSY_AUTEUR_GENRE_6_BIN[d$V_PSY_AUTEUR_GENRE_6==1]=1
+# d$V_PSY_AUTEUR_GENRE_6_BIN[d$V_PSY_AUTEUR_GENRE_6==0]=0
 
 #V_PSY_AUTEUR_GENRE_99
 #V_PSY_AUTEUR_GENRE_99_RC
@@ -2647,12 +2678,12 @@ d$V_PSY_AUTEUR_GENRE_99_RC <- d$V_PSY_AUTEUR_GENRE_99
 d$V_PSY_AUTEUR_GENRE_99_RC[d$V_PSY_AUTEUR_GENRE_99==1]="NSP"
 d$V_PSY_AUTEUR_GENRE_99_RC[d$V_PSY_AUTEUR_GENRE_99==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_99_BIN
-d$V_PSY_AUTEUR_GENRE_99_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_99_BIN <- d$V_PSY_AUTEUR_GENRE_99
-
-d$V_PSY_AUTEUR_GENRE_99_BIN[d$V_PSY_AUTEUR_GENRE_99==1]=1
-d$V_PSY_AUTEUR_GENRE_99_BIN[d$V_PSY_AUTEUR_GENRE_99==0]=0
+# #V_PSY_AUTEUR_GENRE_99_BIN
+# d$V_PSY_AUTEUR_GENRE_99_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_99_BIN <- d$V_PSY_AUTEUR_GENRE_99
+# 
+# d$V_PSY_AUTEUR_GENRE_99_BIN[d$V_PSY_AUTEUR_GENRE_99==1]=1
+# d$V_PSY_AUTEUR_GENRE_99_BIN[d$V_PSY_AUTEUR_GENRE_99==0]=0
 
 #V_PSY_AUTEUR_GENRE_98
 #V_PSY_AUTEUR_GENRE_98_RC
@@ -2662,21 +2693,21 @@ d$V_PSY_AUTEUR_GENRE_98_RC <- d$V_PSY_AUTEUR_GENRE_98
 d$V_PSY_AUTEUR_GENRE_98_RC[d$V_PSY_AUTEUR_GENRE_98==1]="Refus"
 d$V_PSY_AUTEUR_GENRE_98_RC[d$V_PSY_AUTEUR_GENRE_98==0]="Autres reponses"
 
-#V_PSY_AUTEUR_GENRE_98_BIN
-d$V_PSY_AUTEUR_GENRE_98_BIN <- NA
-d$V_PSY_AUTEUR_GENRE_98_BIN <- d$V_PSY_AUTEUR_GENRE_98
-
-d$V_PSY_AUTEUR_GENRE_98_BIN[d$V_PSY_AUTEUR_GENRE_98==1]=1
-d$V_PSY_AUTEUR_GENRE_98_BIN[d$V_PSY_AUTEUR_GENRE_98==0]=0
+# #V_PSY_AUTEUR_GENRE_98_BIN
+# d$V_PSY_AUTEUR_GENRE_98_BIN <- NA
+# d$V_PSY_AUTEUR_GENRE_98_BIN <- d$V_PSY_AUTEUR_GENRE_98
+# 
+# d$V_PSY_AUTEUR_GENRE_98_BIN[d$V_PSY_AUTEUR_GENRE_98==1]=1
+# d$V_PSY_AUTEUR_GENRE_98_BIN[d$V_PSY_AUTEUR_GENRE_98==0]=0
 
 #On cree la variable V_PSY_AUTEUR_GENRE_NB
 
-d$V_PSY_AUTEUR_GENRE_NB <-  rowSums(d[,c("V_PSY_AUTEUR_GENRE_1_BIN",
-                                         "V_PSY_AUTEUR_GENRE_2_BIN",
-                                         "V_PSY_AUTEUR_GENRE_3_BIN",
-                                         "V_PSY_AUTEUR_GENRE_4_BIN",
-                                         "V_PSY_AUTEUR_GENRE_5_BIN",
-                                         "V_PSY_AUTEUR_GENRE_6_BIN")], na.rm=T)
+d$V_PSY_AUTEUR_GENRE_SUM <-  rowSums(d[,c("V_PSY_AUTEUR_GENRE_1",
+                                         "V_PSY_AUTEUR_GENRE_2",
+                                         "V_PSY_AUTEUR_GENRE_3",
+                                         "V_PSY_AUTEUR_GENRE_4",
+                                         "V_PSY_AUTEUR_GENRE_5",
+                                         "V_PSY_AUTEUR_GENRE_6")], na.rm=T)
 
 #On cree la serie de variables V_PSY_AUTEUR_STATUT
 #V_PSY_AUTEUR_STATUT_1
@@ -2690,13 +2721,13 @@ d$V_PSY_AUTEUR_STATUT_1_RC[d$V_PSY_AUTEUR_STATUT_1==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_1_RC <- factor(d$V_PSY_AUTEUR_STATUT_1, levels=c("Etudiant ou etudiante",
                                                                        "Autres reponses"))
-#V_PSY_AUTEUR_STATUT_1_BIN
-
-d$V_PSY_AUTEUR_STATUT_1_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_1_BIN <- d$V_PSY_AUTEUR_STATUT_1
-
-d$V_PSY_AUTEUR_STATUT_1_RC[d$V_PSY_AUTEUR_STATUT_1==1]=1
-d$V_PSY_AUTEUR_STATUT_1_RC[d$V_PSY_AUTEUR_STATUT_1==0]=0 
+# #V_PSY_AUTEUR_STATUT_1_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_1_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_1_BIN <- d$V_PSY_AUTEUR_STATUT_1
+# 
+# d$V_PSY_AUTEUR_STATUT_1_RC[d$V_PSY_AUTEUR_STATUT_1==1]=1
+# d$V_PSY_AUTEUR_STATUT_1_RC[d$V_PSY_AUTEUR_STATUT_1==0]=0 
 
 #V_PSY_AUTEUR_STATUT_2
 #V_PSY_AUTEUR_STATUT_2_RC
@@ -2709,13 +2740,13 @@ d$V_PSY_AUTEUR_STATUT_2_RC[d$V_PSY_AUTEUR_STATUT_2==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_2_RC <- factor(d$V_PSY_AUTEUR_STATUT_2, levels=c("Enseignant ou enseignante que vous avez eu en cours (amphi, TD, seminaire, etc.)",
                                                                        "Autres reponses"))
-#V_PSY_AUTEUR_STATUT_2_BIN
-
-d$V_PSY_AUTEUR_STATUT_2_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_2_BIN <- d$V_PSY_AUTEUR_STATUT_2
-
-d$V_PSY_AUTEUR_STATUT_2_RC[d$V_PSY_AUTEUR_STATUT_2==1]=1
-d$V_PSY_AUTEUR_STATUT_2_RC[d$V_PSY_AUTEUR_STATUT_2==0]=0  
+# #V_PSY_AUTEUR_STATUT_2_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_2_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_2_BIN <- d$V_PSY_AUTEUR_STATUT_2
+# 
+# d$V_PSY_AUTEUR_STATUT_2_RC[d$V_PSY_AUTEUR_STATUT_2==1]=1
+# d$V_PSY_AUTEUR_STATUT_2_RC[d$V_PSY_AUTEUR_STATUT_2==0]=0  
 
 #V_PSY_AUTEUR_STATUT_3
 #V_PSY_AUTEUR_STATUT_3_RC
@@ -2728,13 +2759,13 @@ d$V_PSY_AUTEUR_STATUT_3_RC[d$V_PSY_AUTEUR_STATUT_3==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_3_RC <- factor(d$V_PSY_AUTEUR_STATUT_3, levels=c("Autre enseignant ou enseignante",
                                                                        "Autres reponses"))
-#V_PSY_AUTEUR_STATUT_3_BIN
-
-d$V_PSY_AUTEUR_STATUT_3_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_3_BIN <- d$V_PSY_AUTEUR_STATUT_3
-
-d$V_PSY_AUTEUR_STATUT_3_RC[d$V_PSY_AUTEUR_STATUT_3==1]=1
-d$V_PSY_AUTEUR_STATUT_3_RC[d$V_PSY_AUTEUR_STATUT_3==0]=0
+# #V_PSY_AUTEUR_STATUT_3_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_3_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_3_BIN <- d$V_PSY_AUTEUR_STATUT_3
+# 
+# d$V_PSY_AUTEUR_STATUT_3_RC[d$V_PSY_AUTEUR_STATUT_3==1]=1
+# d$V_PSY_AUTEUR_STATUT_3_RC[d$V_PSY_AUTEUR_STATUT_3==0]=0
 
 #V_PSY_AUTEUR_STATUT_4
 #V_PSY_AUTEUR_STATUT_4_RC
@@ -2747,13 +2778,13 @@ d$V_PSY_AUTEUR_STATUT_4_RC[d$V_PSY_AUTEUR_STATUT_4==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_4_RC <- factor(d$V_PSY_AUTEUR_STATUT_4, levels=c("Directeur ou directrice de memoire ou de these",
                                                                        "Autres reponses"))
-#V_PSY_AUTEUR_STATUT_4_BIN
-
-d$V_PSY_AUTEUR_STATUT_4_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_4_BIN <- d$V_PSY_AUTEUR_STATUT_4
-
-d$V_PSY_AUTEUR_STATUT_4_RC[d$V_PSY_AUTEUR_STATUT_4==1]=1
-d$V_PSY_AUTEUR_STATUT_4_RC[d$V_PSY_AUTEUR_STATUT_4==0]=0
+# #V_PSY_AUTEUR_STATUT_4_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_4_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_4_BIN <- d$V_PSY_AUTEUR_STATUT_4
+# 
+# d$V_PSY_AUTEUR_STATUT_4_RC[d$V_PSY_AUTEUR_STATUT_4==1]=1
+# d$V_PSY_AUTEUR_STATUT_4_RC[d$V_PSY_AUTEUR_STATUT_4==0]=0
 
 #V_PSY_AUTEUR_STATUT_5
 #V_PSY_AUTEUR_STATUT_5_RC
@@ -2768,11 +2799,11 @@ d$V_PSY_AUTEUR_STATUT_5_RC <- factor(d$V_PSY_AUTEUR_STATUT_5, levels=c("Personne
                                                                        "Autres reponses"))
 #V_PSY_AUTEUR_STATUT_5_BIN
 
-d$V_PSY_AUTEUR_STATUT_5_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_5_BIN <- d$V_PSY_AUTEUR_STATUT_5
-
-d$V_PSY_AUTEUR_STATUT_5_RC[d$V_PSY_AUTEUR_STATUT_5==1]=1
-d$V_PSY_AUTEUR_STATUT_5_RC[d$V_PSY_AUTEUR_STATUT_5==0]=0
+# d$V_PSY_AUTEUR_STATUT_5_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_5_BIN <- d$V_PSY_AUTEUR_STATUT_5
+# 
+# d$V_PSY_AUTEUR_STATUT_5_RC[d$V_PSY_AUTEUR_STATUT_5==1]=1
+# d$V_PSY_AUTEUR_STATUT_5_RC[d$V_PSY_AUTEUR_STATUT_5==0]=0
 
 #MODIFICATION si correction du recodage
 #V_PSY_AUTEUR_STATUT_6
@@ -2804,13 +2835,13 @@ d$V_PSY_AUTEUR_STATUT_7_RC[d$V_PSY_AUTEUR_STATUT_7==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_7_RC <- factor(d$V_PSY_AUTEUR_STATUT_7, levels=c("Autre personne du lieu d'etude",
                                                                        "Autres reponses"))
-#V_PSY_AUTEUR_STATUT_7_BIN
-
-d$V_PSY_AUTEUR_STATUT_7_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_7_BIN <- d$V_PSY_AUTEUR_STATUT_7
-
-d$V_PSY_AUTEUR_STATUT_7_RC[d$V_PSY_AUTEUR_STATUT_7==1]=1
-d$V_PSY_AUTEUR_STATUT_7_RC[d$V_PSY_AUTEUR_STATUT_7==0]=0
+# #V_PSY_AUTEUR_STATUT_7_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_7_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_7_BIN <- d$V_PSY_AUTEUR_STATUT_7
+# 
+# d$V_PSY_AUTEUR_STATUT_7_RC[d$V_PSY_AUTEUR_STATUT_7==1]=1
+# d$V_PSY_AUTEUR_STATUT_7_RC[d$V_PSY_AUTEUR_STATUT_7==0]=0
 
 #V_PSY_AUTEUR_STATUT_100 #A SUPPRIMER SI CORRECTION DU RECODAGE
 #V_PSY_AUTEUR_STATUT_100_RC
@@ -2823,13 +2854,13 @@ d$V_PSY_AUTEUR_STATUT_100_RC[d$V_PSY_AUTEUR_STATUT_100==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_100_RC <- factor(d$V_PSY_AUTEUR_STATUT_100, levels=c("Collegue",
                                                                            "Autres reponses"))
-#V_PSY_AUTEUR_STATUT_100_BIN
-
-d$V_PSY_AUTEUR_STATUT_100_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_100_BIN <- d$V_PSY_AUTEUR_STATUT_100
-
-d$V_PSY_AUTEUR_STATUT_100_RC[d$V_PSY_AUTEUR_STATUT_100==1]=1
-d$V_PSY_AUTEUR_STATUT_100_RC[d$V_PSY_AUTEUR_STATUT_100==0]=0
+# #V_PSY_AUTEUR_STATUT_100_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_100_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_100_BIN <- d$V_PSY_AUTEUR_STATUT_100
+# 
+# d$V_PSY_AUTEUR_STATUT_100_RC[d$V_PSY_AUTEUR_STATUT_100==1]=1
+# d$V_PSY_AUTEUR_STATUT_100_RC[d$V_PSY_AUTEUR_STATUT_100==0]=0
 
 #MODIFICATION si correction du recodage
 ##V_PSY_AUTEUR_STATUT_7
@@ -2860,13 +2891,13 @@ d$V_PSY_AUTEUR_STATUT_8_RC[d$V_PSY_AUTEUR_STATUT_8==1]="Employeur ou employeuse"
 d$V_PSY_AUTEUR_STATUT_8_RC[d$V_PSY_AUTEUR_STATUT_8==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_8_RC <- factor(d$V_PSY_AUTEUR_STATUT_8, levels=c("Employeur ou employeuse","Autres reponses"))
-#V_PSY_AUTEUR_STATUT_8_BIN
-
-d$V_PSY_AUTEUR_STATUT_8_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_8_BIN <- d$V_PSY_AUTEUR_STATUT_8
-
-d$V_PSY_AUTEUR_STATUT_8_RC[d$V_PSY_AUTEUR_STATUT_8==1]=1
-d$V_PSY_AUTEUR_STATUT_8_RC[d$V_PSY_AUTEUR_STATUT_8==0]=0
+# #V_PSY_AUTEUR_STATUT_8_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_8_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_8_BIN <- d$V_PSY_AUTEUR_STATUT_8
+# 
+# d$V_PSY_AUTEUR_STATUT_8_RC[d$V_PSY_AUTEUR_STATUT_8==1]=1
+# d$V_PSY_AUTEUR_STATUT_8_RC[d$V_PSY_AUTEUR_STATUT_8==0]=0
 
 #V_PSY_AUTEUR_STATUT_9
 #V_PSY_AUTEUR_STATUT_9_RC
@@ -2880,11 +2911,11 @@ d$V_PSY_AUTEUR_STATUT_9_RC[d$V_PSY_AUTEUR_STATUT_9==0]="Autres reponses"
 d$V_PSY_AUTEUR_STATUT_9_RC <- factor(d$V_PSY_AUTEUR_STATUT_9, levels=c("Tuteur ou tutrice de stage, maitre ou maitresse de stage","Autres reponses"))
 #V_PSY_AUTEUR_STATUT_9_BIN
 
-d$V_PSY_AUTEUR_STATUT_9_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_9_BIN <- d$V_PSY_AUTEUR_STATUT_9
-
-d$V_PSY_AUTEUR_STATUT_9_RC[d$V_PSY_AUTEUR_STATUT_9==1]=1
-d$V_PSY_AUTEUR_STATUT_9_RC[d$V_PSY_AUTEUR_STATUT_9==0]=0
+# d$V_PSY_AUTEUR_STATUT_9_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_9_BIN <- d$V_PSY_AUTEUR_STATUT_9
+# 
+# d$V_PSY_AUTEUR_STATUT_9_RC[d$V_PSY_AUTEUR_STATUT_9==1]=1
+# d$V_PSY_AUTEUR_STATUT_9_RC[d$V_PSY_AUTEUR_STATUT_9==0]=0
 
 #V_PSY_AUTEUR_STATUT_10
 #V_PSY_AUTEUR_STATUT_10_RC
@@ -2898,11 +2929,11 @@ d$V_PSY_AUTEUR_STATUT_10_RC[d$V_PSY_AUTEUR_STATUT_10==0]="Autres reponses"
 d$V_PSY_AUTEUR_STATUT_10_RC <- factor(d$V_PSY_AUTEUR_STATUT_10, levels=c("Client ou cliente, patient ou patiente, autre personne que vous pouvez rencontrer dans le cadre d'un stage ou d'un emploi","Autres reponses"))
 #V_PSY_AUTEUR_STATUT_10_BIN
 
-d$V_PSY_AUTEUR_STATUT_10_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_10_BIN <- d$V_PSY_AUTEUR_STATUT_10
-
-d$V_PSY_AUTEUR_STATUT_10_RC[d$V_PSY_AUTEUR_STATUT_10==1]=1
-d$V_PSY_AUTEUR_STATUT_10_RC[d$V_PSY_AUTEUR_STATUT_10==0]=0
+# d$V_PSY_AUTEUR_STATUT_10_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_10_BIN <- d$V_PSY_AUTEUR_STATUT_10
+# 
+# d$V_PSY_AUTEUR_STATUT_10_RC[d$V_PSY_AUTEUR_STATUT_10==1]=1
+# d$V_PSY_AUTEUR_STATUT_10_RC[d$V_PSY_AUTEUR_STATUT_10==0]=0
 
 #V_PSY_AUTEUR_STATUT_11
 #V_PSY_AUTEUR_STATUT_11_RC
@@ -2917,11 +2948,11 @@ d$V_PSY_AUTEUR_STATUT_11_RC <- factor(d$V_PSY_AUTEUR_STATUT_11, levels=c("Autre 
 
 #V_PSY_AUTEUR_STATUT_11_BIN
 
-d$V_PSY_AUTEUR_STATUT_11_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_11_BIN <- d$V_PSY_AUTEUR_STATUT_11
-
-d$V_PSY_AUTEUR_STATUT_11_RC[d$V_PSY_AUTEUR_STATUT_11==1]=1
-d$V_PSY_AUTEUR_STATUT_11_RC[d$V_PSY_AUTEUR_STATUT_11==0]=0
+# d$V_PSY_AUTEUR_STATUT_11_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_11_BIN <- d$V_PSY_AUTEUR_STATUT_11
+# 
+# d$V_PSY_AUTEUR_STATUT_11_RC[d$V_PSY_AUTEUR_STATUT_11==1]=1
+# d$V_PSY_AUTEUR_STATUT_11_RC[d$V_PSY_AUTEUR_STATUT_11==0]=0
 
 #V_PSY_AUTEUR_STATUT_12
 #V_PSY_AUTEUR_STATUT_12_RC
@@ -2936,11 +2967,11 @@ d$V_PSY_AUTEUR_STATUT_12_RC <- factor(d$V_PSY_AUTEUR_STATUT_12, levels=c("Un ou 
 
 #V_PSY_AUTEUR_STATUT_12_BIN
 
-d$V_PSY_AUTEUR_STATUT_12_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_12_BIN <- d$V_PSY_AUTEUR_STATUT_12
-
-d$V_PSY_AUTEUR_STATUT_12_RC[d$V_PSY_AUTEUR_STATUT_12==1]=1
-d$V_PSY_AUTEUR_STATUT_12_RC[d$V_PSY_AUTEUR_STATUT_12==0]=0
+# d$V_PSY_AUTEUR_STATUT_12_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_12_BIN <- d$V_PSY_AUTEUR_STATUT_12
+# 
+# d$V_PSY_AUTEUR_STATUT_12_RC[d$V_PSY_AUTEUR_STATUT_12==1]=1
+# d$V_PSY_AUTEUR_STATUT_12_RC[d$V_PSY_AUTEUR_STATUT_12==0]=0
 
 #V_PSY_AUTEUR_STATUT_99
 #V_PSY_AUTEUR_STATUT_99_RC
@@ -2954,12 +2985,12 @@ d$V_PSY_AUTEUR_STATUT_99_RC[d$V_PSY_AUTEUR_STATUT_99==0]="Autres reponses"
 d$V_PSY_AUTEUR_STATUT_99_RC <- factor(d$V_PSY_AUTEUR_STATUT_99, levels=c("NSP","Autres reponses"))
 
 #V_PSY_AUTEUR_STATUT_99_BIN
-
-d$V_PSY_AUTEUR_STATUT_99_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_99_BIN <- d$V_PSY_AUTEUR_STATUT_99
-
-d$V_PSY_AUTEUR_STATUT_99_RC[d$V_PSY_AUTEUR_STATUT_99==1]=1
-d$V_PSY_AUTEUR_STATUT_99_RC[d$V_PSY_AUTEUR_STATUT_99==0]=0
+# 
+# d$V_PSY_AUTEUR_STATUT_99_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_99_BIN <- d$V_PSY_AUTEUR_STATUT_99
+# 
+# d$V_PSY_AUTEUR_STATUT_99_RC[d$V_PSY_AUTEUR_STATUT_99==1]=1
+# d$V_PSY_AUTEUR_STATUT_99_RC[d$V_PSY_AUTEUR_STATUT_99==0]=0
 
 #V_PSY_AUTEUR_STATUT_98
 #V_PSY_AUTEUR_STATUT_98_RC
@@ -2971,31 +3002,31 @@ d$V_PSY_AUTEUR_STATUT_98_RC[d$V_PSY_AUTEUR_STATUT_98==1]="Refus"
 d$V_PSY_AUTEUR_STATUT_98_RC[d$V_PSY_AUTEUR_STATUT_98==0]="Autres reponses"
 
 d$V_PSY_AUTEUR_STATUT_98_RC <- factor(d$V_PSY_AUTEUR_STATUT_98, levels=c("NSP","Autres reponses"))
-
-#V_PSY_AUTEUR_STATUT_98_BIN
-
-d$V_PSY_AUTEUR_STATUT_98_BIN <- NA
-d$V_PSY_AUTEUR_STATUT_98_BIN <- d$V_PSY_AUTEUR_STATUT_98
-
-d$V_PSY_AUTEUR_STATUT_98_RC[d$V_PSY_AUTEUR_STATUT_98==1]=1
-d$V_PSY_AUTEUR_STATUT_98_RC[d$V_PSY_AUTEUR_STATUT_98==0]=0
+# 
+# #V_PSY_AUTEUR_STATUT_98_BIN
+# 
+# d$V_PSY_AUTEUR_STATUT_98_BIN <- NA
+# d$V_PSY_AUTEUR_STATUT_98_BIN <- d$V_PSY_AUTEUR_STATUT_98
+# 
+# d$V_PSY_AUTEUR_STATUT_98_RC[d$V_PSY_AUTEUR_STATUT_98==1]=1
+# d$V_PSY_AUTEUR_STATUT_98_RC[d$V_PSY_AUTEUR_STATUT_98==0]=0
 
 #On cree la variable V_PSY_AUTEUR_STATUT_NB
 
-d$V_PSY_AUTEUR_STATUT_NB <-
+d$V_PSY_AUTEUR_STATUT_SUM <-
   rowSums(d[, c(
-    "V_PSY_AUTEUR_STATUT_1_BIN",
-    "V_PSY_AUTEUR_STATUT_2_BIN",
-    "V_PSY_AUTEUR_STATUT_3_BIN",
-    "V_PSY_AUTEUR_STATUT_4_BIN",
-    "V_PSY_AUTEUR_STATUT_5_BIN",
-    "V_PSY_AUTEUR_STATUT_7_BIN",
-    "V_PSY_AUTEUR_STATUT_100_BIN",
-    "V_PSY_AUTEUR_STATUT_8_BIN",
-    "V_PSY_AUTEUR_STATUT_9_BIN",
-    "V_PSY_AUTEUR_STATUT_10_BIN",
-    "V_PSY_AUTEUR_STATUT_11_BIN",
-    "V_PSY_AUTEUR_STATUT_12_BIN",
+    "V_PSY_AUTEUR_STATUT_1",
+    "V_PSY_AUTEUR_STATUT_2",
+    "V_PSY_AUTEUR_STATUT_3",
+    "V_PSY_AUTEUR_STATUT_4",
+    "V_PSY_AUTEUR_STATUT_5",
+    "V_PSY_AUTEUR_STATUT_7",
+    "V_PSY_AUTEUR_STATUT_100",
+    "V_PSY_AUTEUR_STATUT_8",
+    "V_PSY_AUTEUR_STATUT_9",
+    "V_PSY_AUTEUR_STATUT_10",
+    "V_PSY_AUTEUR_STATUT_11",
+    "V_PSY_AUTEUR_STATUT_12",
   )], na.rm = T)
 
 #MODIFICATION si correction du recodage
@@ -3003,15 +3034,14 @@ d$V_PSY_AUTEUR_STATUT_NB <-
 
 #[ICI]
 
-#On cree P_FAITS_PHYS_1_BIN, une variable dichtomique pour permettre de mesurer si oui ou non les individus ont declare avoir subi le fait de violences physiques
+#On cree P_FAITS_PHYS_1_BIN, une variable dichotomique pour permettre de mesurer si oui ou non les individus ont declare avoir subi le fait de violences physiques
 
 d$P_FAITS_PHYS_1_BIN[d$P_FAITS_PHYS_1==1 | d$P_FAITS_PHYS_1==2]=1
 d$P_FAITS_PHYS_1_BIN[d$P_FAITS_PHYS_1==3 | d$P_FAITS_PHYS_1==99 | d$P_FAITS_PHYS_1==98 ]=0
-table(d$P_FAITS_PHYS_1_BIN)
 
 #On cree une variable P_FAITS_PSY_GEN, qui comptabilise le nombre de faits de violence phychologiques declares par les repondant(e)s (un seul fait, mais plus simple pour construction de la variable generale)
 
-d$P_FAITS_PHYS_GEN= (d$P_FAITS_PHYS_1_BIN)
+d$P_FAITS_PHYS_SUM = (d$P_FAITS_PHYS_1_BIN)
 
 #On amende au besoin la variable V_PHYS_DOUZE pour s'assurer que les valeurs vides sont considerees comme des NA et non comme des 0
 
@@ -3019,56 +3049,45 @@ d$V_PHYS_DOUZE[d$V_PHYS_DOUZE==""]=NA
 
 #####VIOLENCES SEXUELLES
 
-#On cree 8 variables dichtomiques, pour permettre de mesurer si oui ou non les individus ont declare avoir subi les 8 faits de violences sexuelles 
+#On cree 8 variables dichotomiques, pour permettre de mesurer si oui ou non les individus ont declare avoir subi les 8 faits de violences sexuelles 
 
 d$P_FAITS_SEX_1_BIN[d$P_FAITS_SEX_1==1 | d$P_FAITS_SEX_1==2]=1
 d$P_FAITS_SEX_1_BIN[d$P_FAITS_SEX_1==3 | d$P_FAITS_SEX_1==99 | d$P_FAITS_SEX_1==98 ]=0
-table(d$P_FAITS_SEX_1_BIN)
 
-d$P_FAITP_FAITS_SEX_1d$P_FAITS_SEX_2_BIN[d$P_FAITS_SEX_2==1 | d$P_FAITS_SEX_2==2]=1
+d$P_FAITS_SEX_2_BIN[d$P_FAITS_SEX_2==1 | d$P_FAITS_SEX_2==2]=1
 d$P_FAITS_SEX_2_BIN[d$P_FAITS_SEX_2==3 | d$P_FAITS_SEX_2==99 | d$P_FAITS_SEX_2==98 ]=0
-table(d$P_FAITS_SEX_2_BIN)
 
 d$P_FAITS_SEX_3_BIN[d$P_FAITS_SEX_3==1 | d$P_FAITS_SEX_3==2]=1
 d$P_FAITS_SEX_3_BIN[d$P_FAITS_SEX_3==3 | d$P_FAITS_SEX_3==99 | d$P_FAITS_SEX_3==98 ]=0
-table(d$P_FAITS_SEX_3_BIN)
 
 d$P_FAITS_SEX_4_BIN[d$P_FAITS_SEX_4==1 | d$P_FAITS_SEX_4==2]=1
 d$P_FAITS_SEX_4_BIN[d$P_FAITS_SEX_4==3 | d$P_FAITS_SEX_4==99 | d$P_FAITS_SEX_4==98 ]=0
-table(d$P_FAITS_SEX_4_BIN)
 
 d$P_FAITS_SEX_5_BIN[d$P_FAITS_SEX_5==1 | d$P_FAITS_SEX_5==2]=1
 d$P_FAITS_SEX_5_BIN[d$P_FAITS_SEX_5==3 | d$P_FAITS_SEX_5==99 | d$P_FAITS_SEX_5==98 ]=0
-table(d$P_FAITS_SEX_5_BIN)
 
 d$P_FAITS_SEX_6_BIN[d$P_FAITS_SEX_6==1 | d$P_FAITS_SEX_6==2]=1
 d$P_FAITS_SEX_6_BIN[d$P_FAITS_SEX_6==3 | d$P_FAITS_SEX_6==99 | d$P_FAITS_SEX_6==98 ]=0
-table(d$P_FAITS_SEX_6_BIN)
 
 d$P_FAITS_SEX_7_BIN[d$P_FAITS_SEX_7==1 | d$P_FAITS_SEX_7==2]=1
 d$P_FAITS_SEX_7_BIN[d$P_FAITS_SEX_7==3 | d$P_FAITS_SEX_7==99 | d$P_FAITS_SEX_7==98 ]=0
-table(d$P_FAITS_SEX_7_BIN)
 
 #On cree une autre variable dichotomique pour la variable des faits de signalements (pour l'instant, viols)
 
-d$P_FAITS_SEX_8_BIN [d$P_FAITS_SIGN_MAJ_1==1 | d$P_FAITS_SIGN_MAJ_1==2]=1
-d$P_FAITS_SEX_8_BIN[d$P_FAITS_SIGN_MAJ_1==3 | d$P_FAITS_SIGN_MAJ_1==99 | d$P_FAITS_SIGN_MAJ_1==98 ]=0
-d$P_FAITS_SEX_8_BIN [d$P_FAITS_SIGN_MIN_1==1 | d$P_FAITS_SIGN_MIN_1==2]=1
-d$P_FAITS_SEX_8_BIN[d$P_FAITS_SIGN_MIN_1==3 | d$P_FAITS_SIGN_MIN_1==99 | d$P_FAITS_SIGN_MIN_1==98 ]=0
+# d$P_FAITS_SEX_8_BIN [d$P_FAITS_SIGN_MAJ_1==1 | d$P_FAITS_SIGN_MAJ_1==2]=1
+# d$P_FAITS_SEX_8_BIN[d$P_FAITS_SIGN_MAJ_1==3 | d$P_FAITS_SIGN_MAJ_1==99 | d$P_FAITS_SIGN_MAJ_1==98 ]=0
+# d$P_FAITS_SEX_8_BIN [d$P_FAITS_SIGN_MIN_1==1 | d$P_FAITS_SIGN_MIN_1==2]=1
+# d$P_FAITS_SEX_8_BIN[d$P_FAITS_SIGN_MIN_1==3 | d$P_FAITS_SIGN_MIN_1==99 | d$P_FAITS_SIGN_MIN_1==98 ]=0
 
 #On creer une variable P_FAITS_SEX_GEN, qui comptabilise le nombre de faits de violence sexuelle declares par les repondant(e)s
 
-d$P_FAITS_SEX_GEN= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
+d$P_FAITS_SEX_SUM= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
 
-table(d$P_FAITS_SEX_GEN)
-sum(table(d$P_FAITS_SEX_GEN))
 
 #On cree une variable P_FAITS_SEX_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence sexuelle
 
-d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN==0]=0
-d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN>=1]=1
-
-table(d$P_FAITS_SEX_GEN_BIN)
+d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM==0]=0
+d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM>=1]=1
 
 #On cree une variable V_SEX_DOUZE_GEN
 
@@ -3084,49 +3103,54 @@ d$V_SEX_DOUZE_8[d$V_SEX_DOUZE_8==""]=NA
 d$V_SEX_DOUZE_9[d$V_SEX_DOUZE_8==""]=NA
 
 
-d$V_SEX_DOUZE_1 <- as.integer(d$V_SEX_DOUZE_1)
-d$V_SEX_DOUZE_2 <- as.integer(d$V_SEX_DOUZE_2)
-d$V_SEX_DOUZE_3 <- as.integer(d$V_SEX_DOUZE_3)
-d$V_SEX_DOUZE_4 <- as.integer(d$V_SEX_DOUZE_4)
-d$V_SEX_DOUZE_5 <- as.integer(d$V_SEX_DOUZE_5)
-d$V_SEX_DOUZE_6 <- as.integer(d$V_SEX_DOUZE_6)
-d$V_SEX_DOUZE_7 <- as.integer(d$V_SEX_DOUZE_7)
-d$V_SEX_DOUZE_8 <- as.integer(d$V_SEX_DOUZE_8)
-d$V_SEX_DOUZE_9 <- as.integer(d$V_SEX_DOUZE_9)
+# d$V_SEX_DOUZE_1 <- as.integer(d$V_SEX_DOUZE_1)
+# d$V_SEX_DOUZE_2 <- as.integer(d$V_SEX_DOUZE_2)
+# d$V_SEX_DOUZE_3 <- as.integer(d$V_SEX_DOUZE_3)
+# d$V_SEX_DOUZE_4 <- as.integer(d$V_SEX_DOUZE_4)
+# d$V_SEX_DOUZE_5 <- as.integer(d$V_SEX_DOUZE_5)
+# d$V_SEX_DOUZE_6 <- as.integer(d$V_SEX_DOUZE_6)
+# d$V_SEX_DOUZE_7 <- as.integer(d$V_SEX_DOUZE_7)
+# d$V_SEX_DOUZE_8 <- as.integer(d$V_SEX_DOUZE_8)
+# d$V_SEX_DOUZE_9 <- as.integer(d$V_SEX_DOUZE_9)
 
 #On cree une variable V_SEX_DOUZE_GEN qui synthetise le nombre de faits declares ayant eu lieu les 12 derniers mois
 
-d$V_SEX_DOUZE_GEN <- rowSums(d[,c("V_SEX_DOUZE_1","V_SEX_DOUZE_2","V_SEX_DOUZE_3","V_SEX_DOUZE_4","V_SEX_DOUZE_5","V_SEX_DOUZE_6","V_SEX_DOUZE_7","V_SEX_DOUZE_8")], na.rm=T)
-d$V_SEX_DOUZE_GEN[d$P_FAITS_SEX_GEN_BIN==0]=NA
-d$V_SEX_DOUZE_GEN[is.na(d$P_FAITS_SEX_GEN_BIN)]=NA
-
-table(d$V_SEX_DOUZE_GEN)
+d$V_SEX_DOUZE_SUM <- rowSums(d[,c("V_SEX_DOUZE_1","V_SEX_DOUZE_2","V_SEX_DOUZE_3","V_SEX_DOUZE_4","V_SEX_DOUZE_5","V_SEX_DOUZE_6","V_SEX_DOUZE_7","V_SEX_DOUZE_8")], na.rm=T)
+d$V_SEX_DOUZE_SUM[d$P_FAITS_SEX_SUM_BIN==0]=NA
+d$V_SEX_DOUZE_SUM[is.na(d$P_FAITS_SEX_SUM_BIN)]=NA
 
 #On cree une variable V_SEX_DOUZE_GEN_BIN qui indique si l'individu a declare au moins un fait de violence psychologique au cours des 12 derniers mois
 
-d$V_SEX_DOUZE_GEN_BIN[d$V_SEX_DOUZE_GEN==0]=0
-d$V_SEX_DOUZE_GEN_BIN[is.na(d$V_SEX_DOUZE_GEN)]=NA
-d$V_SEX_DOUZE_GEN_BIN[d$V_SEX_DOUZE_GEN>=1]=1
+d$V_SEX_DOUZE_SUM_BIN[d$V_SEX_DOUZE_SUM==0]=0
+d$V_SEX_DOUZE_SUM_BIN[is.na(d$V_SEX_DOUZE_SUM)]=NA
+d$V_SEX_DOUZE_SUM_BIN[d$V_SEX_DOUZE_SUM>=1]=1
 
-table(d$V_SEX_DOUZE_GEN_BIN)
 
 d$V_SEX_MARQ[d$V_SEX_MARQ==""]=NA
 
 
 #On cree une variable P_FAITS_GEN, qui recapitule le nombre de faits declares
 
-d$P_FAITS_GEN <- rowSums(d[,c("P_FAITS_PSY_GEN", "P_FAITS_PHYS_GEN", "P_FAITS_SEX_GEN")], na.rm=T)
-table(d$P_FAITS_GEN)
-sum(table(d$P_FAITS_GEN))
-table(d$P_FAITS_PHYS_GEN)
+d$P_FAITS_SUM <- rowSums(d[,c("P_FAITS_PSY_SUM", "P_FAITS_PHYS_SUM", "P_FAITS_SEX_SUM")], na.rm=T)
 
 #On cree une variable P_FAITS_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence au total
 
-d$P_FAITS_GEN_BIN[d$P_FAITS_GEN==0]=0
-d$P_FAITS_GEN_BIN[d$P_FAITS_GEN>=1]=1
+d$P_FAITS_SUM_BIN[d$P_FAITS_SUM==0]=0
+d$P_FAITS_SUM_BIN[d$P_FAITS_SUM>=1]=1
 
 
 
 
+#### Transformation en factor ####
+
+#Appliquer la transformation sur les colonnes qui peuvent être converties en factor
+
+d <- as.data.frame(lapply(d, function(x) {
+  if (is.integer(x) && is_convertible_to_integer(x)) {
+    as.factor(x)  # Convertir en factor
+  } else {
+    x  # Laisser la colonne telle quelle
+  }
+}))
 
 
