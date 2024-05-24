@@ -17,7 +17,6 @@ dv <- c(safeduc_let[1,]) #on cree un vecteur texte, qui comprend la premiere lig
 safeduc_let <- safeduc_let[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
 safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
 
-
 ##########     DEBUT DES RECODAGES    ##########
 
 
@@ -45,8 +44,6 @@ d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
 
 ### Création de variables regroupant les modalités à choix multiples (reverse one hot encoding) ### 
 
-#### EN COURS #####
-
 d<- reverse_one_hot_encoding(
   d, 
   c(
@@ -57,7 +54,31 @@ d<- reverse_one_hot_encoding(
   )
 )
 
-    
+d<- reverse_one_hot_encoding(
+  d, 
+  c(
+    "V_PSY_DOUZE", "V_PSY_ETAB","V_PSY_LIEU", "V_PSY_INTERNET", "V_PSY_AUTEUR_GENRE",
+    "V_PSY_AUTEUR_STATUT", "V_PSY_AUTEUR_REL", "V_PSY_AUTEUR_ALCOOL", "V_PSY_MOTIF"
+  )
+)
+
+d<- reverse_one_hot_encoding(
+  d, 
+  c(
+    "V_PHY_ETAB","V_PHY_LIEU", "V_PHY_AUTEUR_STATUT", 
+    "V_PHY_AUTEUR_REL", "V_PHY_AUTEUR_ALCOOL", "V_PHY_MOTIF"
+  )
+)
+
+d<- reverse_one_hot_encoding(
+  d, 
+  c(
+    "V_SEX_DOUZE", "V_SEX_ETAB","V_SEX_LIEU", "V_SEX_INTERNET", "V_SEX_AUTEUR_GENRE",
+    "V_SEX_AUTEUR_STATUT", "V_SEX_AUTEUR_REL", "V_SEX_AUTEUR_ALCOOL", "V_SEX_MOTIF"
+  )
+)
+
+
 
 ###### Création de nouvelles variables recodées ######
 

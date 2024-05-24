@@ -1,3 +1,6 @@
+#import packages 
+source("packages.R")
+
 ##### Fonction qui crée une variable_label pour chaque variable concernée #####
 
 # Cette fonction fusionne les bases identiques dont l'une des versions a ses modalités en num et l'autre en character
@@ -34,17 +37,17 @@ merge_with_labels <- function(num_df, let_df) {
 
 reverse_one_hot_encoding <- function(df, prefixes) {
   for (prefix in prefixes) {
-    # Sélectionner les colonnes correspondant au préfixe de la variable (par exemple pour I_NATIONALITE_1 le prefixe est I_NATIONALITE)
+    # Sélectionner les colonnes correspondant au préfixe de la variable
     cols <- grep(paste0("^", prefix, "_"), names(df), value = TRUE)
     
     # Extraire les numéros des colonnes
     nums <- sub(paste0(prefix, "_"), "", cols)
     
-    # Créer une nouvelle colonne de liste avec les numéros où la valeur est 1
+    # Créer une nouvelle colonne de liste avec les numéros où la valeur est 1, exclure les NA
     liste_col <- paste0(prefix, "_liste")
     df[[liste_col]] <- apply(df[cols], 1, function(row) {
-      valid_nums <- nums[row == 1]
-      if (length(valid_nums) == 0 || all(is.na(valid_nums))) {
+      valid_nums <- nums[row == 1 & !is.na(row)]
+      if (length(valid_nums) == 0) {
         return(NA)
       } else {
         return(paste(valid_nums, collapse = ","))
@@ -53,20 +56,26 @@ reverse_one_hot_encoding <- function(df, prefixes) {
     
     # Réorganiser les colonnes pour placer la colonne _liste avant les colonnes one-hot encodées
     col_pos <- match(cols[1], names(df))
-    new_order <- c(names(df)[1:(col_pos-1)], liste_col, names(df)[col_pos:(length(names(df))-1)])
+    new_order <- c(names(df)[1:(col_pos-1)], liste_col, names(df)[col_pos:(length(names(df)))])
     df <- df[, new_order]
+    
+    # Supprimer la colonne _liste de la fin si elle y est
+    if (names(df)[length(names(df))] == liste_col) {
+      df <- df[, -length(names(df))]
+    }
   }
   
   return(df)
 }
 
 
+# Fonction pour filtrer les lignes avec progress > 54 (réponses exploitables)
+filter_exploitable <- function(df) {
+  df %>% filter(Progress > 54)
+}
 
-
-
-
-
-
-
-
+# Fonction pour filtrer les lignes avec progress == 100 (réponses complètes)
+filter_complete <- function(df) {
+  df %>% filter(Progress == 100)
+}
 
