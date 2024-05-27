@@ -74,6 +74,15 @@ reverse_one_hot_encoding <- function(df, prefixes) {
   return(df)
 }
 
+##### Fonction pour compter le nombre de faits déclarés
+
+compter_faits <- function(data, variables, nouvelle_variable) {
+  nouvelle_variable <- rlang::ensym(nouvelle_variable)
+  data %>%
+    rowwise() %>%
+    mutate(!!nouvelle_variable := sum(c_across(all_of(variables)) %in% c(1, 2), na.rm = TRUE)) %>%
+    ungroup()
+}
 
 ##### Fonction pour filtrer les lignes avec progress > 54 (réponses exploitables) #####
 filter_exploitable <- function(df) {

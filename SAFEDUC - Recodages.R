@@ -8,6 +8,7 @@ source("fonctions.R")
 safeduc_num <- read_csv("safeduc_num.csv")
 safeduc_let <- read_csv("safeduc_let.csv")
 
+
 dv <- c(safeduc_num[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
 safeduc_num <- safeduc_num[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
 safeduc_num <- set_variable_labels(safeduc_num,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
@@ -37,13 +38,6 @@ d <- as.data.frame(lapply(d, function(x) {
     x  # Laisser la colonne telle quelle
   }
 }))
-
-
-#### Transformation en datetime#### 
-
-d$StartDate <- as.POSIXct(d$StartDate, format="%Y-%m-%d %H:%M:%S")
-d$EndDate <- as.POSIXct(d$EndDate, format="%Y-%m-%d %H:%M:%S")
-d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
 
 #### Fusionner safeduc_num et safeduc_let afin de labelliser les variables #### 
 
@@ -94,8 +88,52 @@ d<- reverse_one_hot_encoding(
 )
 
 
-
 ###### Création de nouvelles variables recodées ######
+
+
+#####Variables de comptage des faits vécus
+
+
+variables_faits_psy <- names(d)[grepl("^P_FAITS_PSY", names(d))]
+d <- compter_faits(d, variables_faits_psy, "P_FAITS_PSY_SUM")
+
+variables_faits_phys <- names(d)[grepl("^P_FAITS_PHYS", names(d))]
+d <- compter_faits(d, variables_faits_phys, "P_FAITS_PHYS_SUM")
+
+
+variables_faits_sex <- names(d)[grepl("^P_FAITS_SEX", names(d))]
+d <- compter_faits(d, variables_faits_sex, "P_FAITS_SEX_SUM")
+
+d <- d %>% 
+  mutate(
+    P_FAITS_SUM = rowSums(across(c("P_FAITS_PSY_SUM", "P_FAITS_PHYS_SUM", "P_FAITS_SEX_SUM"), na.rm=T))
+  )
+
+
+#### Transformation en factor ####
+
+#Appliquer la transformation sur les colonnes qui peuvent être converties en factor
+
+d <- as.data.frame(lapply(d, function(x) {
+  if (is.integer(x) && is_convertible_to_integer(x)) {
+    as.factor(x)  # Convertir en factor
+  } else {
+    x  # Laisser la colonne telle quelle
+  }
+}))
+
+#### Transformation en datetime#### 
+
+d$StartDate <- as.POSIXct(d$StartDate, format="%Y-%m-%d %H:%M:%S")
+d$EndDate <- as.POSIXct(d$EndDate, format="%Y-%m-%d %H:%M:%S")
+d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
+
+#### Transformation en integer ####
+
+d$Progress <- as.integer(d$Progress)
+d$Duration..in.seconds. <- as.integer(d$Duration..in.seconds.)
+
+##### CODE VICTOR #####
 
 #Variable I_ETAB, pour l'etablissement de rattachement (Sciences Po/Upcite)
 
@@ -562,7 +600,7 @@ d$I_U_FACULTE_REFUS <- d$I_U_FACULTE_98
 #On cree la variable I_U_FACULTE_NB pour le nombre de facultes cochees
 
 table(d$I_U_FACULTE_1)
-d$I_U_FACULTE_SUM <- rowSums(d[,c("I_U_FACULTE_1","I_U_FACULTE_2","I_U_FACULTE_3","I_U_FACULTE_4")], na.rm=T)
+d$I_U_FACULTE_GEN <- rowSums(d[,c("I_U_FACULTE_1","I_U_FACULTE_2","I_U_FACULTE_3","I_U_FACULTE_4")], na.rm=T)
 
 #On recode la variable d$I_U_FACULTE_SANTE
 
@@ -577,7 +615,7 @@ d$I_UFR_SANTE_NSP <- d$I_U_FACULTE_SANTE_99
 d$I_UFR_SANTE_REFUS <- d$I_U_FACULTE_SANTE_98
 
 #On cree la variable I_U_UFR_SANTE_NB pour le nombre d'UFR a la faculte de sante
-d$I_UFR_SANTE_SUM <- rowSums(d[,c("I_U_FACULTE_SANTE_1","I_U_FACULTE_SANTE_2","I_U_FACULTE_SANTE_3","I_U_FACULTE_SANTE_4","I_U_FACULTE_SANTE_5","I_U_FACULTE_SANTE_6","I_UFR_FACULTE_SANTE_7")], na.rm=T)
+d$I_UFR_SANTE_GEN <- rowSums(d[,c("I_U_FACULTE_SANTE_1","I_U_FACULTE_SANTE_2","I_U_FACULTE_SANTE_3","I_U_FACULTE_SANTE_4","I_U_FACULTE_SANTE_5","I_U_FACULTE_SANTE_6","I_UFR_FACULTE_SANTE_7")], na.rm=T)
 
 #On recode la variable d$I_U_FACULTE_SCIENCES
 
@@ -595,7 +633,7 @@ d$I_UFR_SCIENCES_NSP <- d$I_U_FACULTE_SCIENCES_99
 d$I_UFR_SCIENCES_REFUS <- d$I_U_FACULTE_SCIENCES_98
 
 #On cree la variable I_UFR_SCIENCES_NB pour le nombre d'UFR a la faculte des Sciences
-d$I_UFR_SCIENCES_SUM <-rowSums(d[, c("I_U_FACULTE_SCIENCES_1",
+d$I_UFR_SCIENCES_GEN <-rowSums(d[, c("I_U_FACULTE_SCIENCES_1",
                                     "I_U_FACULTE_SCIENCES_2",
                                     "I_U_FACULTE_SCIENCES_3",
                                     "I_U_FACULTE_SCIENCES_4",
@@ -626,7 +664,7 @@ d$I_UFR_SOCIETES_REFUS <- d$I_U_FACULTE_SOCIETES_98
 d$I_UFR_SOCIETES_NSP <- d$I_U_FACULTE_SOCIETES_99
 
 #On cree la variable I_UFR_SCIENCES_NB pour le nombre d'UFR a la faculte des Sciences
-d$I_UFR_SOCIETES_SUM <-rowSums(d[, c("I_U_FACULTE_SOCIETES_1",
+d$I_UFR_SOCIETES_GEN <-rowSums(d[, c("I_U_FACULTE_SOCIETES_1",
                                     "I_U_FACULTE_SOCIETES_2",
                                     "I_U_FACULTE_SOCIETES_3",
                                     "I_U_FACULTE_SOCIETES_4",
@@ -642,7 +680,7 @@ d$I_UFR_SOCIETES_SUM <-rowSums(d[, c("I_U_FACULTE_SOCIETES_1",
 
 #On cree la variable I_UFR_NB pour le nombre d'UFR dans l'ensemble d'UPCITE
 
-d$I_UFR_SUM <- rowSums((d[,c("I_UFR_SANTE_NB","I_UFR_SCIENCES_NB","I_UFR_SOCIETES_NB")]))
+d$I_UFR_GEN <- rowSums((d[,c("I_UFR_SANTE_NB","I_UFR_SCIENCES_NB","I_UFR_SOCIETES_NB")]))
 
 #On recode la variable I_U_BOURSE
 
@@ -1668,13 +1706,13 @@ d$P_FAITS_PSY_5_BIN[d$P_FAITS_PSY_5==99 | d$P_FAITS_PSY_5==98]=NA
 
 #On cree une variable P_FAITS_PSY_GEN, qui comptabilise le nombre de faits de violence psychologiques declares par les repondant(e)s
 
-d$P_FAITS_PSY_SUM= rowSums(d[,c("P_FAITS_PSY_1_BIN","P_FAITS_PSY_2_BIN","P_FAITS_PSY_3_BIN","P_FAITS_PSY_4_BIN","P_FAITS_PSY_5_BIN")],na.rm=T)
+d$P_FAITS_PSY_GEN= rowSums(d[,c("P_FAITS_PSY_1_BIN","P_FAITS_PSY_2_BIN","P_FAITS_PSY_3_BIN","P_FAITS_PSY_4_BIN","P_FAITS_PSY_5_BIN")],na.rm=T)
 
 
 #On cree une variable P_FAITS_PSY_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence psychologique
 
-d$P_FAITS_PSY_SUM_BIN[d$P_FAITS_PSY_SUM==0]=0
-d$P_FAITS_PSY_SUM_BIN[d$P_FAITS_PSY_SUM>=1]=1
+d$P_FAITS_PSY_GEN_BIN[d$P_FAITS_PSY_GEN==0]=0
+d$P_FAITS_PSY_GEN_BIN[d$P_FAITS_PSY_GEN>=1]=1
 
 #P_FAITS_PHYS
 #P_FAITS_PHYS_1_RC
@@ -1888,12 +1926,12 @@ d$P_FAITS_SEX_8_BIN[d$P_FAITS_SEX_8==99 | d$P_FAITS_SEX_8==98]=NA
 
 #On cree une variable P_FAITS_SEX_GEN, qui comptabilise le nombre de faits de violence sexuelle declares par les repondant(e)s
 
-d$P_FAITS_SEX_SUM= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
+d$P_FAITS_SEX_GEN= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
 
 #On cree une variable P_FAITS_SEX_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence psychologique
 
-d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM==0]=0
-d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM>=1]=1
+d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN==0]=0
+d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN>=1]=1
 
 #On cree la serie de variables V_PSY_DOUZE
 
@@ -1976,14 +2014,14 @@ d$V_PSY_DOUZE_98_RC[is.na(d$V_PSY_DOUZE_98)]=NA
 
 #On cree une variable V_PSY_DOUZE_GEN qui synthetise le nombre de faits declares ayant eu lieu les 12 derniers mois
 
-d$V_PSY_DOUZE_SUM <- rowSums(d[,c("V_PSY_DOUZE_1_BIN","V_PSY_DOUZE_2_BIN","V_PSY_DOUZE_3_BIN","V_PSY_DOUZE_4_BIN","V_PSY_DOUZE_5_BIN")], na.rm=T)
-d$V_PSY_DOUZE_SUM[d$P_FAITS_PSY_SUM_BIN==0]=NA #A verifier
+d$V_PSY_DOUZE_GEN <- rowSums(d[,c("V_PSY_DOUZE_1_BIN","V_PSY_DOUZE_2_BIN","V_PSY_DOUZE_3_BIN","V_PSY_DOUZE_4_BIN","V_PSY_DOUZE_5_BIN")], na.rm=T)
+d$V_PSY_DOUZE_GEN[d$P_FAITS_PSY_GEN_BIN==0]=NA #A verifier
 
 #On cree une variable V_PSY_DOUZE_GEN_BIN qui indique si l'individu a declare au moins un fait de violence psychologique au cours des 12 derniers mois
 
-d$V_PSY_DOUZE_SUM_BIN[d$V_PSY_DOUZE_SUM==0]=0
-d$V_PSY_DOUZE_SUM_BIN[is.na(d$V_PSY_DOUZE_SUM)]=NA
-d$V_PSY_DOUZE_SUM_BIN[d$V_PSY_DOUZE_SUM>=1]=1
+d$V_PSY_DOUZE_GEN_BIN[d$V_PSY_DOUZE_GEN==0]=0
+d$V_PSY_DOUZE_GEN_BIN[is.na(d$V_PSY_DOUZE_GEN)]=NA
+d$V_PSY_DOUZE_GEN_BIN[d$V_PSY_DOUZE_GEN>=1]=1
 
 #On cree une variable V_PSY_MARQ
 
@@ -2460,7 +2498,7 @@ d$V_PSY_LIEU_98_RC <- factor(d$V_PSY_LIEU_98_RC, factor("Refus",
 
 #On cree la variable V_PSY_LIEU_NB
 
-d$V_PSY_LIEU_SUM <-  rowSums(d[,c("V_PSY_LIEU_1",
+d$V_PSY_LIEU_NB <-  rowSums(d[,c("V_PSY_LIEU_1",
                                  "V_PSY_LIEU_2",
                                  "V_PSY_LIEU_3",
                                  "V_PSY_LIEU_4",
@@ -2575,7 +2613,7 @@ d$V_PSY_INTERNET_98_RC <- factor(d$V_PSY_INTERNET_98_RC,levels=c("Refus",
 
 #On cree la variable V_PSY_INTERNET_NB
 
-d$V_PSY_INTERNET_SUM <-  rowSums(d[,c("V_PSY_INTERNET_1",
+d$V_PSY_INTERNET_GEN <-  rowSums(d[,c("V_PSY_INTERNET_1",
                                      "V_PSY_INTERNET_2",
                                      "V_PSY_INTERNET_3")], na.rm=T)
 
@@ -2702,7 +2740,7 @@ d$V_PSY_AUTEUR_GENRE_98_RC[d$V_PSY_AUTEUR_GENRE_98==0]="Autres reponses"
 
 #On cree la variable V_PSY_AUTEUR_GENRE_NB
 
-d$V_PSY_AUTEUR_GENRE_SUM <-  rowSums(d[,c("V_PSY_AUTEUR_GENRE_1",
+d$V_PSY_AUTEUR_GENRE_NB <-  rowSums(d[,c("V_PSY_AUTEUR_GENRE_1",
                                          "V_PSY_AUTEUR_GENRE_2",
                                          "V_PSY_AUTEUR_GENRE_3",
                                          "V_PSY_AUTEUR_GENRE_4",
@@ -3013,7 +3051,7 @@ d$V_PSY_AUTEUR_STATUT_98_RC <- factor(d$V_PSY_AUTEUR_STATUT_98, levels=c("NSP","
 
 #On cree la variable V_PSY_AUTEUR_STATUT_NB
 
-d$V_PSY_AUTEUR_STATUT_SUM <-
+d$V_PSY_AUTEUR_STATUT_NB <-
   rowSums(d[, c(
     "V_PSY_AUTEUR_STATUT_1",
     "V_PSY_AUTEUR_STATUT_2",
@@ -3041,7 +3079,7 @@ d$P_FAITS_PHYS_1_BIN[d$P_FAITS_PHYS_1==3 | d$P_FAITS_PHYS_1==99 | d$P_FAITS_PHYS
 
 #On cree une variable P_FAITS_PSY_GEN, qui comptabilise le nombre de faits de violence phychologiques declares par les repondant(e)s (un seul fait, mais plus simple pour construction de la variable generale)
 
-d$P_FAITS_PHYS_SUM = (d$P_FAITS_PHYS_1_BIN)
+d$P_FAITS_PHYS_GEN = (d$P_FAITS_PHYS_1_BIN)
 
 #On amende au besoin la variable V_PHYS_DOUZE pour s'assurer que les valeurs vides sont considerees comme des NA et non comme des 0
 
@@ -3081,13 +3119,13 @@ d$P_FAITS_SEX_7_BIN[d$P_FAITS_SEX_7==3 | d$P_FAITS_SEX_7==99 | d$P_FAITS_SEX_7==
 
 #On creer une variable P_FAITS_SEX_GEN, qui comptabilise le nombre de faits de violence sexuelle declares par les repondant(e)s
 
-d$P_FAITS_SEX_SUM= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
+d$P_FAITS_SEX_GEN= rowSums(d[,c("P_FAITS_SEX_1_BIN","P_FAITS_SEX_2_BIN","P_FAITS_SEX_3_BIN","P_FAITS_SEX_4_BIN","P_FAITS_SEX_5_BIN","P_FAITS_SEX_6_BIN","P_FAITS_SEX_7_BIN","P_FAITS_SEX_8_BIN")],na.rm=T)
 
 
 #On cree une variable P_FAITS_SEX_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence sexuelle
 
-d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM==0]=0
-d$P_FAITS_SEX_SUM_BIN[d$P_FAITS_SEX_SUM>=1]=1
+d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN==0]=0
+d$P_FAITS_SEX_GEN_BIN[d$P_FAITS_SEX_GEN>=1]=1
 
 #On cree une variable V_SEX_DOUZE_GEN
 
@@ -3115,15 +3153,15 @@ d$V_SEX_DOUZE_9[d$V_SEX_DOUZE_8==""]=NA
 
 #On cree une variable V_SEX_DOUZE_GEN qui synthetise le nombre de faits declares ayant eu lieu les 12 derniers mois
 
-d$V_SEX_DOUZE_SUM <- rowSums(d[,c("V_SEX_DOUZE_1","V_SEX_DOUZE_2","V_SEX_DOUZE_3","V_SEX_DOUZE_4","V_SEX_DOUZE_5","V_SEX_DOUZE_6","V_SEX_DOUZE_7","V_SEX_DOUZE_8")], na.rm=T)
-d$V_SEX_DOUZE_SUM[d$P_FAITS_SEX_SUM_BIN==0]=NA
-d$V_SEX_DOUZE_SUM[is.na(d$P_FAITS_SEX_SUM_BIN)]=NA
+d$V_SEX_DOUZE_GEN <- rowSums(d[,c("V_SEX_DOUZE_1","V_SEX_DOUZE_2","V_SEX_DOUZE_3","V_SEX_DOUZE_4","V_SEX_DOUZE_5","V_SEX_DOUZE_6","V_SEX_DOUZE_7","V_SEX_DOUZE_8")], na.rm=T)
+d$V_SEX_DOUZE_GEN[d$V_SEX_DOUZE_GEN_BIN==0]=NA
+d$V_SEX_DOUZE_GEN[is.na(d$V_SEX_DOUZE_GEN_BIN)]=NA
 
 #On cree une variable V_SEX_DOUZE_GEN_BIN qui indique si l'individu a declare au moins un fait de violence psychologique au cours des 12 derniers mois
 
-d$V_SEX_DOUZE_SUM_BIN[d$V_SEX_DOUZE_SUM==0]=0
-d$V_SEX_DOUZE_SUM_BIN[is.na(d$V_SEX_DOUZE_SUM)]=NA
-d$V_SEX_DOUZE_SUM_BIN[d$V_SEX_DOUZE_SUM>=1]=1
+d$V_SEX_DOUZE_GEN_BIN[d$V_SEX_DOUZE_GEN==0]=0
+d$V_SEX_DOUZE_GEN_BIN[is.na(d$V_SEX_DOUZE_GEN)]=NA
+d$V_SEX_DOUZE_GEN_BIN[d$V_SEX_DOUZE_GEN>=1]=1
 
 
 d$V_SEX_MARQ[d$V_SEX_MARQ==""]=NA
@@ -3131,26 +3169,15 @@ d$V_SEX_MARQ[d$V_SEX_MARQ==""]=NA
 
 #On cree une variable P_FAITS_GEN, qui recapitule le nombre de faits declares
 
-d$P_FAITS_SUM <- rowSums(d[,c("P_FAITS_PSY_SUM", "P_FAITS_PHYS_SUM", "P_FAITS_SEX_SUM")], na.rm=T)
+d$P_FAITS_GEN <- rowSums(d[,c("P_FAITS_PSY_GEN", "P_FAITS_PHYS_GEN", "P_FAITS_SEX_GEN")], na.rm=T)
 
 #On cree une variable P_FAITS_GEN_BIN, qui indique si l'individu a declare au moins un fait de violence au total
 
-d$P_FAITS_SUM_BIN[d$P_FAITS_SUM==0]=0
-d$P_FAITS_SUM_BIN[d$P_FAITS_SUM>=1]=1
+d$P_FAITS_GEN_BIN[d$P_FAITS_GEN==0]=0
+d$P_FAITS_GEN_BIN[d$P_FAITS_GEN>=1]=1
 
 
 
 
-#### Transformation en factor ####
-
-#Appliquer la transformation sur les colonnes qui peuvent être converties en factor
-
-d <- as.data.frame(lapply(d, function(x) {
-  if (is.integer(x) && is_convertible_to_integer(x)) {
-    as.factor(x)  # Convertir en factor
-  } else {
-    x  # Laisser la colonne telle quelle
-  }
-}))
 
 
