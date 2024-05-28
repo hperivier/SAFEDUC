@@ -887,24 +887,13 @@ d$C_HABIT_RC <- factor(d$C_HABIT, levels=c("Chez un de vos parents ou chez vos d
 
 #On cree la variable C_FREQ_FAMILLE_RC
 
-d$C_FREQ_FAMILLE_RC <- NA
 d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==1]="Je rentre tous les week-ends ou plus"
-d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==4]="Je rentre au moins une fois par mois"
-d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==5]="Je rentre a chaque vacances ou presque"
-d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==6]="Je rentre environ une ou deux fois par an"
-d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==7]="Plus rarement"
-d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==8]="Non, jamais"
+d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==2]="Je rentre au moins une fois par mois"
+d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==3]="Je rentre a chaque vacances ou presque"
+d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==4]="Je rentre environ une ou deux fois par an"
+d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==5]="Plus rarement"
+d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==6]="Non, jamais"
 d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==98]="Ne souhaite pas repondre"
-
-#MODIFICATION si correction du recodage
-#d$C_FREQ_FAMILLE_RC <- NA
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==1]="Je rentre tous les week-ends ou plus"
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==2]="Je rentre au moins une fois par mois"
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==3]="Je rentre a chaque vacances ou presque"
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==4]="Je rentre environ une ou deux fois par an"
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==5]="Plus rarement"
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==6]="Non, jamais"
-#d$C_FREQ_FAMILLE_RC <- d$C_FREQ_FAMILLE[d$C_FREQ_FAMILLE==98]="Ne souhaite pas repondre"
 
 d$C_FREQ_FAMILLE_RC <- factor(d$C_FREQ_FAMILLE_RC, levels = c("Je rentre tous les week-ends ou plus",
                                                               "Je rentre au moins une fois par mois",
@@ -916,21 +905,10 @@ d$C_FREQ_FAMILLE_RC <- factor(d$C_FREQ_FAMILLE_RC, levels = c("Je rentre tous le
 
 #On cree une variable C_FREQ_PRESETA_RC
 
-d$C_FREQ_PRESETA_RC <- NA
-d$C_FREQ_PRESETA_RC <- d$C_FREQ_PRESETA
-
 d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==1]="Tous les jours ouvres ou presque"
-d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==4]="Au moins une fois par semaine"
-d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==5]="Moins frequemment"
+d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==2]="Au moins une fois par semaine"
+d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==3]="Moins frequemment"
 d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==98]="Ne souhaite pas repondre"
-
-#MODIFICATION si correction du recodage
-#d$C_FREQ_PRESETA_RC <- NA
-#d$C_FREQ_PRESETA_RC <- d$C_FREQ_PRESETA
-#d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==1]="Tous les jours ouvres ou presque"
-#d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==2]="Au moins une fois par semaine"
-#d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==3]="Moins frequemment"
-#d$C_FREQ_PRESETA_RC[d$C_FREQ_PRESETA_RC==98]="Ne souhaite pas repondre"
 
 d$C_FREQ_PRESETA_RC <- factor(d$C_FREQ_PRESETA_RC,levels=c("Tous les jours ouvres ou presque",
                                                            "Au moins une fois par semaine",
@@ -939,10 +917,6 @@ d$C_FREQ_PRESETA_RC <- factor(d$C_FREQ_PRESETA_RC,levels=c("Tous les jours ouvre
 
 #On cree la base C_FREQ_EVETU_RC
 
-d$C_FREQ_EVETU_RC <- NA
-d$C_FREQ_EVETU_RC <- d$C_FREQ_EVETU
-
-#MODIFICATION si correction du recodage
 
 #d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==1]="Plusieurs fois par semaine"
 #d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==2]="Environ une fois par semaine"
@@ -950,11 +924,6 @@ d$C_FREQ_EVETU_RC <- d$C_FREQ_EVETU
 #d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==4]="Moins frequemment"
 #d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==98]="Ne souhaite pas repondre"
 
-d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==1]="Plusieurs fois par semaine"
-d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==4]="Environ une fois par semaine"
-d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==5]="Une a deux fois pendant le mois"
-d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==6]="Moins frequemment"
-d$C_FREQ_EVETU_RC[d$C_FREQ_EVETU==98]="Ne souhaite pas repondre"
 
 d$C_FREQ_EVETU_RC <- factor(d$C_FREQ_EVETU_RC, levels=c("Plusieurs fois par semaine",
                                                         "Environ une fois par semaine",
@@ -964,10 +933,6 @@ d$C_FREQ_EVETU_RC <- factor(d$C_FREQ_EVETU_RC, levels=c("Plusieurs fois par sema
 
 #On cree la variable C_OS
 
-d$C_OS_RC <- NA
-d$C_OS_RC <- d$C_OS
-
-#MODIFICATION si correction du recodage
 
 #d$C_OS_RC[d$C_OS==1]="Bisexuel/bisexuelle"
 #d$C_OS_RC[d$C_OS==2]="Heterosexuel/heterosexuelle"
@@ -976,12 +941,7 @@ d$C_OS_RC <- d$C_OS
 #d$C_OS_RC[d$C_OS==99]="Ne sait pas"
 #d$C_OS_RC[d$C_OS==98]="Refus"
 
-d$C_OS_RC[d$C_OS==1]="Bisexuel/bisexuelle"
-d$C_OS_RC[d$C_OS==4]="Heterosexuel/heterosexuelle"
-d$C_OS_RC[d$C_OS==5]="Gay/Lesbienne/Homosexuel/homosexuelle"
-d$C_OS_RC[d$C_OS==6]="Vous utilisez un autre terme"
-d$C_OS_RC[d$C_OS==99]="Ne sait pas"
-d$C_OS_RC[d$C_OS==98]="Refus"
+
 
 d$C_OS_RC <- factor(d$C_OS_RC,levels=c("Bisexuel/bisexuelle",
                                        "Heterosexuel/heterosexuelle",
@@ -1150,18 +1110,9 @@ d$C_ACTI_HORS_REFUS[d$C_ACTI_HORS_98==0]="Non"
 
 #On cree la variable C_ACTI_SEX_RC
 
-d$C_ACTI_SEX_RC <- NA
-d$C_ACTI_SEX_RC <- d$C_ACTI_SEX
-
-d$C_ACTI_SEX_RC[d$C_ACTI_SEX==1]="Oui, de maniere reguliere"
-d$C_ACTI_SEX_RC[d$C_ACTI_SEX==7]="Oui, quelques fois"
-d$C_ACTI_SEX_RC[d$C_ACTI_SEX==8]="Oui, une fois"
-
-#MODIFICATION si correction du recodage
 #d$C_ACTI_SEX_RC[d$C_ACTI_SEX==1]="Oui, de maniere reguliere"
 #d$C_ACTI_SEX_RC[d$C_ACTI_SEX==2]="Oui, quelques fois"
 #d$C_ACTI_SEX_RC[d$C_ACTI_SEX==3]="Oui, une fois"
-
 d$C_ACTI_SEX_RC[d$C_ACTI_SEX==4]="Non"
 d$C_ACTI_SEX_RC[d$C_ACTI_SEX==99]="NSP"
 d$C_ACTI_SEX_RC[d$C_ACTI_SEX==98]="Ne souhaite pas repondre"
