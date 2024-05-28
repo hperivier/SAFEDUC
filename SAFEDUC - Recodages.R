@@ -142,7 +142,7 @@ d$I_ETAB_RC[d$I_ETAB==2]="UPCite"
 
 d$I_ETAB_RC <- factor(d$I_ETAB_RC, levels=c("Sciences Po","UPCite"))
 
-var_label(d$I_ETAB_RC) <- "Etablissement de rattachement"
+var_label(d$I_ETAB_RC) <- var_label(d$I_ETAB)
 var_label(d$I_ETAB) <- "Etablissement de rattachement"
 
 #Variable I_ECHANGE, pour le fait ou non d'etre en echange dans l'etablissement
@@ -308,7 +308,6 @@ d$I_NATIONALITE_HORS_EU_REFUS <- factor(d$I_NATIONALITE_HORS_EU_REFUS,levels=c("
 var_label(d$I_NATIONALITE_REFUS) <- "Nationalite (hors UE) - Refus"
 var_label(d$I_NATIO_HORS_UE_98) <- "Nationalite (hors UE) - Refus"
 
-#[REPRISE]
 # #On reprend ces variables, et on en fait des binaires pour les traitements
 # #Variable I_NATIO_HUE_EUR_BIN pour nationalite en europe non UE
 # d$I_NATIO_HUE_EUR_BIN[d$I_NATIO_HORS_UE_1==1]=1
@@ -443,8 +442,8 @@ d$I_S_ANNEE_RC[d$I_S_ANNEE_2==1]="Bac + 2 (L2 ou equivalent)"
 d$I_S_ANNEE_RC[d$I_S_ANNEE_3==1]="Bac + 3 (L3 ou equivalent)"
 d$I_S_ANNEE_RC[d$I_S_ANNEE_4==1]="Bac + 4 (M1 ou equivalent)"
 d$I_S_ANNEE_RC[d$I_S_ANNEE_5==1]="Bac + 5 (M2 ou equivalent)"
-d$I_S_ANNEE_RC[d$I_S_ANNEE_5==1 & d$I_S_ANNEE_8==1 ]="Bac + 5 (M2 ou equivalent) ET preparation au concours"
-d$I_S_ANNEE_RC[d$I_S_ANNEE_5==0 & d$I_S_ANNEE_8==1 ]="Uniquement la preparation aux concours administratifs"
+d$I_S_ANNEE_RC[d$I_S_ANNEE_5==1 & d$I_S_ANNEE_7==1 ]="Bac + 5 (M2 ou equivalent) ET preparation au concours"
+d$I_S_ANNEE_RC[d$I_S_ANNEE_5==0 & d$I_S_ANNEE_7==1 ]="Uniquement la preparation aux concours administratifs"
 d$I_S_ANNEE_RC[d$I_S_ANNEE_6==1]="Doctorat"
 
 d$I_S_ANNEE_RC <- factor(d$I_S_ANNEE_RC,levels=c("Bac + 1 (L1 ou equivalent)",
@@ -455,7 +454,6 @@ d$I_S_ANNEE_RC <- factor(d$I_S_ANNEE_RC,levels=c("Bac + 1 (L1 ou equivalent)",
                                                  "Bac + 5 (M2 ou equivalent) ET preparation au concours",
                                                  "Doctorat",
                                                  "Uniquement la preparation aux concours administratifs",NA))
-
 #On recode la variable I_S_APPREN
 
 d$I_S_APPREN_RC[d$I_S_APPREN==1]="Oui, j'ai un contrat d'alternance ou d'apprentissage cette annee"
@@ -486,6 +484,7 @@ d$I_S_ECOLE_RC <- factor(d$I_S_ECOLE_RC,levels=c(
   "Ecole de la recherche",
   NA))
 
+#[REPRISE]
 #On recode la variable I_S_Bourse
 
 d$I_S_BOURSE_RC[d$I_S_BOURSE==1]="Oui, d'une bourse du Crous"
