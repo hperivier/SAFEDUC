@@ -8,6 +8,8 @@ source("fonctions.R")
 safeduc_num <- read_csv("safeduc_num.csv")
 safeduc_let <- read_csv("safeduc_let.csv")
 
+safeduc_num <- safeduc_num %>% rename(Duration_seconds = `Duration (in seconds)`)
+safeduc_let <- safeduc_let %>% rename(Duration_seconds = `Duration (in seconds)`)
 
 dv <- c(safeduc_num[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
 safeduc_num <- safeduc_num[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
@@ -26,14 +28,18 @@ safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'uti
 d <- safeduc_num
 
 #Appliquer la transformation sur les colonnes qui peuvent être converties en integer
+### Attention, cela enlève les labels des variables
 
-d <- as.data.frame(lapply(d, function(x) {
+d[,-(1:10)] <- as.data.frame(lapply(d[,-(1:10)], function(x) {
   if (is.character(x) && is_convertible_to_integer(x)) {
     as.integer(x)  # Convertir en integer
   } else {
     x  # Laisser la colonne telle quelle
   }
 }))
+
+#Récupération des labels 
+var_label(d) <- dv
 
 #LABELISATION DES MODALITES PAR VARIABLES
 
@@ -794,14 +800,16 @@ var_label(d$C_INDIC_BIEN_7_RC) <- var_label(d$C_INDIC_BIEN_7)
 
 ###LIGNES DE FIN
 #Appliquer la transformation sur les colonnes qui peuvent être converties en factor
+### Attention, cela enlève les labels des variables
 
-d <- as.data.frame(lapply(d, function(x) {
+d[,-(1:10)] <- as.data.frame(lapply(d[,-(1:10)], function(x) {
   if (is.integer(x) || is.character(x)) {
     as.factor(x)  # Convertir en factor
   } else {
     x  # Laisser la colonne telle quelle
   }
 }))
+
 
 #### Transformation en datetime#### 
 
@@ -812,4 +820,11 @@ d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
 #### Transformation en integer ####
 
 d$Progress <- as.integer(d$Progress)
-d$Duration..in.seconds. <- as.integer(d$Duration..in.seconds.)
+d$Duration_seconds <- as.integer(d$Duration_seconds)
+
+### ATTENTION : VERIFIER LE FORMAT SOUHAITE POUR LES 10 PREMIERES VAR
+
+#Récupération des labels 
+var_label(d) <- dv
+
+
