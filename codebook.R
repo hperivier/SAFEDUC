@@ -794,7 +794,361 @@ d$C_INDIC_BIEN_7_RC <- factor(d$C_INDIC_BIEN_7_RC, levels=c("Tres souvent",
 
 var_label(d$C_INDIC_BIEN_7_RC) <- var_label(d$C_INDIC_BIEN_7)
 
-### [REPRISE]
+##Module P sur la prelavence des faits de violence
+
+#On cree la serie de variable P_FAITS_PSY_RC
+#P_FAITS_PSY_1 et P_FAITS_PSY_1_RC
+
+d$P_FAITS_PSY_1_RC[d$P_FAITS_PSY_1==1]="Plusieurs fois"
+d$P_FAITS_PSY_1_RC[d$P_FAITS_PSY_1==2]="Une fois"
+d$P_FAITS_PSY_1_RC[d$P_FAITS_PSY_1==3]="Jamais"
+d$P_FAITS_PSY_1_RC[d$P_FAITS_PSY_1==98]="Refus"
+d$P_FAITS_PSY_1_RC[d$P_FAITS_PSY_1==99]="Je ne suis pas sur, pas sure"
+
+
+d$P_FAITS_PSY_1_RC<-factor(d$P_FAITS_PSY_1_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+var_label(d$P_FAITS_PSY_1_RC) <- var_label(d$P_FAITS_PSY_1)
+
+#P_FAITS_PSY_2 et P_FAITS_PSY_2_RC
+
+d$P_FAITS_PSY_2_RC[d$P_FAITS_PSY_2==1]="Plusieurs fois"
+d$P_FAITS_PSY_2_RC[d$P_FAITS_PSY_2==2]="Une fois"
+d$P_FAITS_PSY_2_RC[d$P_FAITS_PSY_2==3]="Jamais"
+d$P_FAITS_PSY_2_RC[d$P_FAITS_PSY_2==98]="Refus"
+d$P_FAITS_PSY_2_RC[d$P_FAITS_PSY_2==99]="Je ne suis pas sur, pas sure"
+
+
+d$P_FAITS_PSY_2_RC<-factor(d$P_FAITS_PSY_2_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_PSY_2_RC) <- var_label(d$P_FAITS_PSY_2)
+
+#P_FAITS_PSY_3 et P_FAITS_PSY_3_RC
+
+d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==1]="Plusieurs fois"
+d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==2]="Une fois"
+d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==3]="Jamais"
+d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==98]="Refus"
+d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==99]="Je ne suis pas sur, pas sure"
+
+
+d$P_FAITS_PSY_3_RC<-factor(d$P_FAITS_PSY_3_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_PSY_3_RC) <- var_label(d$P_FAITS_PSY_3)
+
+#P_FAITS_PSY_4 et P_FAITS_PSY_4_RC
+
+d$P_FAITS_PSY_4_RC[d$P_FAITS_PSY_4==1]="Plusieurs fois"
+d$P_FAITS_PSY_4_RC[d$P_FAITS_PSY_4==2]="Une fois"
+d$P_FAITS_PSY_4_RC[d$P_FAITS_PSY_4==3]="Jamais"
+d$P_FAITS_PSY_4_RC[d$P_FAITS_PSY_4==98]="Refus"
+d$P_FAITS_PSY_4_RC[d$P_FAITS_PSY_4==99]="Je ne suis pas sur, pas sure"
+
+
+d$P_FAITS_PSY_4_RC<-factor(d$P_FAITS_PSY_4_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_PSY_4_RC) <- var_label(d$P_FAITS_PSY_4)
+
+#P_FAITS_PSY_5 et P_FAITS_PSY_5_RC
+
+d$P_FAITS_PSY_5_RC[d$P_FAITS_PSY_5==1]="Plusieurs fois"
+d$P_FAITS_PSY_5_RC[d$P_FAITS_PSY_5==2]="Une fois"
+d$P_FAITS_PSY_5_RC[d$P_FAITS_PSY_5==3]="Jamais"
+d$P_FAITS_PSY_5_RC[d$P_FAITS_PSY_5==98]="Refus"
+d$P_FAITS_PSY_5_RC[d$P_FAITS_PSY_5==99]="Je ne suis pas sur, pas sure"
+
+
+d$P_FAITS_PSY_5_RC<-factor(d$P_FAITS_PSY_5_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_PSY_5_RC) <- var_label(d$P_FAITS_PSY_5)
+
+#P_FAITS_PHYS
+#P_FAITS_PHYS_1_RC
+
+d$P_FAITS_PHYS_1_RC[d$P_FAITS_PHYS_1==1]="Plusieurs fois"
+d$P_FAITS_PHYS_1_RC[d$P_FAITS_PHYS_1==2]="Une fois"
+d$P_FAITS_PHYS_1_RC[d$P_FAITS_PHYS_1==3]="Jamais"
+d$P_FAITS_PHYS_1_RC[d$P_FAITS_PHYS_1==98]="Refus"
+d$P_FAITS_PHYS_1_RC[d$P_FAITS_PHYS_1==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_PHYS_1_RC<-factor(d$P_FAITS_PHYS_1_RC, levels=c("Plusieurs fois",
+                                                          "Une fois",
+                                                          "Jamais",
+                                                          "Refus",
+                                                          "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_PHYS_1_RC) <- var_label(d$P_FAITS_PHYS_1)
+
+
+#On cree la serie de variable P_FAITS_SEX_RC
+#P_FAITS_SEX_1
+#d$P_FAITS_SEX_1_RC
+
+d$P_FAITS_SEX_1_RC[d$P_FAITS_SEX_1==1]="Plusieurs fois"
+d$P_FAITS_SEX_1_RC[d$P_FAITS_SEX_1==2]="Une fois"
+d$P_FAITS_SEX_1_RC[d$P_FAITS_SEX_1==3]="Jamais"
+d$P_FAITS_SEX_1_RC[d$P_FAITS_SEX_1==98]="Refus"
+d$P_FAITS_SEX_1_RC[d$P_FAITS_SEX_1==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_1_RC<-factor(d$P_FAITS_SEX_1_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_1_RC) <- var_label(d$P_FAITS_SEX_1)
+
+#P_FAITS_SEX_2
+#d$P_FAITS_SEX_2_RC
+
+d$P_FAITS_SEX_2_RC[d$P_FAITS_SEX_2==1]="Plusieurs fois"
+d$P_FAITS_SEX_2_RC[d$P_FAITS_SEX_2==2]="Une fois"
+d$P_FAITS_SEX_2_RC[d$P_FAITS_SEX_2==3]="Jamais"
+d$P_FAITS_SEX_2_RC[d$P_FAITS_SEX_2==98]="Refus"
+d$P_FAITS_SEX_2_RC[d$P_FAITS_SEX_2==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_2_RC<-factor(d$P_FAITS_SEX_2_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_2_RC) <- var_label(d$P_FAITS_SEX_2)
+
+#P_FAITS_SEX_3
+#d$P_FAITS_SEX_3_RC
+
+d$P_FAITS_SEX_3_RC[d$P_FAITS_SEX_3==1]="Plusieurs fois"
+d$P_FAITS_SEX_3_RC[d$P_FAITS_SEX_3==2]="Une fois"
+d$P_FAITS_SEX_3_RC[d$P_FAITS_SEX_3==3]="Jamais"
+d$P_FAITS_SEX_3_RC[d$P_FAITS_SEX_3==98]="Refus"
+d$P_FAITS_SEX_3_RC[d$P_FAITS_SEX_3==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_3_RC<-factor(d$P_FAITS_SEX_3_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_3_RC) <- var_label(d$P_FAITS_SEX_3)
+
+#P_FAITS_SEX_4
+#d$P_FAITS_SEX_4_RC
+
+d$P_FAITS_SEX_4_RC[d$P_FAITS_SEX_4==1]="Plusieurs fois"
+d$P_FAITS_SEX_4_RC[d$P_FAITS_SEX_4==2]="Une fois"
+d$P_FAITS_SEX_4_RC[d$P_FAITS_SEX_4==3]="Jamais"
+d$P_FAITS_SEX_4_RC[d$P_FAITS_SEX_4==98]="Refus"
+d$P_FAITS_SEX_4_RC[d$P_FAITS_SEX_4==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_4_RC<-factor(d$P_FAITS_SEX_4_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_4_RC) <- var_label(d$P_FAITS_SEX_4)
+
+#P_FAITS_SEX_5
+#d$P_FAITS_SEX_5_RC
+
+d$P_FAITS_SEX_5_RC[d$P_FAITS_SEX_5==1]="Plusieurs fois"
+d$P_FAITS_SEX_5_RC[d$P_FAITS_SEX_5==2]="Une fois"
+d$P_FAITS_SEX_5_RC[d$P_FAITS_SEX_5==3]="Jamais"
+d$P_FAITS_SEX_5_RC[d$P_FAITS_SEX_5==98]="Refus"
+d$P_FAITS_SEX_5_RC[d$P_FAITS_SEX_5==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_5_RC<-factor(d$P_FAITS_SEX_5_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_5_RC) <- var_label(d$P_FAITS_SEX_5)
+
+#P_FAITS_SEX_6
+#d$P_FAITS_SEX_6_RC
+
+d$P_FAITS_SEX_6_RC[d$P_FAITS_SEX_6==1]="Plusieurs fois"
+d$P_FAITS_SEX_6_RC[d$P_FAITS_SEX_6==2]="Une fois"
+d$P_FAITS_SEX_6_RC[d$P_FAITS_SEX_6==3]="Jamais"
+d$P_FAITS_SEX_6_RC[d$P_FAITS_SEX_6==98]="Refus"
+d$P_FAITS_SEX_6_RC[d$P_FAITS_SEX_6==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_6_RC<-factor(d$P_FAITS_SEX_6_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_6_RC) <- var_label(d$P_FAITS_SEX_6)
+
+#P_FAITS_SEX_7
+#d$P_FAITS_SEX_7_RC
+
+d$P_FAITS_SEX_7_RC[d$P_FAITS_SEX_7==1]="Plusieurs fois"
+d$P_FAITS_SEX_7_RC[d$P_FAITS_SEX_7==2]="Une fois"
+d$P_FAITS_SEX_7_RC[d$P_FAITS_SEX_7==3]="Jamais"
+d$P_FAITS_SEX_7_RC[d$P_FAITS_SEX_7==98]="Refus"
+d$P_FAITS_SEX_7_RC[d$P_FAITS_SEX_7==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_7_RC<-factor(d$P_FAITS_SEX_7_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_7_RC) <- var_label(d$P_FAITS_SEX_7)
+
+#P_FAITS_SEX_8
+#d$P_FAITS_SEX_8_RC
+
+d$P_FAITS_SEX_8_RC[d$P_FAITS_SEX_8==1]="Plusieurs fois"
+d$P_FAITS_SEX_8_RC[d$P_FAITS_SEX_8==2]="Une fois"
+d$P_FAITS_SEX_8_RC[d$P_FAITS_SEX_8==3]="Jamais"
+d$P_FAITS_SEX_8_RC[d$P_FAITS_SEX_8==98]="Refus"
+d$P_FAITS_SEX_8_RC[d$P_FAITS_SEX_8==99]="Je ne suis pas sur, pas sure"
+
+d$P_FAITS_SEX_8_RC<-factor(d$P_FAITS_SEX_8_RC, levels=c("Plusieurs fois",
+                                                        "Une fois",
+                                                        "Jamais",
+                                                        "Refus",
+                                                        "Je ne suis pas sur, pas sure"))
+
+var_label(d$P_FAITS_SEX_8_RC) <- var_label(d$P_FAITS_SEX_8)
+
+
+#MODULE V_PSY_MARQ
+#V_PSY_MARQ en V_PSY_MARQ_RC
+
+d$V_PSY_MARQ_RC[d$V_PSY_MARQ==1]="Les moqueries, les propos degradants ou humiliants" 
+d$V_PSY_MARQ_RC[d$V_PSY_MARQ==2]="Le fait que quelqu'un a porte atteinte a votre reputation ou a tente de le faire, en repandant des rumeurs par exemple"
+d$V_PSY_MARQ_RC[d$V_PSY_MARQ==3]="Le fait que quelqu'un a porte atteinte a votre image ou menace de le faire (diffusion de videos ou photos intimes ou prise a votre insu, montage photo...)"
+d$V_PSY_MARQ_RC[d$V_PSY_MARQ==4]="Le fait que quelqu'un vous a tenu volontairement a l'ecart des activites etudiantes, collectives ou festives"
+d$V_PSY_MARQ_RC[d$V_PSY_MARQ==5]="Le fait que quelqu'un se soit approprie votre travail, l'a fait disparaitre ; ou vous ait force a faire votre travail a sa place"
+d$V_PSY_MARQ_RC[d$V_PSY_MARQ==98]="Refus"
+
+d$V_PSY_MARQ_RC <- factor(d$V_PSY_MARQ_RC, levels=c("Les moqueries, les propos degradants ou humiliants",
+                                                    "Le fait que quelqu'un a porte atteinte a votre reputation ou a tente de le faire, en repandant des rumeurs par exemple",
+                                                    "Le fait que quelqu'un a porte atteinte a votre image ou menace de le faire (diffusion de videos ou photos intimes ou prise a votre insu, montage photo...)",
+                                                    "Le fait que quelqu'un vous a tenu volontairement a l'ecart des activites etudiantes, collectives ou festives",
+                                                    "Le fait que quelqu'un se soit approprie votre travail, l'a fait disparaitre ; ou vous ait force a faire votre travail a sa place",
+                                                    "Refus"))
+
+var_label(d$V_PSY_MARQ_RC) <- var_label(d$V_PSY_MARQ)
+
+#Correction de la variable V_PSY_ETAB_4 en V_PSY_98
+
+d$V_PSY_ETAB_98 <- d$V_PSY_ETAB_4
+var_label(d$V_PSY_ETAB_98) <- var_label(d$V_SY_ETAB_4)
+d <- d %>% relocate(V_PSY_ETAB_98,.after = V_PSY_ETAB_3)
+d$V_PSY_ETAB_4 <- NULL
+
+#V_PSY_AUTEUR_RENC en V_PSY_AUTEUR_RENC_RC
+
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==1]="Oui, de facon volontaire"
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==2]="Oui, car vous n'avez pas le choix"
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==3]="Non, vous evitez volontairement cette ou ces personnes"
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==4]="Non, mais cela s’est fait naturellement"
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==98]="Refus"
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==99]="NSP"
+  
+d$V_PSY_AUTEUR_RENC_RC <- factor(d$V_PSY_AUTEUR_RENC_RC, levels=c("Oui, de facon volontaire",
+                                                                  "Oui, car vous n'avez pas le choix",
+                                                                  "Non, vous evitez volontairement cette ou ces personnes",
+                                                                  "Non, mais cela s’est fait naturellement",
+                                                                  "Refus",
+                                                                  "NSP"
+                                                                  ))
+
+#Correction de la variable V_PHYS_ETAB_4 en V_PHY_98
+
+d$V_PHY_ETAB_98 <- d$V_PHY_ETAB_4
+var_label(d$V_PHY_ETAB_98) <- var_label(d$V_PHY_ETAB_4)
+d$V_PHY_ETAB_4 <- NULL
+d <- d %>% relocate(V_PHY_ETAB_98,.after = V_PHY_ETAB_3)
+
+
+#V_PHY_AUTEUR_RENC en V_PHY_AUTEUR_RENC_RC
+
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==1]="Oui, de facon volontaire"
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==2]="Oui, car vous n'avez pas le choix"
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==3]="Non, vous evitez volontairement cette ou ces personnes"
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==4]="Non, mais cela s’est fait naturellement"
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==98]="Refus"
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==99]="NSP"
+
+d$V_PHY_AUTEUR_RENC_RC <- factor(d$V_PHY_AUTEUR_RENC_RC, levels=c("Oui, de facon volontaire",
+                                                                  "Oui, car vous n'avez pas le choix",
+                                                                  "Non, vous evitez volontairement cette ou ces personnes",
+                                                                  "Non, mais cela s’est fait naturellement",
+                                                                  "Refus",
+                                                                  "NSP"))
+
+var_label(d$V_PHY_AUTEUR_RENC_RC) <- var_label(d$V_PHY_AUTEUR_RENC)
+
+
+#V_PHY_AUTEUR_GENRE
+
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==1]="Une femme (seule)"
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==2]="Un homme (seul)"
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==3]="Plusieurs femmes (en groupe)"
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==4]="Plusieurs hommes (en groupe)" 
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==5]="Plusieurs hommes et femmes (en groupe)"
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==98]="Refus"
+d$V_PHY_AUTEUR_GENRE_RC[d$V_PHY_AUTEUR_GENRE==99]="NSP"
+
+d$V_PHY_AUTEUR_GENRE_RC <- factor(d$V_PHY_AUTEUR_GENRE_RC, levels=c("Une femme (seule)",
+                                                                    "Un homme (seul)",
+                                                                    "Plusieurs femmes (en groupe)",
+                                                                    "Plusieurs hommes (en groupe)",
+                                                                    "Plusieurs hommes et femmes (en groupe)",
+                                                                    "Refus",
+                                                                    "NSP"))
+  
+var_label(d$V_PHY_AUTEUR_GENRE_RC) <- var_label(d$V_PHY_AUTEUR_GENRE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
