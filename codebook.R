@@ -32,8 +32,6 @@ safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'uti
 
 ##########     DEBUT DES RECODAGES    ##########
 
-var_label(d$I_U_FACULTE_SOCIETES_8)
-
 #Pour aller au niveau du dernier recodage verifie, chercher [REPRISE]
 
 d <- safeduc_num
@@ -1067,12 +1065,6 @@ d$V_PSY_MARQ_RC <- factor(d$V_PSY_MARQ_RC, levels=c("Les moqueries, les propos d
 
 var_label(d$V_PSY_MARQ_RC) <- var_label(d$V_PSY_MARQ)
 
-#Correction de la variable V_PSY_ETAB_4 en V_PSY_98
-
-# d$V_PSY_ETAB_98 <- d$V_PSY_ETAB_4
-# var_label(d$V_PSY_ETAB_98) <- var_label(d$V_SY_ETAB_4)
-# d <- d %>% relocate(V_PSY_ETAB_98,.after = V_PSY_ETAB_3)
-# d$V_PSY_ETAB_4 <- NULL
 
 
 #V_PSY_AUTEUR_RENC en V_PSY_AUTEUR_RENC_RC
@@ -1092,13 +1084,9 @@ d$V_PSY_AUTEUR_RENC_RC <- factor(d$V_PSY_AUTEUR_RENC_RC, levels=c("Oui, de facon
                                                                   "NSP"
                                                                   ))
 
-#Correction de la variable V_PHYS_ETAB_4 en V_PHY_ETAB_98
-# 
-# d$V_PHY_ETAB_98 <- d$V_PHY_ETAB_4
-# var_label(d$V_PHY_ETAB_98) <- var_label(d$V_PHY_ETAB_4)
-# d$V_PHY_ETAB_4 <- NULL
-# d <- d %>% relocate(V_PHY_ETAB_98,.after = V_PHY_ETAB_3)
 
+
+var_label(d$V_PSY_AUTEUR_RENC_RC) <- var_label(d$V_PSY_AUTEUR_RENC)
 
 
 #V_PHY_AUTEUR_RENC en V_PHY_AUTEUR_RENC_RC
@@ -1140,29 +1128,85 @@ d$V_PHY_AUTEUR_GENRE_RC <- factor(d$V_PHY_AUTEUR_GENRE_RC, levels=c("Une femme (
   
 var_label(d$V_PHY_AUTEUR_GENRE_RC) <- var_label(d$V_PHY_AUTEUR_GENRE)
 
+#V_SEX_MARQ_RC
+
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 1] = "Les propos et gestes à caractere sexuel qui vous ont mis mal à l'aise (mime de geste sexuel, propositions sexuelles, reflexion sur votre vie sexuelle…)"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 2] = "Le fait qu'on vous a impose des images à caractere pornographique qui vous ont mis mal a l’aise (sur une conversation de groupe par exemple ou des photos intimes non sollicitees…)"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 3] = "Le fait qu'on a suivi(e), qu'on vous a contacte ou sollicite de maniere insistante au point de vous mettre mal a l'aise ou de vous faire peur"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 4] = "Le fait qu'on vous a administre a votre insu une substance (par exemple addictive ou medicamenteuse) de nature a alterer votre discernement ou le controle de vos actes"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 5] = "Le fait que vous ayez eu affaire a un ou une exhibitionniste ou a un voyeur ou une voyeuse"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 6] = "Le fait que quelqu’un a touche vos fesses, vous a coince pour vous embrasser, s'est colle ou s'est frotte a vous contre votre gre ou que quelqu’un vous a force a faire ou a subir des attouchements des parties intimes"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 7] = "Le fait que quelqu’un a use a votre encontre de pression grave dans le but d’obtenir de vous un acte de nature sexuelle ; Le fait qu'on vous a fait craindre des represailles si vous refusiez d’acceder a une demande sexuelle ou que l’on vous a laisse entendre que vous pourriez beneficier d’une recompense si vous accediez a une demande sexuelle"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 8] = "Le fait que quelqu'un a essaye ou est parvenu a avoir un rapport sexuel avec vous, que ce rapport implique une penetration (effectuee par le sexe, les doigts ou un objet) ou un contact sexe-bouche, sans que vous l'ayez voulu"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 98] = "Refus"
+
+d$V_SEX_MARQ_RC <- factor(d$V_SEX_MARQ_RC, levels = c("Les propos et gestes à caractere sexuel qui vous ont mis mal à l'aise (mime de geste sexuel, propositions sexuelles, reflexion sur votre vie sexuelle…)",
+                                                      "Le fait qu'on vous a impose des images à caractere pornographique qui vous ont mis mal a l’aise (sur une conversation de groupe par exemple ou des photos intimes non sollicitees…)",
+                                                      "Le fait qu'on a suivi(e), qu'on vous a contacte ou sollicite de maniere insistante au point de vous mettre mal a l'aise ou de vous faire peur",
+                                                      "Le fait qu'on vous a administre a votre insu une substance (par exemple addictive ou medicamenteuse) de nature a alterer votre discernement ou le controle de vos actes",
+                                                      "Le fait que vous ayez eu affaire a un ou une exhibitionniste ou a un voyeur ou une voyeuse",
+                                                      "Le fait que quelqu’un a touche vos fesses, vous a coince pour vous embrasser, s'est colle ou s'est frotte a vous contre votre gre ou que quelqu’un vous a force a faire ou a subir des attouchements des parties intimes",
+                                                      "Le fait que quelqu’un a use a votre encontre de pression grave dans le but d’obtenir de vous un acte de nature sexuelle ; Le fait qu'on vous a fait craindre des represailles si vous refusiez d’acceder a une demande sexuelle ou que l’on vous a laisse entendre que vous pourriez beneficier d’une recompense si vous accediez a une demande sexuelle",
+                                                      "Le fait que quelqu'un a essaye ou est parvenu a avoir un rapport sexuel avec vous, que ce rapport implique une penetration (effectuee par le sexe, les doigts ou un objet) ou un contact sexe-bouche, sans que vous l'ayez voulu",
+                                                      "Refus"))
+
+var_label(d$V_SEX_MARQ_RC) <- var_label(d$V_SEX_MARQ)
+
+#V_SEX_AUTEUR_RENC en V_SEX_AUTEUR_RENC_RC
+
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==1]="Oui, de facon volontaire"
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==2]="Oui, car vous n'avez pas le choix"
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==3]="Non, vous evitez volontairement cette ou ces personnes"
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==4]="Non, mais cela s’est fait naturellement"
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==98]="Refus"
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==99]="NSP"
+
+d$V_SEX_AUTEUR_RENC_RC <- factor(d$V_SEX_AUTEUR_RENC_RC, levels=c("Oui, de facon volontaire",
+                                                                  "Oui, car vous n'avez pas le choix",
+                                                                  "Non, vous evitez volontairement cette ou ces personnes",
+                                                                  "Non, mais cela s’est fait naturellement",
+                                                                  "Refus",
+                                                                  "NSP"
+))
 
 
 
+var_label(d$V_SEX_AUTEUR_RENC_RC) <- var_label(d$V_SEX_AUTEUR_RENC)
+
+#Q_PARLE_PLAINTE_SANC_RC
+
+d$Q_PARLE_PLAINTE_SANC_RC[d$Q_PARLE_PLAINTE_SANC == 1] = "Oui"
+d$Q_PARLE_PLAINTE_SANC_RC[d$Q_PARLE_PLAINTE_SANC == 2] = "Non"
+d$Q_PARLE_PLAINTE_SANC_RC[d$Q_PARLE_PLAINTE_SANC == 3] = "C'est toujours en cours"
+d$Q_PARLE_PLAINTE_SANC_RC[d$Q_PARLE_PLAINTE_SANC == 99] = "NSP"
 
 
+d$Q_PARLE_PLAINTE_SANC_RC <- factor(d$Q_PARLE_PLAINTE_SANC_RC, levels = c("Oui",
+                                                                          "Non",
+                                                                          "C'est toujours en cours",
+                                                                          "NSP"))
 
+var_label(d$Q_PARLE_PLAINTE_SANC_RC) <- var_label(d$Q_PARLE_PLAINTE_SANC) 
 
+#Q_PAROLE_DELAI_RC
 
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 1] = "Immediatement apres les faits" 
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 2] = "Quelques jours apres les faits" 
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 3] = "Quelques semaines apres les faits"
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 4] = "Quelques mois apres les faits" 
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 5] = "Plus de six mois apres les faits" 
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 98] = "Refus" 
+d$Q_PAROLE_DELAI_RC[d$Q_PAROLE_DELAI == 99] = "NSP" 
 
+d$Q_PAROLE_DELAI_RC <- factor(d$Q_PAROLE_DELAI_RC, levels = c("Immediatement apres les faits",
+                                                              "Quelques jours apres les faits",
+                                                              "Quelques semaines apres les faits",
+                                                              "Quelques mois apres les faits",
+                                                              "Plus de six mois apres les faits",
+                                                              "Refus",
+                                                              "NSP"))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+var_label(d$Q_PAROLE_DELAI_RC) <- var_label(d$Q_PAROLE_DELAI)
 
 
 ###LIGNES DE FIN
