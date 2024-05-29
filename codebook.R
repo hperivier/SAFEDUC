@@ -8,8 +8,18 @@ source("fonctions.R")
 safeduc_num <- read_csv("safeduc_num.csv")
 safeduc_let <- read_csv("safeduc_let.csv")
 
+#renommer certaines variables
+
 safeduc_num <- safeduc_num %>% rename(Duration_seconds = `Duration (in seconds)`)
 safeduc_let <- safeduc_let %>% rename(Duration_seconds = `Duration (in seconds)`)
+
+safeduc_num <- safeduc_num %>% rename(V_PSY_ETAB_98 = V_PSY_ETAB_4)
+safeduc_let <- safeduc_let %>% rename(V_PSY_ETAB_98 = V_PSY_ETAB_4)
+
+safeduc_num <- safeduc_num %>% rename(V_PHY_ETAB_98 = V_PHY_ETAB_4)
+safeduc_let <- safeduc_let %>% rename(V_PHY_ETAB_98 = V_PHY_ETAB_4)
+
+#récupération des labels des variables
 
 dv <- c(safeduc_num[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
 safeduc_num <- safeduc_num[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
@@ -22,6 +32,7 @@ safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'uti
 
 ##########     DEBUT DES RECODAGES    ##########
 
+var_label(d$I_U_FACULTE_SOCIETES_8)
 
 #Pour aller au niveau du dernier recodage verifie, chercher [REPRISE]
 
@@ -1058,10 +1069,11 @@ var_label(d$V_PSY_MARQ_RC) <- var_label(d$V_PSY_MARQ)
 
 #Correction de la variable V_PSY_ETAB_4 en V_PSY_98
 
-d$V_PSY_ETAB_98 <- d$V_PSY_ETAB_4
-var_label(d$V_PSY_ETAB_98) <- var_label(d$V_SY_ETAB_4)
-d <- d %>% relocate(V_PSY_ETAB_98,.after = V_PSY_ETAB_3)
-d$V_PSY_ETAB_4 <- NULL
+# d$V_PSY_ETAB_98 <- d$V_PSY_ETAB_4
+# var_label(d$V_PSY_ETAB_98) <- var_label(d$V_SY_ETAB_4)
+# d <- d %>% relocate(V_PSY_ETAB_98,.after = V_PSY_ETAB_3)
+# d$V_PSY_ETAB_4 <- NULL
+
 
 #V_PSY_AUTEUR_RENC en V_PSY_AUTEUR_RENC_RC
 
@@ -1080,12 +1092,13 @@ d$V_PSY_AUTEUR_RENC_RC <- factor(d$V_PSY_AUTEUR_RENC_RC, levels=c("Oui, de facon
                                                                   "NSP"
                                                                   ))
 
-#Correction de la variable V_PHYS_ETAB_4 en V_PHY_98
+#Correction de la variable V_PHYS_ETAB_4 en V_PHY_ETAB_98
+# 
+# d$V_PHY_ETAB_98 <- d$V_PHY_ETAB_4
+# var_label(d$V_PHY_ETAB_98) <- var_label(d$V_PHY_ETAB_4)
+# d$V_PHY_ETAB_4 <- NULL
+# d <- d %>% relocate(V_PHY_ETAB_98,.after = V_PHY_ETAB_3)
 
-d$V_PHY_ETAB_98 <- d$V_PHY_ETAB_4
-var_label(d$V_PHY_ETAB_98) <- var_label(d$V_PHY_ETAB_4)
-d$V_PHY_ETAB_4 <- NULL
-d <- d %>% relocate(V_PHY_ETAB_98,.after = V_PHY_ETAB_3)
 
 
 #V_PHY_AUTEUR_RENC en V_PHY_AUTEUR_RENC_RC
