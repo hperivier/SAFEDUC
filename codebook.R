@@ -21,16 +21,16 @@ safeduc_let <- safeduc_let %>% rename(V_PSY_ETAB_98 = V_PSY_ETAB_4)
 safeduc_num <- safeduc_num %>% rename(V_PHY_ETAB_98 = V_PHY_ETAB_4)
 safeduc_let <- safeduc_let %>% rename(V_PHY_ETAB_98 = V_PHY_ETAB_4)
 
-#récupération des labels des variables
+#recuperation des labels des variables
 
 dv <- c(safeduc_num[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
 safeduc_num <- safeduc_num[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
-safeduc_num <- set_variable_labels(safeduc_num,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
+safeduc_num <- set_variable_labels(safeduc_num,.labels=dv) #On indique a R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
 
 
 dv <- c(safeduc_let[1,]) #on cree un vecteur texte, qui comprend la premiere ligne de notre base, c-a-d leur description
 safeduc_let <- safeduc_let[c(-1,-2),] # on supprime les deux premieres lignes de la base qui contiennent des infos sur les variables, mais qui ne doivent pas etre traitees comme des reponses
-safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
+safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique a R d'utiliser le vecteur comprenant les descriptions des variables pour les inclure dans notre nouvelle base
 
 ##########     DEBUT DES RECODAGES    ##########
 
@@ -39,7 +39,7 @@ safeduc_let <- set_variable_labels(safeduc_let,.labels=dv) #On indique à R d'uti
 d <- safeduc_num
 
 #Appliquer la transformation sur les colonnes qui peuvent être converties en integer
-### Attention, cela enlève les labels des variables
+### Attention, cela enleve les labels des variables
 
 d[,-(1:10)] <- as.data.frame(lapply(d[,-(1:10)], function(x) {
   if (is.character(x) && is_convertible_to_integer(x)) {
@@ -49,7 +49,7 @@ d[,-(1:10)] <- as.data.frame(lapply(d[,-(1:10)], function(x) {
   }
 }))
 
-#Récupération des labels 
+#Recuperation des labels 
 var_label(d) <- dv
 
 #LABELISATION DES MODALITES PAR VARIABLES
@@ -478,18 +478,18 @@ d$C_FREQ_EVETU_RC <- factor(d$C_FREQ_EVETU_RC, levels=c("Plusieurs fois par sema
 
 var_label(d$C_FREQ_EVETU_RC) <- var_label(d$C_FREQ_EVETU)
 
-# Création de C_COUPLE_RC
+# Creation de C_COUPLE_RC
 
 d$C_COUPLE_RC[d$C_COUPLE==1]='Celibataire'
 d$C_COUPLE_RC[d$C_COUPLE==2]='En couple'
-d$C_COUPLE_RC[d$C_COUPLE==3]='Vous fréquentez une/des personnes mais vous ne vous considérez pas engage, engagee'
+d$C_COUPLE_RC[d$C_COUPLE==3]='Vous frequentez une/des personnes mais vous ne vous considerez pas engage, engagee'
 d$C_COUPLE_RC[d$C_COUPLE==4]='Autre'
 d$C_COUPLE_RC[d$C_COUPLE==98]='Refus'
 d$C_COUPLE_RC[d$C_COUPLE==99]='NSP'
 
 d$C_COUPLE_RC <- factor(d$C_COUPLE_RC, levels=c("Celibataire",                                                                       
                                                 "En couple",                                                                         
-                                                "Vous fréquentez une/des personnes mais vous ne vous considérez pas engage, engagee",
+                                                "Vous frequentez une/des personnes mais vous ne vous considerez pas engage, engagee",
                                                 "Autre",
                                                 "Refus",
                                                 "NSP"                                                                              
@@ -842,7 +842,6 @@ d$P_FAITS_PSY_2_RC<-factor(d$P_FAITS_PSY_2_RC, levels=c("Plusieurs fois",
 var_label(d$P_FAITS_PSY_2_RC) <- var_label(d$P_FAITS_PSY_2)
 
 #P_FAITS_PSY_3 et P_FAITS_PSY_3_RC
-
 d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==1]="Plusieurs fois"
 d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==2]="Une fois"
 d$P_FAITS_PSY_3_RC[d$P_FAITS_PSY_3==3]="Jamais"
@@ -1074,14 +1073,14 @@ var_label(d$V_PSY_MARQ_RC) <- var_label(d$V_PSY_MARQ)
 d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==1]="Oui, de facon volontaire"
 d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==2]="Oui, car vous n'avez pas le choix"
 d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==3]="Non, vous evitez volontairement cette ou ces personnes"
-d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==4]="Non, mais cela s’est fait naturellement"
+d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==4]="Non, mais cela s'est fait naturellement"
 d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==98]="Refus"
 d$V_PSY_AUTEUR_RENC_RC[d$V_PSY_AUTEUR_RENC==99]="NSP"
   
 d$V_PSY_AUTEUR_RENC_RC <- factor(d$V_PSY_AUTEUR_RENC_RC, levels=c("Oui, de facon volontaire",
                                                                   "Oui, car vous n'avez pas le choix",
                                                                   "Non, vous evitez volontairement cette ou ces personnes",
-                                                                  "Non, mais cela s’est fait naturellement",
+                                                                  "Non, mais cela s'est fait naturellement",
                                                                   "Refus",
                                                                   "NSP"
                                                                   ))
@@ -1096,14 +1095,14 @@ var_label(d$V_PSY_AUTEUR_RENC_RC) <- var_label(d$V_PSY_AUTEUR_RENC)
 d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==1]="Oui, de facon volontaire"
 d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==2]="Oui, car vous n'avez pas le choix"
 d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==3]="Non, vous evitez volontairement cette ou ces personnes"
-d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==4]="Non, mais cela s’est fait naturellement"
+d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==4]="Non, mais cela s'est fait naturellement"
 d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==98]="Refus"
 d$V_PHY_AUTEUR_RENC_RC[d$V_PHY_AUTEUR_RENC==99]="NSP"
 
 d$V_PHY_AUTEUR_RENC_RC <- factor(d$V_PHY_AUTEUR_RENC_RC, levels=c("Oui, de facon volontaire",
                                                                   "Oui, car vous n'avez pas le choix",
                                                                   "Non, vous evitez volontairement cette ou ces personnes",
-                                                                  "Non, mais cela s’est fait naturellement",
+                                                                  "Non, mais cela s'est fait naturellement",
                                                                   "Refus",
                                                                   "NSP"))
 
@@ -1132,23 +1131,23 @@ var_label(d$V_PHY_AUTEUR_GENRE_RC) <- var_label(d$V_PHY_AUTEUR_GENRE)
 
 #V_SEX_MARQ_RC
 
-d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 1] = "Les propos et gestes à caractere sexuel qui vous ont mis mal à l'aise (mime de geste sexuel, propositions sexuelles, reflexion sur votre vie sexuelle…)"
-d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 2] = "Le fait qu'on vous a impose des images à caractere pornographique qui vous ont mis mal a l’aise (sur une conversation de groupe par exemple ou des photos intimes non sollicitees…)"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 1] = "Les propos et gestes a caractere sexuel qui vous ont mis mal a l'aise (mime de geste sexuel, propositions sexuelles, reflexion sur votre vie sexuelle...)"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 2] = "Le fait qu'on vous a impose des images a caractere pornographique qui vous ont mis mal a l'aise (sur une conversation de groupe par exemple ou des photos intimes non sollicitees...)"
 d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 3] = "Le fait qu'on a suivi(e), qu'on vous a contacte ou sollicite de maniere insistante au point de vous mettre mal a l'aise ou de vous faire peur"
 d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 4] = "Le fait qu'on vous a administre a votre insu une substance (par exemple addictive ou medicamenteuse) de nature a alterer votre discernement ou le controle de vos actes"
 d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 5] = "Le fait que vous ayez eu affaire a un ou une exhibitionniste ou a un voyeur ou une voyeuse"
-d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 6] = "Le fait que quelqu’un a touche vos fesses, vous a coince pour vous embrasser, s'est colle ou s'est frotte a vous contre votre gre ou que quelqu’un vous a force a faire ou a subir des attouchements des parties intimes"
-d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 7] = "Le fait que quelqu’un a use a votre encontre de pression grave dans le but d’obtenir de vous un acte de nature sexuelle ; Le fait qu'on vous a fait craindre des represailles si vous refusiez d’acceder a une demande sexuelle ou que l’on vous a laisse entendre que vous pourriez beneficier d’une recompense si vous accediez a une demande sexuelle"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 6] = "Le fait que quelqu'un a touche vos fesses, vous a coince pour vous embrasser, s'est colle ou s'est frotte a vous contre votre gre ou que quelqu'un vous a force a faire ou a subir des attouchements des parties intimes"
+d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 7] = "Le fait que quelqu'un a use a votre encontre de pression grave dans le but d'obtenir de vous un acte de nature sexuelle ; Le fait qu'on vous a fait craindre des represailles si vous refusiez d'acceder a une demande sexuelle ou que l'on vous a laisse entendre que vous pourriez beneficier d'une recompense si vous accediez a une demande sexuelle"
 d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 8] = "Le fait que quelqu'un a essaye ou est parvenu a avoir un rapport sexuel avec vous, que ce rapport implique une penetration (effectuee par le sexe, les doigts ou un objet) ou un contact sexe-bouche, sans que vous l'ayez voulu"
 d$V_SEX_MARQ_RC[d$V_SEX_MARQ == 98] = "Refus"
 
-d$V_SEX_MARQ_RC <- factor(d$V_SEX_MARQ_RC, levels = c("Les propos et gestes à caractere sexuel qui vous ont mis mal à l'aise (mime de geste sexuel, propositions sexuelles, reflexion sur votre vie sexuelle…)",
-                                                      "Le fait qu'on vous a impose des images à caractere pornographique qui vous ont mis mal a l’aise (sur une conversation de groupe par exemple ou des photos intimes non sollicitees…)",
+d$V_SEX_MARQ_RC <- factor(d$V_SEX_MARQ_RC, levels = c("Les propos et gestes a caractere sexuel qui vous ont mis mal a l'aise (mime de geste sexuel, propositions sexuelles, reflexion sur votre vie sexuelle...)",
+                                                      "Le fait qu'on vous a impose des images a caractere pornographique qui vous ont mis mal a l'aise (sur une conversation de groupe par exemple ou des photos intimes non sollicitees...)",
                                                       "Le fait qu'on a suivi(e), qu'on vous a contacte ou sollicite de maniere insistante au point de vous mettre mal a l'aise ou de vous faire peur",
                                                       "Le fait qu'on vous a administre a votre insu une substance (par exemple addictive ou medicamenteuse) de nature a alterer votre discernement ou le controle de vos actes",
                                                       "Le fait que vous ayez eu affaire a un ou une exhibitionniste ou a un voyeur ou une voyeuse",
-                                                      "Le fait que quelqu’un a touche vos fesses, vous a coince pour vous embrasser, s'est colle ou s'est frotte a vous contre votre gre ou que quelqu’un vous a force a faire ou a subir des attouchements des parties intimes",
-                                                      "Le fait que quelqu’un a use a votre encontre de pression grave dans le but d’obtenir de vous un acte de nature sexuelle ; Le fait qu'on vous a fait craindre des represailles si vous refusiez d’acceder a une demande sexuelle ou que l’on vous a laisse entendre que vous pourriez beneficier d’une recompense si vous accediez a une demande sexuelle",
+                                                      "Le fait que quelqu'un a touche vos fesses, vous a coince pour vous embrasser, s'est colle ou s'est frotte a vous contre votre gre ou que quelqu'un vous a force a faire ou a subir des attouchements des parties intimes",
+                                                      "Le fait que quelqu'un a use a votre encontre de pression grave dans le but d'obtenir de vous un acte de nature sexuelle ; Le fait qu'on vous a fait craindre des represailles si vous refusiez d'acceder a une demande sexuelle ou que l'on vous a laisse entendre que vous pourriez beneficier d'une recompense si vous accediez a une demande sexuelle",
                                                       "Le fait que quelqu'un a essaye ou est parvenu a avoir un rapport sexuel avec vous, que ce rapport implique une penetration (effectuee par le sexe, les doigts ou un objet) ou un contact sexe-bouche, sans que vous l'ayez voulu",
                                                       "Refus"))
 
@@ -1159,14 +1158,14 @@ var_label(d$V_SEX_MARQ_RC) <- var_label(d$V_SEX_MARQ)
 d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==1]="Oui, de facon volontaire"
 d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==2]="Oui, car vous n'avez pas le choix"
 d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==3]="Non, vous evitez volontairement cette ou ces personnes"
-d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==4]="Non, mais cela s’est fait naturellement"
+d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==4]="Non, mais cela s'est fait naturellement"
 d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==98]="Refus"
 d$V_SEX_AUTEUR_RENC_RC[d$V_SEX_AUTEUR_RENC==99]="NSP"
 
 d$V_SEX_AUTEUR_RENC_RC <- factor(d$V_SEX_AUTEUR_RENC_RC, levels=c("Oui, de facon volontaire",
                                                                   "Oui, car vous n'avez pas le choix",
                                                                   "Non, vous evitez volontairement cette ou ces personnes",
-                                                                  "Non, mais cela s’est fait naturellement",
+                                                                  "Non, mais cela s'est fait naturellement",
                                                                   "Refus",
                                                                   "NSP"
 ))
@@ -1213,7 +1212,7 @@ var_label(d$Q_PAROLE_DELAI_RC) <- var_label(d$Q_PAROLE_DELAI)
 
 ###LIGNES DE FIN
 #Appliquer la transformation sur les colonnes qui peuvent être converties en factor
-### Attention, cela enlève les labels des variables
+### Attention, cela enleve les labels des variables
 
 d[,-(1:10)] <- as.data.frame(lapply(d[,-(1:10)], function(x) {
   if (is.integer(x) || is.character(x)) {
@@ -1237,5 +1236,5 @@ d$Duration_seconds <- as.integer(d$Duration_seconds)
 d$Status <- as.integer(d$Status)
 d$Finished <- as.integer(d$Finished)
 
-#Récupération des labels 
+#Recuperation des labels 
 var_label(d) <- dv
