@@ -8,6 +8,8 @@ source("fonctions.R")
 safeduc_num <- read_csv("safeduc_num.csv")
 safeduc_let <- read_csv("safeduc_let.csv")
 
+
+
 #renommer certaines variables
 
 safeduc_num <- safeduc_num %>% rename(Duration_seconds = `Duration (in seconds)`)
@@ -1232,10 +1234,8 @@ d$RecordedDate <- as.POSIXct(d$RecordedDate, format="%Y-%m-%d %H:%M:%S")
 
 d$Progress <- as.integer(d$Progress)
 d$Duration_seconds <- as.integer(d$Duration_seconds)
-
-### ATTENTION : VERIFIER LE FORMAT SOUHAITE POUR LES 10 PREMIERES VAR
+d$Status <- as.integer(d$Status)
+d$Finished <- as.integer(d$Finished)
 
 #Récupération des labels 
 var_label(d) <- dv
-
-

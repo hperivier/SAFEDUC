@@ -35,8 +35,6 @@ merge_with_labels <- function(num_df, let_df) {
   return(num_df)
 }
 
-
-
 ###### Fonction qui permet de regrouper les modalités one hot encodées en une seule variable liste #####
 
 #Le one hot encoding est le fait de diviser une variable à modalités multiples en plusieurs variables binaires
@@ -89,12 +87,12 @@ filter_exploitable <- function(df) {
   df %>% filter(Progress > 54)
 }
 
-###### Fonction pour filtrer les lignes avec progress == 100 (réponses complètes) #####
+##### Fonction pour filtrer les lignes avec progress == 100 (réponses complètes) #####
 filter_complete <- function(df) {
   df %>% filter(Progress == 100)
 }
 
-##### Fonction pour conserver seulement le premier élément des listes
+##### Fonction pour conserver seulement le premier élément des listes #####
 get_first_element <- function(x) {
   if (is.list(x)) {
     return(x[[1]])
