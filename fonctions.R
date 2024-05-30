@@ -101,3 +101,13 @@ get_first_element <- function(x) {
   }
 }
 
+#### Fonction pour trouver la dernière question répondue en ignorant les colonnes de recodage #### 
+
+find_last_question <- function(row) {
+  last_answered <- which(!is.na(row[questionnaire_variables]))
+  if (length(last_answered) > 0) {
+    return(questionnaire_variables[last_answered[length(last_answered)]])
+  } else {
+    return(NA)
+  }
+}
