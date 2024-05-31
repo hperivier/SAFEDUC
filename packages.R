@@ -4,3 +4,5 @@ library(tidyverse)
 
 library(questionr)
 library(gmodels)
+library(gtsummary)
+library(ggplot2)
