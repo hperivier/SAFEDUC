@@ -72,7 +72,7 @@ reverse_one_hot_encoding <- function(df, prefixes) {
   return(df)
 }
 
-##### Fonction pour compter le nombre de faits déclarés
+##### Fonction pour compter le nombre de faits déclarés ####
 
 compter_faits <- function(data, variables, nouvelle_variable) {
   nouvelle_variable <- rlang::ensym(nouvelle_variable)
@@ -92,13 +92,13 @@ filter_complete <- function(df) {
   df %>% filter(Progress == 100)
 }
 
-##### Fonction pour conserver seulement le premier élément des listes #####
-get_first_element <- function(x) {
-  if (is.list(x)) {
-    return(x[[1]])
-  } else {
-    return(x)
-  }
+##### Fonction pour conserver seulement le premier élément des listes de character #####
+premier_element <- function(x) {
+  # Séparer les valeurs par la virgule
+  split_values <- strsplit(as.character(x), ",")
+  # Ne conserver que la première valeur
+  first_value <- sapply(split_values, `[`, 1)
+  return(first_value)
 }
 
 #### Fonction pour trouver la dernière question répondue en ignorant les colonnes de recodage #### 
