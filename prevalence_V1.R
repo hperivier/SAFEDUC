@@ -114,9 +114,9 @@ d_f %>%
       ~ .x %>%
       tbl_summary(by = GENRE_RC) %>%
       add_n() %>% 
-      add_overall() %>% 
-      add_p(test = list(all_categorical() ~ "fisher.test"))
-  )
+      add_overall() 
+  ) 
+
 
 
 #dataframe qui ne prend que les personnes d'upcite 
@@ -132,8 +132,6 @@ df_upcite_faculte <- d_f %>%
   filter(presence == 1)
 
 
-length(unique(df_upcite_faculte$ResponseId))
-freq(d_f$I_U_FACULTE_98)
 
   
 df_upcite_faculte %>%

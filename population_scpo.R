@@ -8,6 +8,8 @@ source("fonctions.R")
 d_all <- readRDS("safeduc_all.rds")
 d_f <- readRDS("safeduc_finished.rds")
 
+### Ce code permet de créer des tables descriptives de certaines populations de sciences po
+# on affiche le taux de réponse et le nombre moyen de faits vécus
 
 
 d_f<- reverse_one_hot_encoding(
@@ -27,16 +29,35 @@ d_f <- d_f %>%
     TRUE ~ "Autre ou Refus"  # Cette condition s'applique à toutes les autres modalités
   ))
 
+
+#####Variables de comptage des faits vécus
+
+variables_faits_psy <- names(d_f)[grepl("^P_FAITS_PSY", names(d_f))]
+d_f <- compter_faits(d_f, variables_faits_psy, "P_FAITS_PSY_SUM")
+
+variables_faits_phys <- names(d_f)[grepl("^P_FAITS_PHYS", names(d_f))]
+d_f <- compter_faits(d_f, variables_faits_phys, "P_FAITS_PHYS_SUM")
+
+
+variables_faits_sex <- names(d_f)[grepl("^P_FAITS_SEX", names(d_f))]
+d_f <- compter_faits(d_f, variables_faits_sex, "P_FAITS_SEX_SUM")
+
+d_f <- d_f %>% 
+  mutate(
+    P_FAITS_SUM = rowSums(across(c("P_FAITS_PSY_SUM", "P_FAITS_PHYS_SUM", "P_FAITS_SEX_SUM"), na.rm=T))
+  )
+
+
 #### Analyse des caractéristiques de la population de Sciences Po ####
 
 ##### Analyse par Genre/année d'étude
 
-freq(d_f$I_S_ANNEE_liste)
 
-echantillon_genre_annee <- subset(d_f, I_ETAB==1) %>%
+# Préparer les données de l'échantillon
+echantillon_genre_annee <- subset(d_f, I_ETAB == 1) %>%
   count(I_S_ANNEE_liste, GENRE_RC) %>%
   group_by(GENRE_RC) %>%
-  mutate(freq_echantillon = (n /2556)) %>%
+  mutate(freq_echantillon = (n / 2556)) %>%
   ungroup()
 
 echantillon_genre_annee$I_S_ANNEE_liste <- premier_element(echantillon_genre_annee$I_S_ANNEE_liste)
@@ -44,8 +65,7 @@ echantillon_genre_annee$I_S_ANNEE_liste <- premier_element(echantillon_genre_ann
 # Regrouper les catégories 1, 2, 3 ensemble, 4, 5 ensemble, et laisser 6 et 7 séparées
 echantillon_genre_annee <- echantillon_genre_annee %>%
   mutate(I_S_ANNEE_liste = case_when(
-    I_S_ANNEE_liste %in% c("1", "2", "3") ~ "1-3",
-    I_S_ANNEE_liste %in% c("4", "5") ~ "4-5",
+    I_S_ANNEE_liste %in% c("5", "7") ~ "5&7",
     TRUE ~ as.character(I_S_ANNEE_liste)
   ))
 
@@ -65,6 +85,24 @@ total_effectif <- sum(echantillon_genre_annee$n)
 echantillon_genre_annee <- echantillon_genre_annee %>%
   mutate(freq_echantillon = (n / total_effectif))
 
+# Calculer les moyennes des faits vécus
+echantillon_genre_annee <- echantillon_genre_annee %>%
+  left_join(d_f %>%
+              filter(I_ETAB == 1 & GENRE_RC != "Autre ou Refus" & I_S_ANNEE_liste != "98") %>%
+              mutate(I_S_ANNEE_liste = case_when(
+                I_S_ANNEE_liste %in% c("5", "7") ~ "5&7",
+                TRUE ~ as.character(I_S_ANNEE_liste)
+              )) %>%
+              group_by(GENRE_RC, I_S_ANNEE_liste) %>%
+              summarise(
+                mean_faits_vecus = mean(P_FAITS_SUM, na.rm = TRUE),
+                mean_faits_phys = mean(P_FAITS_PHYS_SUM, na.rm = TRUE),
+                mean_faits_psy = mean(P_FAITS_PSY_SUM, na.rm = TRUE),
+                mean_faits_sex = mean(P_FAITS_SEX_SUM, na.rm = TRUE),
+                .groups = 'drop'
+              ),
+            by = c("GENRE_RC", "I_S_ANNEE_liste"))
+
 # Données de la population
 population_genre_annee <- data.frame(
   GENRE_RC = c(rep("Une femme", 7), rep("Un homme", 7)),
@@ -75,8 +113,7 @@ population_genre_annee <- data.frame(
 # Regrouper les catégories dans les données de la population de la même manière
 population_genre_annee <- population_genre_annee %>%
   mutate(I_S_ANNEE_liste = case_when(
-    I_S_ANNEE_liste %in% c("1", "2", "3") ~ "1-3",
-    I_S_ANNEE_liste %in% c("4", "5") ~ "4-5",
+    I_S_ANNEE_liste %in% c("5", "7") ~ "5&7",
     TRUE ~ as.character(I_S_ANNEE_liste)
   )) %>%
   group_by(GENRE_RC, I_S_ANNEE_liste) %>%
@@ -93,17 +130,16 @@ comp_genre_annee <- merge(echantillon_genre_annee, population_genre_annee, by = 
 comp_genre_annee <- comp_genre_annee %>%
   mutate(expected_n_echantillon = freq_pop * total_effectif)
 
+# Calculer les taux de réponse
+comp_genre_annee$taux_reponse <- comp_genre_annee$n / comp_genre_annee$effectif_pop
 
-# Effectuer le test du chi carré d'adéquation
-chisq_test <- chisq.test(comp_genre_annee$n, p = comp_genre_annee$expected_n_echantillon / sum(comp_genre_annee$expected_n_echantillon))
+#reorganiser les colonnes
 
-# Afficher les résultats du test
-print("Résultats du test du chi carré d'adéquation :")
-print(chisq_test)
+comp_genre_annee <- comp_genre_annee %>%
+  select(GENRE_RC, I_S_ANNEE_liste, n, taux_reponse, mean_faits_vecus, mean_faits_phys, mean_faits_psy, mean_faits_sex, effectif_pop, freq_pop, expected_n_echantillon, freq_echantillon
+         )
 
-## Analyse par Campus x Genre
-
-# Préparer les données de l'échantillon
+#### Analyse par Campus x Genre ####
 
 echantillon_genre_campus <- subset(d_f, I_ETAB == 1) %>%
   count(I_S_CAMPUS, GENRE_RC) %>%
@@ -111,6 +147,7 @@ echantillon_genre_campus <- subset(d_f, I_ETAB == 1) %>%
   mutate(freq_echantillon = (n / 2556)) %>%
   ungroup()
 
+# Filtrer pour supprimer la modalité "98"
 echantillon_genre_campus <- echantillon_genre_campus %>%
   filter(I_S_CAMPUS != "98" & GENRE_RC != "Autre ou Refus")
 
@@ -126,21 +163,26 @@ total_effectif <- sum(echantillon_genre_campus$n)
 echantillon_genre_campus <- echantillon_genre_campus %>%
   mutate(freq_echantillon = (n / total_effectif))
 
+# Calculer les moyennes des faits vécus
+echantillon_genre_campus <- echantillon_genre_campus %>%
+  left_join(d_f %>%
+              filter(I_ETAB == 1 & GENRE_RC != "Autre ou Refus" & I_S_CAMPUS != "98") %>%
+              group_by(GENRE_RC, I_S_CAMPUS) %>%
+              summarise(
+                mean_faits_vecus = mean(P_FAITS_SUM, na.rm = TRUE),
+                mean_faits_phys = mean(P_FAITS_PHYS_SUM, na.rm = TRUE),
+                mean_faits_psy = mean(P_FAITS_PSY_SUM, na.rm = TRUE),
+                mean_faits_sex = mean(P_FAITS_SEX_SUM, na.rm = TRUE),
+                .groups = 'drop'
+              ),
+            by = c("GENRE_RC", "I_S_CAMPUS"))
+
 # Données de la population
 population_genre_campus <- data.frame(
   GENRE_RC = c(rep("Une femme", 7), rep("Un homme", 7)),
   I_S_CAMPUS = rep(c("1", "2", "3", "4", "5", "6", "7"), 2),
-  effectif_pop = c(174,344,389,337,6704,288,1439,101,175,177,160,3862,107,580)
+  effectif_pop = c(174, 344, 389, 337, 6704, 288, 1439, 101, 175, 177, 160, 3862, 107, 580)
 )
-
-# Regrouper les catégories dans les données de la population de la même manière
-population_genre_campus <- population_genre_campus %>%
-  mutate(I_S_CAMPUS = case_when(
-    I_S_CAMPUS %in% c("1", "2", "3","4","6","7") ~ "Autre Campus",
-    TRUE ~ as.character(I_S_CAMPUS)
-  )) %>%
-  group_by(GENRE_RC, I_S_CAMPUS) %>%
-  summarise(effectif_pop = sum(effectif_pop), .groups = 'drop')
 
 # Calculer les proportions de la population
 population_genre_campus <- population_genre_campus %>%
@@ -153,12 +195,14 @@ comp_genre_campus <- merge(echantillon_genre_campus, population_genre_campus, by
 comp_genre_campus <- comp_genre_campus %>%
   mutate(expected_n_echantillon = freq_pop * total_effectif)
 
-# Effectuer le test du chi carré d'adéquation
-chisq_test <- chisq.test(comp_genre_campus$n, p = comp_genre_campus$expected_n_echantillon / sum(comp_genre_campus$expected_n_echantillon))
+# Calculer les taux de réponse
+comp_genre_campus$taux_reponse <- comp_genre_campus$n / comp_genre_campus$effectif_pop
 
-# Afficher les résultats du test
-print("Résultats du test du chi carré d'adéquation :")
-print(chisq_test)
+#reorganiser les colonnes
+
+comp_genre_campus <- comp_genre_campus %>%
+  select(GENRE_RC, I_S_CAMPUS, n, taux_reponse, mean_faits_vecus, mean_faits_phys, mean_faits_psy, mean_faits_sex, effectif_pop, freq_pop, freq_echantillon, expected_n_echantillon)
+ 
 
 ## Analyse par Genre
 
@@ -174,6 +218,20 @@ total_effectif <- sum(echantillon_genre$n)
 # Calculer les fréquences sur l'effectif total
 echantillon_genre <- echantillon_genre %>%
   mutate(freq_echantillon = (n / total_effectif))
+
+# Calculer les moyennes des faits vécus
+echantillon_genre <- echantillon_genre %>%
+  left_join(d_f %>%
+              filter(I_ETAB == 1 & GENRE_RC != "Autre ou Refus") %>%
+              group_by(GENRE_RC) %>%
+              summarise(
+                mean_faits_vecus = mean(P_FAITS_SUM, na.rm = TRUE),
+                mean_faits_phys = mean(P_FAITS_PHYS_SUM, na.rm = TRUE),
+                mean_faits_psy = mean(P_FAITS_PSY_SUM, na.rm = TRUE),
+                mean_faits_sex = mean(P_FAITS_SEX_SUM, na.rm = TRUE),
+                .groups = 'drop'
+              ),
+            by = "GENRE_RC")
 
 # Données de la population (effectifs)
 population_genre <- data.frame(
@@ -192,10 +250,11 @@ comp_genre <- merge(echantillon_genre, population_genre, by = "GENRE_RC")
 comp_genre <- comp_genre %>%
   mutate(expected_n_echantillon = freq_pop * total_effectif)
 
-chisq_test <- chisq.test(comp_genre$n, p = comp_genre$expected_n_echantillon / sum(comp_genre$expected_n_echantillon))
+# Calculer les taux de réponse
+comp_genre$taux_reponse <- comp_genre$n / comp_genre$effectif_pop
 
-# Afficher les résultats du test
-print("Résultats du test du chi carré d'adéquation :")
-print(chisq_test)
+#reorganiser les colonnes
+comp_genre <- comp_genre %>%
+  select(GENRE_RC, n, taux_reponse, mean_faits_vecus, mean_faits_phys, mean_faits_psy, mean_faits_sex, effectif_pop, freq_pop, freq_echantillon, expected_n_echantillon)
 
 
