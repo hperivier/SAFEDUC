@@ -4,4 +4,4 @@ format: html
 editor: visual
 ---
 
-## enquÃªte Ã  l'universitÃ©
+## enquête à l'université
