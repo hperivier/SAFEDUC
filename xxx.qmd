@@ -46,6 +46,12 @@ Puisque
 
 ```{r}
 freq_last_question[, c("Dernière question", "Effectif", "Proportion", "Question d'abandon")] %>%
+  gt()
+
+```
+
+```{r}
+freq_last_question[, c("Dernière question", "Effectif", "Proportion", "Question d'abandon")] %>%
   kable(caption = "Table des questions où les étudiant.es ont le plus abandonné la complétion (n = 901)") %>%
   kable_styling(full_width = FALSE, position = "center", bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
