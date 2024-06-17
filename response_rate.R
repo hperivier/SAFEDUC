@@ -50,7 +50,7 @@ labels_lastquestion <- sapply(freq_last_question$LastQuestion, function(x) {
 
 # Ajouter la colonne Question avec les labels correspondants
 freq_last_question <- freq_last_question %>%
-  mutate("Derniere question" = labels_lastquestion)
+  mutate("Dernière Question" = labels_lastquestion)
 
 
 ## idem pour la question abandonnee
@@ -88,7 +88,7 @@ daily_counts <- d_all %>%
 # Joindre la sequence de dates avec les Resultats pour inclure les jours sans reponses
 daily_counts <- data.frame(open_day = date_seq) %>%
   left_join(daily_counts, by = "open_day") %>%
-  replace_na(list(daily_count = 0))  
+  replace_na(list(daily_count = 0))
 
 # Calculer l'Effectif cumule
 daily_counts <- daily_counts %>%
@@ -133,12 +133,12 @@ plot_scpo <- ggplot(daily_counts, aes(x = open_day)) +
     plot.title = element_text(hjust = 0.5)
   ) +
   geom_vline(data = vertical_lines, aes(xintercept = as.numeric(date), color = group),
-             linetype = c(rep("solid", length(relances_mail)), 
-                          rep("dashed", length(relances_campus)), 
-                          rep("dotted", length(relances_flyers))), 
+             linetype = c(rep("solid", length(relances_mail)),
+                          rep("dashed", length(relances_campus)),
+                          rep("dotted", length(relances_flyers))),
              show.legend = TRUE) +
   scale_color_manual(name = "legende",
-                     values = c("Effectif journalier" = "#0072B2", "Effectif cumule" = "#D55E00", 
+                     values = c("Effectif journalier" = "#0072B2", "Effectif cumule" = "#D55E00",
                                 "Relances Mail" = "#009E73", "Relances Campus" = "#E69F00", "Relances Flyers" = "#999999")) +
   guides(color = guide_legend(ncol = 2, byrow = TRUE))  # Diviser la legende en plusieurs colonnes
 
@@ -199,7 +199,7 @@ plot_scpo_campus <- ggplot(daily_counts_campus, aes(x = open_day, y = daily_coun
   geom_vline(data = vertical_lines, aes(xintercept = as.numeric(date), color = group, linetype = group),
              size = 0.5, show.legend = F) +
   scale_color_manual(name = "Legende",
-                     values = c("Campus de Paris" = "#0072B2", "Autres Campus" = "#D55E00", 
+                     values = c("Campus de Paris" = "#0072B2", "Autres Campus" = "#D55E00",
                                 "Relances Mail" = "#009E73", "Relances Campus" = "#E69F00", "Relances Flyers" = "#999999")) +
   scale_linetype_manual(name = "Legende",
                         values = c("Relances Mail" = "solid", "Relances Campus" = "dashed", "Relances Flyers" = "dotted")) +
@@ -227,7 +227,7 @@ daily_counts <- d_all %>%
 # Joindre la sequence de dates avec les resultats pour inclure les jours sans reponses
 daily_counts <- data.frame(open_day = date_seq) %>%
   left_join(daily_counts, by = "open_day") %>%
-  replace_na(list(daily_count = 0))  
+  replace_na(list(daily_count = 0))
 
 # Calculer l'effectif cumule
 daily_counts <- daily_counts %>%
@@ -272,11 +272,11 @@ plot_upcite <- ggplot(daily_counts, aes(x = open_day)) +
     plot.title = element_text(hjust = 0.5)
   ) +
   geom_vline(data = vertical_lines, aes(xintercept = as.numeric(date), color = group),
-             linetype = c(rep("solid", length(relances_mail)), 
-                          rep("dotted", length(relances_flyers))), 
+             linetype = c(rep("solid", length(relances_mail)),
+                          rep("dotted", length(relances_flyers))),
              show.legend = TRUE) +
   scale_color_manual(name = "legende",
-                     values = c("Effectif journalier" = "#0072B2", "Effectif cumule" = "#D55E00", 
+                     values = c("Effectif journalier" = "#0072B2", "Effectif cumule" = "#D55E00",
                                 "Relances Mail" = "#009E73", "Relances Flyers" = "#999999")) +
   guides(color = guide_legend(ncol = 2, byrow = TRUE))  # Diviser la legende en plusieurs colonnes
 
@@ -381,8 +381,8 @@ plot_facultes <- ggplot(daily_counts, aes(x = open_day)) +
        x = "Date",
        y = "Effectif") +
   theme_minimal(base_size = 15) +
-  scale_color_manual(name = NULL, 
-                     values = c("Effectif journalier" = "#0072B2", 
+  scale_color_manual(name = NULL,
+                     values = c("Effectif journalier" = "#0072B2",
                                 "Relances Mail" = "#009E73", "Relances Flyers" = "#999999")) +
   scale_fill_manual(name = NULL, values = c("periode de vacances" = "blue")) +
   scale_linetype_manual(name = NULL,
@@ -394,7 +394,7 @@ plot_facultes <- ggplot(daily_counts, aes(x = open_day)) +
     plot.title = element_text(hjust = 0.5),
     legend.background = element_rect(fill = "white", color = NA)  # Fond blanc pour la legende
   ) +
-  guides(color = guide_legend(override.aes = list(linetype = c(1))), 
+  guides(color = guide_legend(override.aes = list(linetype = c(1))),
          fill = guide_legend(override.aes = list(alpha = 0.2))) +
   facet_wrap(~ faculte, scales = "free_y", ncol = 1, labeller = as_labeller(facet_labels)) +  # Diviser les graphiques par faculte
   geom_text(data = faculte_info, aes(x = min(daily_counts$open_day), y = Inf, label = info_label),
