@@ -131,8 +131,6 @@ df_upcite_faculte <- d_f %>%
   ) %>%
   filter(presence == 1)
 
-
-
   
 df_upcite_faculte %>%
   select(starts_with("bin_"), GENRE_RC, faculte) %>%

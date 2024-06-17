@@ -1,0 +1,67 @@
+---
+title: "Analyse du taux de réponse"
+format: html
+editor: visual
+---
+
+# SAFEDUC
+
+```{r setup, include=FALSE}
+# Paramètres globaux pour tous les chunks
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  message = FALSE, 
+  warning = FALSE
+)
+source("response_rate.R")
+```
+
+## Analyse du taux de réponse et de la passation de l'enquête à Sciences Po et Université Paris Cité
+
+L'enquête SAFEDUC a été lancée le 25 mars 2024 auprès de toute la population étudiante (hors formation continue) de Sciences Po et Université Paris Cité. La passation s'est clôturée le 20 mai 2024 après 8 semaines de diffusion.
+
+Le questionnaire anonyme était disponible en ligne et accessible via un lien ou un QR code. Ainsi, la communication de l'enquête s'est faite en ligne avec le lien, via des campagnes de mails et des diffusions informelles dans des groupes étudiants, et hors ligne avec le QR code, via des affiches et des flyers disponibles sur tous les campus ainsi qu'une slide qui était disponible pour une diffusion en cours.
+
+La population d'enquête était contrôlée grâce à un système d'authentification en début de questionnaire. Ce système demandait aux étudiant.es de compléter leur numéro étudiant et leur date de naissance, informations qui étaient supprimées et jamais associées aux réponses au questionnaire, afin d'assurer que seules les populations d'intérêt puissent répondre.
+
+L'enquête a permis de collecter 4649 questionnaires complets parmi les deux populations enquêtées. A cela s'ajoute 901 questionnaires non terminés qu'il est intéressant d'observer pour analyser les comportements d'abandon. Pour arriver à la fin du questionnaire, un.e répondant.e devait répondre à toutes les questions, bien que des modalités *Ne souhaite pas répondre* ou *Ne sait pas* étaient proposées.
+
+#### Abandons des questionnaires
+
+Nous étudions ici les 901 questionnaires d'étudiant.es qui ont passé l'étape d'authentification mais qui ont abandonné la complétion en cours de route. Cet échantillon fait donc bien partie de notre population et permet d'observer les étapes du questionnaire qui ont favorisé l'abandon.
+
+Tout d'abord, nous observons que la majorité des personnes ayant entamé la complétion ne s'arrête pas aux premières questions puisque la majorité s'arrête plutôt vers le milieu du questionnaire, entre 40 et 50% de complétion. Il faut noter que la mesure du taux de progression diffère selon les personnes et leurs réponses aux questions filtres. Par exemple, une personne qui déclare des violences aura à répondre à plus de questions qu'une personne qui n'en déclare pas. Ainsi, une personne qui déclare des violences aura atteint un niveau de progression moindre car elle accède à de nouvelles questions supplémentaires.
+
+```{r, fig.width=8, fig.height=4}
+hist(d_all[d_all$Progress < 100,]$Progress,
+     main = "Histogramme du taux de progression parmi les abandons (n = 901) ",
+     xlab = "Taux de progression",
+     ylab = "Fréquence",
+     col = "lightblue",  # Couleur de l'histogramme
+     border = "white")   # Bordure des barres
+
+```
+
+Puisque
+
+```{r}
+freq_last_question[, c("Dernière question", "Effectif", "Proportion", "Question d'abandon")] %>%
+  kable(caption = "Table des questions où les étudiant.es ont le plus abandonné la complétion (n = 901)") %>%
+  kable_styling(full_width = FALSE, position = "center", bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+```{r, fig.width=8, fig.height=6}
+print(plot_scpo)
+```
+
+```{r, fig.width=10, fig.height=10}
+print(plot_scpo_campus)
+```
+
+```{r, fig.width=10, fig.height=6}
+print(plot_upcite)
+```
+
+```{r, fig.width=10, fig.height=9}
+print(plot_facultes)
+```

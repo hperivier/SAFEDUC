@@ -101,7 +101,7 @@ premier_element <- function(x) {
   return(first_value)
 }
 
-#### Fonction pour trouver la dernière question répondue en ignorant les colonnes de recodage #### 
+#### Fonction pour trouver la dernière question répondue et la première non répondue en ignorant les colonnes de recodage #### 
 
 find_last_question <- function(row) {
   last_answered <- which(!is.na(row[questionnaire_variables]))
@@ -110,4 +110,16 @@ find_last_question <- function(row) {
   } else {
     return(NA)
   }
+}
+
+find_first_unanswered <- function(row) {
+  first_unanswered <- which(is.na(row[questionnaire_variables]))
+  if (length(first_unanswered) > 0) {
+    for (i in seq_along(first_unanswered)) {
+      if (all(is.na(row[questionnaire_variables][first_unanswered[i]:length(questionnaire_variables)]))) {
+        return(questionnaire_variables[first_unanswered[i]])
+      }
+    }
+  }
+  return(NA)
 }
