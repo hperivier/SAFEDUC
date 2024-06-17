@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   message = FALSE, 
   warning = FALSE
 )
-source("response_rate.R")
+source("response_rate.R", encoding = "utf-8")
 ```
 
 ## Analyse du taux de réponse et de la passation de l'enquête à Sciences Po et Université Paris Cité
@@ -45,13 +45,13 @@ hist(d_all[d_all$Progress < 100,]$Progress,
 Puisque
 
 ```{r}
-freq_last_question[, c("Dernière question", "Effectif", "Proportion", "Question d'abandon")] %>%
+freq_last_question[, c("Derniere question", "Effectif", "Proportion", "Question d'abandon")] %>%
   gt()
 
 ```
 
 ```{r}
-freq_last_question[, c("Dernière question", "Effectif", "Proportion", "Question d'abandon")] %>%
+freq_last_question[, c("Derniere question", "Effectif", "Proportion", "Question d'abandon")] %>%
   kable(caption = "Table des questions où les étudiant.es ont le plus abandonné la complétion (n = 901)") %>%
   kable_styling(full_width = FALSE, position = "center", bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
