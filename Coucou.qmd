@@ -1,7 +1,0 @@
----
-title: "Coucou"
-format: html
-editor: visual
----
-
-La prévalence dans et l'évaluation dans les enquêtes de façade et les coléoptères
