@@ -1,0 +1,183 @@
+---
+title: "SAFEDUC - Synthèse de la passation"
+author: "Clara le Gallic-Ach & Victor Coutolleau"
+date: 06/18/2024
+format: revealjs
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+source("packages.R")
+source("fonctions.R")
+```
+
+# Taux de réponse
+
+## Figure 1 - Taux de réponse par Faculté, Université Paris Cité
+
+```{r Figure 1}
+#| echo: false
+#| message: false
+#| warning: false
+data1 <- data.frame(faculte=c("Santé","Sciences","SHS","ENSEMBLE","IPGP","Refus"),
+           nb.rep=c(656,422,1011,2093,19,34),
+           eff.pop=c(21772,8280,20362,53831,273,NA),
+           tx.part=c(0.0301,0.051,0.0497,0.0389,0.0696,NA))
+
+ggplot(data=data1[c(1:4),])+
+ aes(x=factor(faculte,levels=c("Sciences","SHS","ENSEMBLE","Santé")),y=tx.part, fill = factor(faculte,levels=c("Sciences","SHS","ENSEMBLE","Santé")))+
+ geom_col(width = 0.5)+
+ theme_bw()+
+ theme(plot.caption = element_text(hjust = 0))+
+ scale_fill_manual(values=c("#8A1538","#8A1538","lightslategrey","#8A1538"))+
+ guides(fill="none")+
+ scale_y_continuous(labels = scales::percent)+
+ scale_x_discrete(labels=c('Faculté des Sciences \n(n=422)','Faculté Sociétés \net Humanités \n(n=1011)','Ensemble \n(n=2093)','Faculté de Santé \n(n=656)'))+
+labs(x="",y="Taux de participation")
+#caption = "Champ : Etudiant·es d'Université Paris Cité ayant terminé le questionnaire (n = 2 093)\n
+#Lecture : Au sein de la faculté  « Société et humanités », un peu moins de 5 % des étudiant·es ont complété un questionnaire.\n
+#Source : SAFEDUC (2024, UPCité-Sciences Po)"
+```
+
+## Figure 2 - Taux de réponse par campus, Sciences Po
+
+```{r Figure 2}
+#| echo: false
+#| message: false
+#| warning: false
+
+
+data2 <- data.frame(campus=factor(x=c("Dijon","Le Havre","Menton","Nancy","Paris","Poitiers","Reims","Ensemble"),levels=c("Dijon","Le Havre","Menton","Nancy","Paris","Poitiers","Reims","Ensemble")),
+          nb.rep=c(79,61,69,123,1847,84,286,2549),
+          tx.rep=c(0.29,0.12,0.12,0.25,0.17,0.21,0.14,0.17),
+          nb.rep.1A2A=c(51,47,51,87,296,64,207,803),
+          tx.rep.1A2A=c(0.28,0.15,0.15,0.28,0.31,0.23,0.19,0.23)
+          )
+
+data2 <- pivot_longer(data2, cols = c("tx.rep"), cols_vary = "fastest")
+ggplot(data = data2) +
+  aes(x = factor(campus,levels = c("Dijon","Nancy","Poitiers","Paris","Ensemble","Reims","Le Havre","Menton")),
+  y = value,
+  fill = factor(
+  campus,
+  levels = c("Dijon","Nancy","Poitiers","Paris","Ensemble","Reims","Le Havre","Menton"))) +
+  geom_col() +
+  scale_fill_manual(
+    values = c(
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "lightslategrey",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D"
+    )
+  ) +
+  guides(fill = "none") +
+  theme_bw() +
+  scale_y_continuous(labels = scales::percent) +
+  labs(, x =
+         "", y = "Pourcentage") +
+  scale_x_discrete(
+    labels = c(
+      "Dijon\n(n=79)",
+      "Nancy\n(n=123)",
+      "Poitiers\n(n=84)",
+      "Paris\n(n=1847)",
+      "Ensemble\n(n=2549)",
+      "Reims\n(n=286)",
+      "Le Havre\n(n=61)",
+      "Menton\n(n=69)"
+    )
+  )
+```
+
+## Figure 3 - Taux de réponse par école (niveau master), Sciences Po
+
+```{r}
+t3 <- data.frame(ecole=factor(c("Ecole urbaine\n(n=137)","Ecole de la recherche\n(n=123)","Ecole de journalisme\n(n=41)","Ecole d'affaires publiques\n(n=486)",	"Ensemble\n(n=1344)","École des affaires internationales\n(n=352)","Ecole de droit\n(n=101)","Ecole du management et de l'impact\n(n=104)"),levels=c("Ecole urbaine\n(n=137)","Ecole de la recherche\n(n=123)","Ecole de journalisme\n(n=41)","Ecole d'affaires publiques\n(n=486)",	"Ensemble\n(n=1344)","École des affaires internationales\n(n=352)","Ecole de droit\n(n=101)","Ecole du management et de l'impact\n(n=104)")),tx.rep=c(0.3914,0.3146,0.2828,0.2107,0.2012,0.1981,0.1857,0.0891))
+
+ggplot(data=t3)+
+         aes(x=tx.rep,y=ecole, fill=ecole)+
+         geom_col()+
+        scale_fill_manual(values = c("#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "lightslategrey",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D"
+      ))+
+  guides(fill = "none") +
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  scale_y_discrete(limits=rev)+
+  labs(x="Taux de réponse (en pourcentage)",y="")+
+  theme(text = element_text(size = 16)) 
+
+```
+
+## Figure 4 - Sur ou sous représentation des catégories de genre (catégories binaires)
+
+```{r}
+t4 <- data.frame(etablissement=c("UPCité (n=2009)","Sciences Po (n=2499)", "Ensemble (n=4508)"),cat.sex=c("Femmes","Femmes","Femmes","Hommes","Hommes","Hommes"),diff=c(0.11, 0.05, 0.07,-0.11,-0.05,-0.07))
+
+ggplot(data=t4)+
+  aes(x=diff, y= cat.sex, fill=etablissement)+
+geom_col(position="dodge")+
+  scale_fill_manual(values = c("lightslategrey","#E6142D","#8A1538"))+
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  theme(text = element_text(size = 14))+
+  labs(x= "Sur ou sous représentation (en point de pourcentage)", y="", fill="Etablissement")
+  
+```
+
+## Figure 5 - Sur ou sous représentation des PCS
+
+```{r}
+t5 <- data.frame(pcs=factor(c("Agriculteurs exploitants","Artisans, commerçants et chefs d'entreprise","Cadres et professions intellectuelles supèrieures","Professions intermédiaires","Employés","Ouvriers","Retraités","Autres personnes sans activité professionnelles","Non renseigné"), levels=c("Agriculteurs exploitants","Artisans, commerçants et chefs d'entreprise","Cadres et professions intellectuelles supèrieures","Professions intermédiaires","Employés","Ouvriers","Retraités","Autres personnes sans activité professionnelles","Non renseigné")),
+prop.upc=c(0.0051,0.0777,0.417,0.0981,0.140,0.0552,0.0758,0.0617,0.0686),
+prop.upc.safeduc=c(0.0043,0.0731,0.4735,0.1309,0.1405,0.0344,0.0502,0.0248,0.0683),
+diff.upc=c(-0.0008,-0.0046,0.0562,0.0328,0.0000,-0.0208,-0.0256,-0.0368,-0.0003),
+prop.sciencesPo=c(0.0075,0.0636,0.4987,0.1287,0.1365,0.0239,0.0483,0.0557,0.0372),
+prop.sciencesPo.safeduc=c(0.013,0.067,0.565,0.159,0.071,0.026,0.038,0.026,0.036),
+diff.sciencesPo=c(0.0050,0.0029,0.0666,0.0301,-0.0657,0.0023,-0.0107,-0.0295,-0.0012))
+
+t5b <- data.frame(pcs=factor(c("Agriculteurs exploitants","Artisans, commerçants et chefs d'entreprise","Cadres et professions intellectuelles supèrieures","Professions intermédiaires","Employés","Ouvriers","Retraités","Autres personnes sans activité professionnelles","Non renseigné","Agriculteurs exploitants","Artisans, commerçants et chefs d'entreprise","Cadres et professions intellectuelles supèrieures","Professions intermédiaires","Employés","Ouvriers","Retraités","Autres personnes sans activité professionnelles","Non renseigné"), levels=c("Agriculteurs exploitants","Artisans, commerçants et chefs d'entreprise","Cadres et professions intellectuelles supèrieures","Professions intermédiaires","Employés","Ouvriers","Retraités","Autres personnes sans activité professionnelles","Non renseigné")),
+etablissement=c("UPCite","UPCite","UPCite","UPCite","UPCite","UPCite","UPCite","UPCite","UPCite","Sciences Po","Sciences Po","Sciences Po","Sciences Po","Sciences Po","Sciences Po","Sciences Po","Sciences Po","Sciences Po"),
+differences=c(-0.0008,-0.0046,0.0562,0.0328,0.0000,-0.0208,-0.0256,-0.0368,-0.0003,0.0050,0.0029,0.0666,0.0301,-0.0657,0.0023,-0.0107,-0.0295,-0.0012))
+
+ggplot(data=t5b)+
+  aes(x=differences, y=pcs, fill=etablissement)+
+  geom_col(position= "dodge")+
+  scale_fill_manual(values = c("#E6142D","#8A1538"))+
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  theme(text = element_text(size = 14))+
+  labs(x= "Sur ou sous représentation (en point de pourcentage)", y="", fill="Etablissement")+
+  scale_y_discrete(limits=rev)
+```
+
+## Figure 6 - Sur ou sous représentation des boursier.es CROUS
+
+```{r}
+t6 <- data.frame(etab=c("Sciences Po","Sciences Po","Upcite","Upcite"),
+                 statut=c("Boursier","Non-Boursier","Boursier","Non-Boursier"),
+                 difference = c(0.0401,-0.0401,0.07,-0.07))
+
+ggplot(data=t6)+
+  aes(x=difference,y=statut,fill=etab)+
+  geom_col(position="dodge")+
+  scale_fill_manual(values = c("#E6142D","#8A1538"))+
+  theme_bw()+
+  scale_x_continuous(labels = scales::percent)+
+  theme(text = element_text(size = 14))+
+  labs(x= "Sur ou sous représentation (en point de pourcentage)", y="", fill="Etablissement")
+
+```

@@ -1,9 +1,59 @@
 ---
-title: "SAFEDUC - Bilan de passation et taux de réponse"
-author: "L'équipe de recherche SAFEDUC"
-format: html
+title: "Enquête SAFEDUC - Synthèse de la passation et des taux de réponse"
+keywords: genre, violences sexistes et sexuelles, population étudiantes
+abstract: "Ce document de travail présente une synthèse de la passation de l’enquête SAFEDUC, une recherche par questionnaire portant sur l’exposition aux violences sexistes et sexuelles au sein des populations étudiantes de Sciences Po et Université Paris Cité. La passation s’est étalée de la mi-mars à la mi-mai 2024. Elle a collecté un total de 4649 réponses complètes, auxquelles on peut ajouter 270 questionnaires exploitables pour estimer les taux de prévalence. Le taux de participation général est de l’ordre de 7 %, mais il connait une différence marquée entre les deux établissements : il a atteint 17 % à Sciences Po (n=2 556), contre 4 % à UPCité (n= 2093). Ces disparités interétablissements cachent également des disparités interétablissements, avec d’importantes différences entre composantes (UFR/école, etc.). L’échantillon présente parallèlement une surreprésentation de femmes, de fils et filles de cadres et professions intellectuelles supérieures et d’étudiant·es déclarant toucher une bourse CROUS. La construction d’une variable de pondération est en cours, afin de contrôler ces effets de composition dans l’estimation des taux de prévalence."
+
+thanks: "La recherche SAFEDUC a été financée par une dotation accordée au titre de l’Initiative d’Excellence Université Paris 2019 (IdEx UP19) dans le cadre d’un partenariat entre Université Paris Cité et Sciences Po. Elle a également bénéficié de l’accompagnement des déléguées à la protection des données, des services juridiques et de communication de ces deux établissements. Elle a aussi reçu le soutien logistique et administratif du Programme de recherche et d’enseignement des savoirs sur le genre (PRESAGE) de Sciences Po. L’équipe du projet tient à cet égard à remercier l’ensemble des personnels de ces composantes pour leur implication dans ce travail.\n Un Comité de suivi scientifique a encadré la dimension scientifique de l’enquête, et a participé très activement à l’élaboration du questionnaire et la préparation de sa passation. Les membres du Centre de Données Socio-Politiques (CDSP) de Sciences Po ont également participé activement à la mise en œuvre pratique du questionnaire, notamment dans l’accès et le paramatrage de la plateforme de passation. Le protocole de recherche a bénéficié des retours et recommandations du Comité d’évaluation éthique de l’Inserm, qui a rendu un avis favorable sur le projet de recherche (avis n° 23-1062, daté du 5 mars 2024). Enfin, plusieurs groupes et associations étudiantes de Sciences Po ont participé au succès de l’enquête. Les échanges en amont de la passation ont constitué des retours de terrains précieux pour l’équipe de recherche. De même, leur implication dans la communication autour de l’enquête a largement contribué à la diffusion du questionnaire dans les deux institutions. Qu’ils et elles en soient singulièrement remercié·es."
+
+author:
+
+   - name: Hélène Périvier
+     email: helene.perivier@sciencespo.fr
+     affiliation: 
+      - OFCE, Sciences Po Paris
+      
+   - name: Clara Le Gallic-Ach
+     email: clara.legallicach@sciencespo.fr
+     affiliation: 
+      - OFCE, Sciences Po Paris
+
+   - name: Victor Coutolleau
+     email: victor.coutolleau@sciencespo.fr
+     affiliation:
+      - OFCE, Sciences Po Paris
+fig-cap-location: top
+tbl-cap-location: top
+number-sections: true
+number-depth: 2
+crossref:
+  fig-title: Fig.
+  fig-labels: arabic
+  fig-prefix: figure
+  tbl-title: Table
+  tbl-labels: arabic
+  tbl-prefix: table
+wp: 14
+annee: 2024
+date: today
+date-modified: today
+format:
+  wp-html: default
+  wp-pdf: default
+  docx: default
+standalone: true
 editor: visual
 ---
+
+```{css}
+#| echo: false
+p{
+text-align: justify
+}
+.abstract p {
+  text-align: justify;
+}
+
+```
 
 ```{r}
 #| echo: false
@@ -11,80 +61,583 @@ editor: visual
 #| warning: false
 source("packages.R")
 source("fonctions.R")
+
+
+d <- readRDS("~/Github/SAFEDUC/safeduc_finished.rds")
 ```
 
-***En bref :** L'enquête SAFEDUC a collecté un total de 4649 réponses complètes, auxquelles on peut ajouter 270 questionnaires exploitables pour estimer les taux de prévalence. Le taux de participation général est de l'ordre de 7 %, mais il connait une différence marquée entre les deux établissements : il a atteint 17 % à Sciences Po (n=2 556), contre 4 % à UPCité (n= 2093). Ces disparités inter-établissements cachent également des disparités intra-établissements, avec d'importantes différences entre composantes (UFR/école, etc.). Il reste encore à comparer la structure de ces échantillons avec leur population étudiante respective, afin d'envisager la construction d'une variable de pondération. Dans l'ensemble cependant, les échantillons des deux établissements sont relativement similaires en termes de profil socio-démographique des répondant·es.*
+**Contexte de la recherche:**
 
-***En comparaison :***
+La recherche SAFEDUC a été financée par une dotation accordée au titre de [Initiative d'Excellence Université Paris 2019 (IdEx UP19)](https://u-paris.fr/idex-universite-paris/) dans le cadre d’un partenariat entre Université Paris Cité et Sciences Po. Elle a également bénéficié de l’accompagnement des déléguées à la protection des données, des services juridiques et de communication de ces deux établissements. Elle a aussi reçu le soutien logistique et administratif du Programme de recherche et d’enseignement des savoirs sur le genre (PRESAGE) de Sciences Po. L’équipe du projet tient à cet égard à remercier l’ensemble des personnels de ces composantes pour leur implication dans ce travail.
 
--   *12,4 % de réponses exploitables à Nantes Université en 2023*
-
--   *11,6 % à l'Université Clermont Auvergne en 2023*
-
--   *2,7 % pour UniSafe en 2022*
-
--   *Entre 3,7 % et 7,7 % pour Virage Université en 2015*
-                                                    |
-**Contexte de la recherche** \| \| La recherche SAFEDUC a été financée par une dotation accordée au titre de l'[Initiative d'Excellence Université Paris 2019 (IdEx UP19)](https://u-paris.fr/idex-universite-paris/) dans le cadre d'un partenariat entre Université Paris Cité et Sciences Po. \| \| Elle a également bénéficié de l'accompagnement des déléguées à la protection des données, des services juridiques et des services de communication de ces deux établissements. Elle a aussi re à§u le soutien logistique et administratif du Programme de recherche et d'enseignement des savoirs sur le genre (PRESAGE) de Sciences Po. L'équipe de recherche tient à cet égard à les remercier toutes et tous pour leur implication dans ce projet. \| \| La dimension scientifique du projet a été encadrée par un [Comité de suivi scientifique](https://www.sciencespo.fr/gender-studies/sites/sciencespo.fr.gender-studies/files/Organisation-SAFEDUC-FR.pdf), ayant participé très activement à l'élaboration du questionnaire et la préparation de sa passation. La mise en Å“uvre du questionnaire a été permise par les membres du Centre de Données Socio-Politiques de Sciences Po, notamment dans l'accès et le paramétrage de la plateforme de passation. Le protocole de recherche a bénéficié des retours et recommandations du Comité d' à‰valuation Ethique de l'Inserm, qui a rendu un avis favorable sur le projet de recherche (avis n°23-1062, daté du 5 mars 2024). \| Enfin, plusieurs groupes et associations étudiantes de Sciences Po ont participé au succès du projet. Les échanges en amont de la passation ont constitué des retours de terrains précieux pour l'équipe de recherche. De même, leur implication dans la communication autour de l'enquête a largement contribué à la diffusion du questionnaire dans les deux institutions. Qu'ils et elles en soient singulièrement remerciées. \| |
+Un [Comité de suivi](https://www.sciencespo.fr/gender-studies/sites/sciencespo.fr.gender-studies/files/Organisation-SAFEDUC-FR.pdf) a encadré la dimension scientifique de l’enquête, et a participé très activement à l’élaboration du questionnaire et la préparation de sa passation. Les membres du Centre de Données Socio-Politiques (CDSP) de Sciences Po ont également participé activement à la mise en œuvre pratique du questionnaire, notamment dans l’ouverture de l’accès à la plateforme de passation Qualtrics et son paramétrage. Le protocole de recherche a bénéficié des retours et recommandations du Comité d’évaluation éthique de l’Inserm, qui a rendu un avis favorable sur le projet de recherche (avis n° 23-1062, daté du 5 mars 2024). Enfin, plusieurs groupes et associations étudiantes de Sciences Po ont participé au succès de l’enquête. Les échanges en amont de la passation ont constitué des retours de terrains précieux pour l’équipe de recherche. De même, leur implication dans la communication autour de l’enquête a largement contribué à la diffusion du questionnaire dans les deux institutions. Qu’ils et elles en soient singulièrement remercié·es.
 
 # Déroulement de la passation
 
-Les deux institutions ont envoyé, le lundi 25 mars, un mail à d'invitation à participer à l'enquête sur l'adresse mail institutionnelle de l'ensemble des étudiant·es. La passation, d'une durée de 8 semaines, s'est clôturée le 20 mai à 9h. Outre le mail de lancement, chaque établissement a envoyé deux autres mails de relance, auxquels ont pu s'ajouter des communication à plus petite échelle (Composante, etc.). Des campagnes de tractages, passant par la diffusion de QR code renvoyant à l'enquête, ont aussi été déployées au sein de chaque établissement.
+Le questionnaire a été paramétré sur la plateforme de passation en ligne *Qualtrics*. Les deux institutions ont envoyé, le lundi 25 mars, un mail d’invitation à participer à l’enquête sur l’adresse mail institutionnelle de l’ensemble des étudiant·es. La passation, d’une durée de 8 semaines, s’est clôturée le 20 mai à 9h. Outre le mail de lancement, chaque établissement a envoyé deux autres mails de relance, auxquels ont pu s’ajouter des communications à plus petite échelle (par UFR, par « école » de niveau master, etc.). Des campagnes de tractages et d’affichages, passant par la diffusion de QR code renvoyant à l’enquête, ont aussi été déployées au sein de chaque établissement.
 
-Les personnes pouvant participer à l'enquête étaient l'ensemble des étudiant·es en formation initiale et en apprentissage, ce qui excluait les étudiant·es en formation continue. Ces dernier·es n'ont pas été inclus dans la population d'études pour des raisons de comparabilité entre les deux établissements. Leurs numéros étudiant·es n'ont pas été transmis à l'équipe de recherche, ce qui ne leur permettait pas de passer la première étape d'authentification pour accès au questionnaire. La plateforme de passation Qualtrics permettant de quantifier le nombre d'authentifications échouées (après 3 tentatives), on peut ainsi estimer que 71 personnes n'ont ainsi pas pu participer à l'enquête, ce qui reste un chiffre relativement faible à la fois comparativement au nombre de participant·es (plus de 4500) et comparativement au nombre d'étudiant·es en formation continue (plus de 10 000 étudiant·es à Université Paris Cité).
+Les personnes pouvant participer à l’enquête étaient l’ensemble des étudiant·es en formation initiale et en apprentissage. Les étudiant·es en formation continue étaient ainsi exclu·es du champ de l’enquête pour des raisons de comparabilité entre les deux établissements. En effet, les étudiant·es en formation continue (diplômes universitaires, etc.) ne présentent pas le même profil sociodémographique et les mêmes conditions d’études que les étudiants en formation initiale : ils sont souvent plus âgés, en emploi non étudiant, etc. Ils et elles sont par ailleurs sensiblement plus nombreux·ses à Université Paris Cité (plus de 15 000) qu’à Sciences Po. Inclure ces personnes dans le champ de l’enquête aurait ainsi rendu complexe la comparaison entre les deux établissements.
 
-La différence de taux de réponse entre les deux établissements découle en partie de la différence d'efficacité de chaque mode de communication. 84 % des répondant·es de Sciences Po et 68 % des répondant·es d'Université Paris Cité ont ainsi complété le questionnaire en cliquant sur un lien d'invitation ; tandis que 16 % des répondant·es de Sciences Po et 32 % des répondant·es d'UPCité l'ont fait par QR code. Or, le QR code était essentiellement distribué lors des tractages, et le lien de participation étant surtout communiqués via les emails institutionnels. Les emails semblent donc avoir été plus efficaces à Sciences Po, tandis que la distribution de tracts semble avoir produit davantage d'effet chez les étudiant·es d'Université Paris Cité.
+L’accès au questionnaire était assuré par un système d’authentification, demandant numéro étudiant et date de naissance. Ce système permettait d’assurer une adéquation entre l’échantillon et la population d’étude : les étudiant·es en formation continue ou extérieur·es à l’établissement ne pouvant ainsi pas accéder au questionnaire. Par ailleurs, chaque étudiant·e ne pouvait compléter le questionnaire qu’une seule fois, ce qui évitait les risques associés aux réponses multiples malveillantes. La confidentialité et l’anonymat des réponses étaient assurés par un paramétrage de la plateforme de passation : l’équipe de recherche était dans l’incapacité d’associer les informations d’authentification aux réponses individuelles au questionnaire.
 
-Cette différence entre les deux établissements s'explique probablement par le fait que les étudiant·es de Sciences Po sont très régulièrement amené·es à utiliser leur adresse mail institutionnelle, ce qui n'est pas forcément le cas pour les autres établissements d'enseignement supérieur, ce qui a déjà posé problème dans le cadre d'autres enquêtes. Enfin, les différences de taille entre les deux institutions (Université Paris Cité comptant plus de 4 fois plus d'étudiant·es) expliquent également la plus grande difficulté à faire connaitre l'enquête au sein d'UPCité, alors même que d'autres consultations étaient menées en même temps auprès de la population étudiante de l'établissement.
+Au total, la plateforme **Qualtrics** a enregistré 71 échecs d'authentification (c'est-à-dire trois tentatives infructueuses de passer l'authentificateur). Ce chiffre reste relativement faible comparativement au nombre de participant·es (plus de 4500) et comparativement au nombre d’étudiant·es en formation continue (plus de 10 000 étudiant·es à Université Paris Cité). Le système d’authentification ne semble pas avoir rencontré de problème technique et ne semble pas constitué un frein considérable à la participation.
+
+***Au total, le taux de participation à l’enquête s’élève à 7 %, avec des disparités entre Sciences Po (où le taux atteint 17 %) et Université Paris Cité (où il atteint 4 %). Ce chiffre gagne à être comparé aux enquêtes similaires, notamment :***
+
+-   [*L’enquête de Nantes Université (2023)*](https://www.univ-nantes.fr/universite/vision-strategie-et-grands-projets/resultats-de-lenquete-etudiante-de-nantes-universite-sur-le-cadre-de-vie-durant-le-temps-des-etudes-et-lexposition-aux-violences-sexuelles-et-sexistes)*, ayant atteint un taux de réponse exploitable de 12,4 %*.
+
+-   [*L’enquête JEDIS (Justice, Égalité, Diversité, Solidarité) de l’Université Clermont Auvergne (2023)*](https://www.uca.fr/un-plan-dactions-pour-lutter-contre-les-violences-sexistes-et-sexuelles)*, ayant atteint un taux de réponse de 11,6 %*.
+
+-   [*L’enquête UniSafe (2022)*](https://unisafe-gbv.eu/)*, mené à l’échelle européenne et ayant atteint un taux de réponse de 2,7 %*.
+
+-   [*Le volet « Université » de l’enquête Virage (2015)*](https://www.ined.fr/fr/publications/editions/document-travail/violences-subies-etudes-universitaires/)*, ayant atteint des taux de réponse compris entre 3,7 % et 7,7 %*.
+
+En bref, le taux de participation général se situe donc plutôt dans la moyenne des enquêtes de même type, avec une forte différence entre le taux de participation très élevé de Sciences Po et celui d’UPCité se situant dans la moyenne basse.
+
+Cette différence de taux de réponse entre les deux établissements découle en partie de la différence d’efficacité de chaque mode de communication. 84 % des répondant·es de Sciences Po et 68 % des répondant·es d’Université Paris Cité ont ainsi complété le questionnaire via un lien d’invitation, ces liens étant essentiellement distribués par des mails institutionnels. Inversement, 16 % des répondant·es de Sciences Po et 32 % des répondant·es d’UPCité l’ont fait par QR codes, ces derniers étant surtout distribué lors des tractages. Les emails semblent donc avoir été plus efficaces à Sciences Po, tandis que la distribution de tracts semble avoir produit davantage d’effet chez les étudiant·es d’Université Paris Cité.
+
+Cette différence entre les deux établissements s’explique probablement par le fait que les étudiant·es de Sciences Po sont très régulièrement amené·es à utiliser leur adresse mail institutionnelle, ce qui n’est pas forcément le cas pour les autres établissements d’enseignement supérieur \[ref\]. Enfin, les différences de taille entre les deux institutions (Université Paris Cité comptant plus de 4 fois plus d’étudiant·es) expliquent également la plus grande difficulté à faire connaitre l’enquête au sein d’UPCité, alors même que d’autres consultations étudiantes étaient menées en même temps.
 
 # Les disparités de taux de réponse au sein des établissements
 
-## *Les différences internes à Université Paris Cité*
+## Les différences internes à Université Paris Cité
 
-Au sein d'université Paris Cité (voir **Figure 1**), la faculté des Sciences ainsi que la faculté « Sociétés et Humanités » présentent des taux de participation proches de 5 %. La faculté de santé dépasse légèrement les 3 % de taux de participation. L'institut de physique du globe de Paris, accueillant très peu d'étudiant·es (environ 300), présente un taux de participation artificiellement élevé (plus de 7 %). A l'exception de cette dernière composante, chaque faculté dispose cependant d'effectifs suffisants pour permettre des traitements.
+### Les différences entre facultés
+
+Au sein d'université Paris Cité (voir @fig-facultes), la faculté des Sciences ainsi que la faculté « Sociétés et Humanités » présentent des taux de participation proches de 5 %. La faculté de santé dépasse légèrement les 3 % de taux de participation. L'institut de physique du globe de Paris, accueillant très peu d'étudiant·es (environ 300), présente un taux de participation artificiellement élevé (plus de 7 %). A l'exception de cette dernière composante, chaque faculté dispose cependant d'effectifs suffisants pour permettre des traitements.
+
+```{r}
+#| label: tab-facultes
+#| echo: false
+tab_facultes <- data.frame(faculte=factor(c("Faculté de Santé","Faculté des Sciences","Faculté Sociétés \net Humanités","ENSEMBLE","IPGP","Refus"),levels = c("Faculté de Santé","Faculté des Sciences","Faculté Sociétés \net Humanités","ENSEMBLE","IPGP","Refus")),
+           nb.rep=c(656,422,1011,2093,19,34),
+           tx.part=c(0.0301,0.051,0.0497,0.0389,0.0696,NA))
+tab_facultes$labels_tableau <- paste0(tab_facultes$faculte, "\n(n=",tab_facultes$nb.rep,")")
+```
+
+```{r}
+#| label: fig-facultes
+#| fig-cap: "Taux de réponse par Faculté, Université Paris Cité"
+#| echo: false
+tab_facultes|>
+  filter(faculte!="IPGP" & faculte!="Refus")|> #Filtrage des données pertinentes
+ggplot()+
+ aes(x=reorder(labels_tableau,-tx.part),y=tx.part,fill=labels_tableau)+
+ geom_col(width = 0.5)+
+  theme_bw()+
+  theme(plot.caption = element_text(hjust = 0))+ #Pour que les notes soient à gauche
+  guides(fill="none")+ #Pour supprimer la légende des couleurs, redondantes avec les labels
+  scale_y_continuous(labels = scales::percent)+ #Pour que l'axe soit en pourcentage
+  scale_fill_manual(values = c("dimgrey","#9900CC","#9900CC","#9900CC"))+#choix couleurs
+      labs(x="",y="Taux de participation", caption="Champ : Etudiant·es d'Université Paris Cité ayant terminé le questionnaire (n = 2 093)\nLecture : Au sein de la faculté  « Société et humanités », un peu moins de 5 % des étudiant·es ont \ncomplété un questionnaire.\nSource : SAFEDUC (2024, UPCité-Sciences Po) ; Direction des études, de la Formation et de \nl’Innovation Pédagogique (DEFI) d’Université Paris Cité")
+```
+
+### Les différences entre années d'étude
+
+```{r}
+#| label: Tab-annees-upc
+#| echo: false
+#| message: false
+
+#Création du tableau de données
+
+tab_annees_upc<- data.frame(annee = structure(1:8, levels = c("Niveau L1", 
+"Niveau L2", "Niveau L3", "Niveau M1", "Niveau M2", "Niveau Doctorat", 
+"Autre situation", "Refus"), class = "factor"),
+  eff.safeduc = c(352,546,429,262,277,168,56,3),
+  tx.rep = c(0.0254169976171565,0.0640394088669951,0.0459659273545484,0.0407972594207412, 0.0347640562248996,0.0192373754723463,NA,NA))  
+```
+
+On trouve aussi des disparités en fonction du niveau d'étude @fig-annees_upc : le taux de réponse des étudiantes et étudiants en première année se situe un peu au dessus des 2 %, avant d'augmenter de manière marqué chez les étudiant.es en deuxième année (un peu plus de 6 %), puis de diminuer progressivement à chaque niveau d'étude supplémentaire.
 
 ```{r}
 #| echo: false
-data1 <- data.frame(faculte=c("Sante","Sciences","SHS","ENSEMBLE","IPGP","Refus"),
-           nb.rep=c(656,422,1011,2093,19,34),
-           eff.pop=c(21772,8280,20362,53831,273,NA),
-           tx.part=c(0.0301,0.051,0.0497,0.0389,0.0696,NA))
+#| label: fig-annees_upc
+#| fig-cap: "Taux de réponse par niveau d'étude, Université Paris Cité"
 
-ggplot(data=data1[c(1:4),])+
- aes(x=factor(faculte,levels=c("Sante","Sciences","SHS","ENSEMBLE")),y=tx.part, fill = factor(faculte,levels=c("Sante","Sciences","SHS","ENSEMBLE")))+
- geom_col(width = 0.5)+
- theme_bw()+
- theme(plot.caption = element_text(hjust = 0))+
- scale_fill_manual(values=c("#FF6666","#FF6666","#FF6666","lightslategrey"))+
- guides(fill="none")+
- scale_y_continuous(labels = scales::percent)+
- scale_x_discrete(labels=c('Faculté de Santé \n(n=656)','Faculté des Sciences \n(n=422)','Faculté Sociétés \net Humanités \n(n=1011)','Ensemble \n(n=2093)'))+
-labs(x="",y="Taux de participation", title = "Figure 1 - Taux de réponse par Faculté, Université Paris Cité", caption = "Champ : à‰tudiant·es d'Université Paris Cité ayant terminé le questionnaire (n = 2 093)\n
-Lecture : Au sein de la faculté  « Société et humanités Â», un peu moins de 5 % des étudiant·es ont complété un questionnaire.\n
+tab_annees_upc|>
+  filter(annee !="Autre situation"& annee !="Refus")|>
+ggplot()+
+  aes(x=annee,y=tx.rep, fill=annee)+
+  geom_col()+
+    theme_bw()+
+    theme(plot.caption = element_text(hjust = 0))+
+    guides(fill="none")+
+    scale_y_continuous(labels = scales::percent)+
+    scale_fill_manual(values = c("#9900CC","#9900CC","#9900CC","#9900CC","#9900CC","dimgrey"))+
+    scale_x_discrete(labels=paste0(tab_annees_upc$annee,"\n(n=",tab_annees_upc$eff.safeduc,")"))+
+      labs(x="",y="Taux de participation", caption = "Champ : Etudiant·es d'Université Paris Cité ayant terminé le questionnaire (n = 2 093).
+Lecture : Au sein de la faculté  « Société et humanités », un peu moins de 5 % des étudiant·es ont complété \nun questionnaire.
 Source : SAFEDUC (2024, UPCité-Sciences Po)")
+```
+
+Cette tendance générale se retranscrit au sein de chaque faculté, avec quelques variations (voir @fig-3). Ainsi, pour la Faculté des Sciences, le taux de participation "chute" après la troisième année plutôt qu'après la deuxième. Au sein de la faculté "Sociétés et humanités", le taux de participation augmente entre la troisième et la quatrième année d'étude. Le taux de participation le plus élevé au sein de la faculté est celui des étudiant.es en 5e années.
+
+```{r}
+#| echo: false
+#| label: Tab-anneefac
+
+Tab_anneefac<-data.frame(faculte = c("Faculté de Santé","Faculté de Santé","Faculté de Santé","Faculté de Santé","Faculté de Santé","Faculté de Santé","Faculté de Santé","Faculté de Santé","Faculté des Sciences","Faculté des Sciences","Faculté des Sciences",  "Faculté des Sciences","Faculté des Sciences","Faculté des Sciences","Faculté des Sciences","Faculté des Sciences","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Faculté Sociétés \net Humanités","Autre","Autre","Autre","Autre","Autre","Autre","Autre","Autre","Refus","Refus","Refus","Refus","Refus","Refus","Refus","Refus"), annee = c("Niveau L1","Niveau L2","Niveau L3","Niveau M1","Niveau M2","Niveau Doctorat","Autre situation","Refus","Niveau L1","Niveau L2","Niveau L3","Niveau M1","Niveau M2","Niveau Doctorat","Autre situation","Refus","Niveau L1","Niveau L2","Niveau L3","Niveau M1","Niveau M2","Niveau Doctorat","Autre situation","Refus","Niveau L1","Niveau L2","Niveau L3","Niveau M1","Niveau M2","Niveau Doctorat","Autre situation","Refus","Niveau L1","Niveau L2","Niveau L3","Niveau M1","Niveau M2","Niveau Doctorat","Autre situation", 
+"Refus"),
+eff.safeduc = c(62,126,128,79,150,60,50,1,68,107,98,43,50,54,2,0,220,325,196,137,78,50,4,1,4,3,5,0,2,5,0,0,14,2,6,3,2,6,0,1),
+tx.rep =c(0.0113200657294139,0.0498220640569395,0.0464947330185252,0.0304197150558337,0.0556173526140156,0.0104913446406714,NA,NA,0.0306859205776173,0.0641102456560815,0.0703012912482066,0.0381543921916593,0.0284900284900285,0.453781512605042,NA,NA,0.0360242344850172,0.0760767790262172,0.0507246376811594,0.0517762660619803,0.0226086956521739,2.17391304347826,NA,NA,0.0816326530612245,0.0535714285714286,0.015527950310559,0,0.0303030303030303,0.00174094707520891,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA))
+
+Tab_anneefac <- Tab_anneefac|>
+filter(annee!="Niveau Doctorat",
+       annee!="Autre situation",
+       annee!="Refus",
+       faculte!="Refus",
+       faculte!="Autre")
 
 ```
 
-## **Les différences internes à Sciences Po**
+```{r}
+#| echo: false
+#| label: fig-3
+#| fig-cap: "Taux de réponse par niveau d'étude et par faculté"
+ggplot(data=Tab_anneefac[Tab_anneefac$annee !="Autre situation"&Tab_anneefac$annee !="Refus",])+
+  aes(x=annee,y=tx.rep, fill=faculte)+
+    geom_col(position="dodge")+
+  theme_bw()+
+  theme(plot.caption = element_text(hjust = 0))+
+  scale_fill_viridis_d()+
+  scale_y_continuous(labels = scales::percent)+
+   scale_x_discrete(labels= paste0(Tab_anneefac$annee,"\n(n=",sum(Tab_anneefac$eff.safeduc[Tab_anneefac$annee==Tab_anneefac$annee]),")"))+
+labs(x="",y="Taux de participation", fill= "Faculté de rattachement", caption = "Champ : Etudiant·es d'Université Paris Cité ayant terminé le questionnaire, hors doctorat (n = X)
+Note : Les doctorant.es n'étant pas formellement inscrites dans une faculté, il n'est pas possible de \ndécliner leur taux de participation par faculté.
+Lecture : Au sein de la faculté \"Société et humanités\", un peu plus de 7 % des étudiant.es inscrit.es \nen deuxième année ont complété un questionnaire.
+Source : SAFEDUC (2024, UPCité-Sciences Po)")
+```
 
-### *Taux de réponse par campus*
+Si des effets de composition peuvent être à l’œuvre ici, plusieurs éléments peuvent expliquer cette tendance générale. Le faible taux de réponse des étudiant.es en première année peut découler de leur nombre important, rendant plus difficile la bonne diffusion de la communication autour de l'enquête. Par ailleurs, les premières années d'études peuvent également être l'occasion d'abandons et de réorientation de parcours : un certain nombre d'inscrits sur l'année universitaire pourraient ainsi s'être éloigné en cours d'année de leur université (le nombre d'inscrit s chute notamment de X% entre la L1 et la L2).
 
-A Sciences Po, la participation est inégalement répartie entre les campus (voir **Figure 2**), Dijon, Nancy et Poitiers se placent en tête des campus les plus participants, avec des taux de réponse supérieurs à 20%. Les étudiant.es en troisième année étant en échange à l'étranger, le taux de réponse isolé de cette population est également disponible et permet de connaître la participation des étudiant.es effectivement présent.es à Sciences Po cette année. Les taux de participation les plus faibles sont visibles à Menton et Le Havre (entre 12% et 15%). Ces taux restent élevés comparativement aux autres enquêtes de prévalence auprès de la population étudiante.
+Enfin, il n'est pas impossible que les étudiant.es en tout début de cycle se soient sentis peu ou moins concernés par une enquête sur "les violences sexistes et sexuelles dans l'enseignement supérieur" compte tenu de leur entrée récente dans ce milieu. Le taux de participation élevé des étudiant.es en L2 et L3 peut s'expliquer par leur présence plus fréquente sur les campus, en particulier les campus privilégiés pour les tractages. A l'inverse, les taux de participation "descendants" des années suivantes pourrait découler de leur moindre fréquentation de ces lieux.
+
+Concernant les exceptions à cette tendance générale, ces dernières découlent probablement de contingences de passation, typiquement d'enseignant.e, d'associations ou d'étudiant.es s'étant particulièrement impliqué.e dans la diffusion de l'enquête auprès de leurs publics spécifiques.
+
+## Les différences internes à Sciences Po
+
+### Les différences entre campus
+
+A Sciences Po, la participation est inégalement répartie entre les campus (voir @fig-scpo-campus), Dijon, Nancy et Poitiers se placent en tête des campus les plus participants, avec des taux de réponse supérieurs à 20%. Les étudiant.es en troisième année étant en échange à l'étranger, le taux de réponse isolé de cette population est également disponible et permet de connaître la participation des étudiant.es effectivement présent.es à Sciences Po cette année. Les taux de participation les plus faibles sont visibles à Menton et Le Havre (entre 12% et 15%). Ces taux restent élevés comparativement aux autres enquêtes de prévalence auprès de la population étudiante.
 
 ```{r}
 #| echo: false
-data2 <- data.frame(campus=factor(x=c("Dijon","le Havre","Menton","Nancy","Paris","Poitiers","Reims","Ensemble"),levels=c("Dijon","le Havre","Menton","Nancy","Paris","Poitiers","Reims","Ensemble")),
+#| message: false
+#| warning: false
+
+
+tab_annees_upc <- data.frame(campus=factor(x=c("Dijon","Le Havre","Menton","Nancy","Paris","Poitiers","Reims","Ensemble"),levels=c("Dijon","Le Havre","Menton","Nancy","Paris","Poitiers","Reims","Ensemble")),
           nb.rep=c(79,61,69,123,1847,84,286,2549),
-          tx.rep=c(0.29,0.12,0.12,0.25,0.17,0.21,0.14,0.17),
-          nb.rep.1A2A=c(51,47,51,87,296,64,207,803),
-          tx.rep.1A2A=c(0.28,0.15,0.15,0.28,0.31,0.23,0.19,0.23)
+          tx.rep=c(0.29,0.12,0.12,0.25,0.1748,0.21,0.14,0.172)
           )
 
-data2 <- pivot_longer(data2, cols=c("tx.rep","tx.rep.1A2A"),cols_vary = "fastest")
+tab_annees_upc <- pivot_longer(tab_annees_upc, cols = c("tx.rep"), cols_vary = "fastest")
 
-ggplot(data = data2)+
- aes(x=campus,y=value, fill = name, label = value)+
- geom_col(position="dodge")+
- labs(title="Figure 2 - Taux de réponse par campus, Sciences Po", subtitle="(avec focale sur la 1re et 2e année",x="",y="Pourcentage")+
- scale_x_discrete(labels=c("Dijon\n(n=79)","le Havre\n(n=61)","Menton\n(n=69)","Nancy\n(n=123)","Paris\n(n=1847)","Poitiers\n(n=84)","Reims\n(n=286)","Ensemble\n(n=2549)"))
+```
+
+```{r}
+#| echo: false
+#| label: fig-scpo-campus
+#| fig-cap: "Taux de participation par campus, Sciences Po"
+
+ggplot(data = tab_annees_upc) +
+  aes(x = reorder(campus,-value), y = value,
+  fill = campus)+
+  geom_col() +
+    scale_fill_manual(
+      values = c(
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "#E6142D",
+      "lightslategrey"
+      )
+    ) +
+    guides(fill = "none") +
+    theme_bw() +
+    theme(plot.caption = element_text(hjust = 0))+
+    scale_y_continuous(labels = scales::percent) +
+    labs(, x =
+         "", y = "Pourcentage", caption="Champ: Etudiant·es de Sciences Po ayant complété un questionnaire (n = 2538).
+Note : la catégorie \"autre situation\" correspond aux personnes inscrites en préparation aux concours administratifs.
+Lecture : Au sein de la faculté \"Société et humanités\", un peu plus de 27 % des étudiant.es inscrit.es \nen niveau Master 1 ont complété un questionnaire.
+Source : SAFEDUC (2024, UPCité-Sciences Po) ; Service “Scolarité” de Sciences Po") +
+  scale_x_discrete(
+    labels = levels(reorder(paste0(tab_annees_upc$campus,"\n(n=",tab_annees_upc$nb.rep,")"),desc(tab_annees_upc$value))))
+```
+
+### Les différences entre années d'études
+
+On trouve également des disparités de taux de réponse entre niveau d'études (voir @fig-scpo-annee). Ainsi, environ 23 % des étudiant.es en première et seconde année ont complété le questionnaire. Ce taux chute à 17 % pour les étudiant.es de troisième année, avant de remonter à son taux le plus élevé pour les étudiant.es en 4ème année (27 %). Les étudiant.es en deuxième année de Master sont les moins nombreux à avoir participé à l'enquête, avec un taux de réponse se situant à 15 %. Environ 19% des doctorant.es ont répondu.
+
+```{r}
+#| label: Tableau-SCPO-annee
+#| echo: false
+
+tab_annee_scpo <- structure(list(annee = structure(c(1L, 2L, 3L, 4L, 5L, 6L, 7L,8L), levels = c("Niveau L1", "Niveau L2", "Niveau L3", "Niveau M1", 
+"Niveau M2", "Doctorat", "Autre situation","Refus"), class = "factor"), 
+    eff.safeduc = c(405, 396, 311, 764, 574, 57, 21, 10), tx.rep = c(0.23356401384083, 
+    0.224362606232295, 0.172873818788216, 0.270634077222813, 
+    0.148781752203214, 0.18936877076412, 0.0901287553648069, 
+    NA)), row.names = c(NA, -8L), class = "data.frame")
+  
+```
+
+```{r}
+#| label: fig-scpo-annee
+#| fig-cap: "Taux de participation par année d'étude, Sciences Po"
+#| echo: false
+tab_annee_scpo|> #On charge la base
+  filter(annee!="Refus")|>
+  ggplot()+ #On construit le graphe
+  aes(x=annee, y= tx.rep, fill= annee)+
+  geom_col(fill="#E6142D")+
+    guides(fill = "none")+
+    scale_y_continuous(labels = scales::percent)+
+    theme_bw()+
+    theme(plot.caption = element_text(hjust = 0))+
+  scale_x_discrete(labels = paste0(tab_annee_scpo$annee,"\n(n=",tab_annee_scpo$eff.safeduc,")"))+
+    labs(x="", y= "Taux de participation", caption="Champ: Etudiant·es de Sciences Po ayant complété un questionnaire (n = 2538).
+Note : la catégorie \"autre situation\" correspond aux personnes inscrites en préparation aux concours administratifs.
+Lecture : Au sein de la faculté \"Société et humanités\", un peu plus de 27 % des étudiant.es inscrit.es \nen niveau Master 1 ont complété un questionnaire.
+Source : SAFEDUC (2024, UPCité-Sciences Po) ; Service “Scolarité” de Sciences Po")
+  
+```
+
+Ces disparités peuvent être expliquées par les calendriers spécifiques de chaque niveau d'étude. Le plus faible taux de réponse des étudiant.es en troisième année découle probablement du fait que la plupart d'entre eux sont en échange à l'étranger : consultant moins leur mail institutionnel de Sciences Po, n'étant pas forcément sur le même fuseau horaire que la France (réduisant de fait l'efficacité des relances), et n'étant pas présent.es sur les campus et de ce fait, exposé.es aux supports de communication en présentiel, etc.
+
+Le taux de réponse plus élevé des étudiant.es en Master 1 s'explique probablement par une raison géographique : les inscrit.es Master étudient en effet toutes et tous sur le campus de Paris, là où les étudiant.es du collège universitaire (équivalent licence) sont réparti.es sur les différents campus de Sciences Po (voir @fig-scpo-annee). L'équipe de recherche étant basée à Paris, elle a pu mener une campagne de communication en présentiel (tractages, affichages, etc.) plus continue sur ce campus, là où leur présence sur les autres campus était souvent limitée à une journée.
+
+Comparativement, le taux de réponse moins élevé des Master 2 découle probablement du fait que la plupart d'entre elle.ux suivent un stage durant le second semestre : moins présent.es sur les campus et étant moins amené.es à consulter leurs mails institutionnels, ils et elles ont probablement été moins touché.es par la communication autour de l'enquête.
+
+# Socio-démographie des répondant.es
+
+::: {#Enc_1 .encadre}
+## Base et portée des traitements
+
+Les chiffres présentés dans la section suivante sont exclusivement basés sur les 4649 questionnaires terminés. Ils n’incluent donc pas l’ensemble des questionnaires « exploitables » (i.e ayant complété les questions permettant d’estimer la prévalence des faits de violences) ni ceux abandonnés avant toute question sur les violences.
+:::
+
+## Distribution en termes de genre
+
+En termes de genre, 71 % des répondant·es sont des répondantes. 26 % sont des hommes, et environ 3 % se disent non-binaires ou préfèrent se définir par un autre terme. La proportion d’hommes est plus importante à Sciences Po étant donné qu’ils représentent 29 % des répondant·es contre 22 % à UPCité (voir @fig-catgenre).
+
+```{r}
+#| label: tableau-genre
+#| echo: false 
+
+tableau.genre <- structure(list(etab = c("Upcité","Upcité","Upcité","Sciences Po",
+"Sciences Po","Sciences Po","Ensemble","Ensemble","Ensemble"),
+cat.genre = c("Femmes","Hommes","Non-binaire ou préfèrant un autre terme",
+"Femmes","Hommes","Non-binaire ou préfèrant un autre terme",
+"Femmes","Hommes","Non-binaire ou préfèrant un autre terme"),
+prop.safeduc = c(0.74,0.22,0.04,0.69,0.29,0.02,0.71,0.26,0.03),
+prop.safeduc.red = c(0.77,0.23,NA,0.7,0.3,NA,0.73,0.27,NA),
+diff = c(0.08,-0.12,NA,0.0399999999999999,-0.06,NA,0.0499999999999999,-0.08,NA),diff.red = c(0.11,-0.11,NA,0.0499999999999999,-0.05,NA,0.07,-0.07,NA),OR = c(1.72463768115942,0.579831932773109,NA,1.25641025641026,0.795918367346939,NA,1.39281705948373,0.717969379532635,NA)),
+row.names = c(NA,-9L),class = "data.frame")
+```
+
+```{r}
+#| label: fig-catgenre
+#| echo: false
+#| fig-cap: "Distribution en termes de genre (UPCité et Sciences Po)"
+ggplot(data = tableau.genre)+
+  aes(x=etab,y=prop.safeduc, fill=reorder(cat.genre,prop.safeduc))+
+  geom_col()+
+  scale_fill_viridis_d()+
+  labs(x="", y= "Proportion", fill= "Identité de genre déclarée",caption="Champ : Etudiant.es ayant complété un questionnaire (n=4649, refus et “ne sait pas” exclus).
+Lecture :  74 % des répondant.es d’Université Paris Cité sont des étudiantes.
+Source : SAFEDUC (2024, UPCité-Sciences Po)")+
+  scale_y_continuous(labels = scales::percent)+
+  theme_bw()+
+  theme(plot.caption = element_text(hjust = 0))+
+   labs(, x =
+         "", y = "Pourcentage") +
+  scale_x_discrete(
+    labels = c("UPCité\n(n=2093)","Sciences Po\n(n=2556)","Ensemble\n(n=4649)"))
+```
+
+Cette proportion importante de répondantes dans l’échantillon doit cependant être comparée à celle qu’elles occupent au sein des populations étudiantes des deux établissements.
+
+Cette comparaison est réalisable à l’aide des données administratives transmises par les services de “Scolarité” de Sciences Po et par la Direction des études, de la Formation et de l’Innovation Pédagogique (DEFI) d’Université Paris Cité. Ces données administratives ne décrivant le genre qu’à travers les catégories “hommes”/”femmes”, il est nécessaire de réduire légèrement le champ de la comparaison aux étudiant.es s’étant déclarés hommes ou femmes dans le questionnaire (@fig-sursous-genre-1 et @fig-sursous-genre-2)
+
+```{r}
+#| label: fig-sursous-genre
+#| echo: false
+#| fig-cap: "Sur ou sous représentation des catégories de genre\n(catégories binaires)"
+ggplot(data = tableau.genre[tableau.genre$cat.genre!="Non-binaire ou préfèrant un autre terme",])+
+  aes(x=OR,y=cat.genre, color=etab)+
+  geom_point()+
+  scale_color_viridis_d()+
+  labs(x="", y= "Proportion", color= "Établissement",caption="Champ : Etudiant.es ayant complété un questionnaire (n=4649, refus et “ne sait pas” exclus).
+Lecture :  74 % des répondant.es d’Université Paris Cité sont des étudiantes.
+Source : SAFEDUC (2024, UPCité-Sciences Po)")+
+  theme_bw()+
+  theme(plot.caption = element_text(hjust = 0))+
+   labs(, x =
+         "", y = "Pourcentage")+
+  geom_vline(xintercept = 1)+
+  scale_x_continuous(limits=c(0,2))
+
+tableau.genre |>
+  filter(cat.genre!="Non-binaire ou préfèrant un autre terme")|>
+  drop_na(cat.genre)|>
+  ggplot()+
+  aes(x=factor(cat.genre, levels=c("Hommes","Femmes",NA)), y=diff.red, fill=etab)+
+  geom_col(position="dodge")+
+  theme_bw() +
+  theme(plot.caption = element_text(hjust = 0))+
+  scale_y_continuous(labels = scales::percent) +
+  labs(, x =
+         "", y = "Pourcentage", fill= "Etablissement", caption="Champ : Etudiant·es se présentant comme homme ou comme femme et ayant complété un questionnaire \n(n=4508, refus et “ne sait pas” exclus) comparé·es aux populations étudiantes pouvant participer à l’enquête \n(n=53 831 à UPCité et n=14 837 à Sciences Po)
+Note : En raison de l’absence de données administratives sur la proportion de personnes non-binaires ou \npréférant un autre terme au sein de chaque établissement, leur sous/sur-représentation ne peut pas \nêtre calculée.
+Lecture : 74 % des répondant.es d’Université Paris Cité sont des étudiantes. 
+Source : SAFEDUC (2024, UPCité-Sciences Po) ; Service “Scolarité” de Sciences Po ;\nDirection des études, de la Formation et de l’Innovation Pédagogique (DEFI) d’Université Paris Cité.
+") +
+  scale_fill_viridis_d()+
+  coord_flip()
+```
+
+Si on porte la focale sur les étudiant·es se présentant soit comme homme, soit comme femme au sein des deux établissements (n=4508), on constate une 73 % de ces étudiantes s’identifient comme femmes, contre 66 % de la population étudiante des deux établissements, soit un écart de 7 points de pourcentage (@fig-sursous-genre-1).
+
+Ici encore, on trouve des disparités entre établissements. Cette surreprésentation des femmes est moins marquée dans l’échantillon de Sciences Po, où elle est de l’ordre de 5 points de pourcentage : 70 % des répondant·es sont des femmes alors qu’elles représentent 65 % des inscrit·es dans l’établissement. À Université Paris Cité, cette surreprésentation est plutôt de l’ordre de 11 points de pourcentage, étant donné que 77 % des répondant·es sont des femmes, alors qu’elles représentent 66 % des inscrit·es au sein de l’établissement.
+
+## Distribution en termes de nationalité(s)
+
+```{r}
+#| label: tableau.natio
+#| echo: false
+tableau.natio <-data.frame(etab=factor(c("UPCité\n(n=2093)","Sciences Po\n(n=2556)","Ensemble\n(n=4649)"),levels=c("UPCité\n(n=2093)","Sciences Po\n(n=2556)","Ensemble\n(n=4649)")),
+                           natio.fr=c(0.92,0.79,0.85),
+                           natio.UE=c(0.07,0.15,0.12),
+                           natio.HUE=c(0.15,0.18,0.17))
+tableau.natio.longer <- pivot_longer(tableau.natio, cols = c(2:4), names_to = "natio", values_to = "tx.rep")
+```
+
+En termes de nationalités (voir @fig-natio), 85 % des répondant·es ont la nationalité française, 12 % ont une nationalité d’un pays de l’Union européenne, 17 % une nationalité d’un pays hors Union européenne. L’échantillon de Sciences Po comprend moins d’étudiant·es ayant la nationalité française (79 % contre 92 % à Université Paris Cité) et plus d’étudiant·es ayant une nationalité d’Union européenne (15 % contre 7 % à Université Paris Cité).
+
+```{r}
+#| echo: false
+#| label: fig-natio
+#| fig-cap: "Nationalité(s) des répondant.es à l’enquête en fonction de l’établissement (choix multiples)"
+
+tableau.natio.longer |>
+  ggplot()+
+  aes(x=etab, y= tx.rep, fill=natio)+
+  geom_col(position = "dodge")+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x="",y="Pourcentage",fill="Nationalité(s)", caption="Champ : Etudiant.es ayant complété un questionnaire (n=4649)
+Lecture : 18 % des répondant.es de Sciences Po ont une nationalité hors d’Union européenne.
+Source : SAFEDUC (2024, UPCité-Sciences Po)")+
+  scale_fill_viridis_d(labels=c("Nationalité française","Nationalité Hors UE","Nationalité d'Union Européenne"))+
+  theme_bw()+
+  theme(plot.caption = element_text(hjust = 0))
+
+
+
+```
+
+## Distribution en termes d'origine sociale
+
+En termes d’origine sociale (voir @fig-csp), les fil·les de cadres et professions intellectuelles supérieures occupent une portion importante de l’échantillon : 57 % des répondant·es de Sciences Po et 47 % des répondant·es d’UPCité disent que leur premier parent fait partie des « Cadres et professions intellectuelles supérieures ». Ils et elles sont surreprésenté·es au sein de l’échantillon, étant donné qu’ils représentent 50 % de la population étudiante de Sciences Po et contre 42 % de la population d’Université Paris Cité (soit 7 et 5 points de pourcentage d’écart, voir Figure X). L’écart constaté entre les deux établissements au sein de l’échantillon semble cependant cohérent avec les écarts constatés entre les deux populations étudiantes.
+
+```{r}
+#| label: tableau.csp
+#| echo: false
+
+tableau.csp <- d|>
+  select("I_ETAB_RC","I_CSP_PARENTS_1_RC")
+tableau.csp$I_CSP_PARENTS_1_RC_RED <- factor(tableau.csp$I_CSP_PARENTS_1_RC, levels=c("Exploitant agricole","Artisanat, commerce, gestion d'entreprise","Cadres et professions intellectuelles superieures","Professions intermediaires","Employe ou employee","Ouvrier ou ouvriere","Autres"))
+
+tableau.csp$I_CSP_PARENTS_1_RC_RED[tableau.csp$I_CSP_PARENTS_1_RC=="Retraite ou retraitee"]="Autres"
+tableau.csp$I_CSP_PARENTS_1_RC_RED[tableau.csp$I_CSP_PARENTS_1_RC=="Sans activite remuneree"]="Autres"
+tableau.csp$I_CSP_PARENTS_1_RC_RED[tableau.csp$I_CSP_PARENTS_1_RC=="Refus"]="Autres"
+tableau.csp$I_CSP_PARENTS_1_RC_RED[tableau.csp$I_CSP_PARENTS_1_RC=="NSP"]="Autres"
+```
+
+```{r}
+#| label: fig-csp
+#| echo: false
+#| fig-cap: "Profession et catégorie socioprofessionnelle du premier parent"
+ggplot(tableau.csp)+
+  aes(x=factor(I_ETAB_RC, levels=c("UPCite","Sciences Po")), fill=I_CSP_PARENTS_1_RC_RED)+
+  geom_bar(position="fill")+
+  labs(x="",y="Pourcentage",fill="CSP du premier parent", caption = "Champ : Etudiant.es ayant complété un questionnaire (n=4649, refus et “ne sait pas” exclus)
+Lecture : 15 % de la population ayant participé à l’enquête déclare que son Parent 1 travaille dans une \nprofession intermédiaire. À Sciences Po, cette catégorie concerne 16 % des Parents 1. 
+Source : SAFEDUC (2024, UPCité-Sciences Po).")+
+  scale_y_continuous(labels = scales::percent)+
+  scale_x_discrete(labels = c("UPCité\n(n=1950)","Sciences Po\n(n=2464)"))+
+  scale_fill_viridis_d()+
+  theme_bw()+
+  theme(plot.caption = element_text(hjust = 0))
+
+
+```
+
+Il en est de même pour les fils et filles de profession intermédiaire. 16 % des répondant·es de Sciences Po et 13 % des répondant·es d’UPCité disent que leur premier parent en fait partie. On retrouve ici une légère surreprésentation de cette catégorie au sein des deux établissements, étant donné qu’ils et elles représentent 13 % des étudiant·es de Sciences Po, contre 10 % à UPCité (soit un écart d’environ 3 points de pourcentage dans les deux établissements). Malgré cette surreprésentation, l’écart entre les deux établissements au sein de l’échantillon semble cohérent avec la structure de la population des deux établissements.
+
+Il n’en est pas de même pour les étudiant·es présentant leur premier parent comme employé·e. En effet, ces derniers représentent environ 14 % des inscrit·es au sein des deux établissements. Cependant, leur proportion est plus importante dans l’échantillon propre à Université Paris Cité comparativement à celui de Sciences Po : 14 % contre 7 %. Les fils et filles d’employé·es semblent donc sous-représenté·es dans l’échantillon propre à Sciences Po, avec un écart de l’ordre de 7 points de pourcentage.
+
+L’échantillon d’UPCité se caractérise en revanche par une légère sous-représentation des fils et filles d’ouvriers (de l’ordre de 2 points de pourcentage). Au sein des deux échantillons, on retrouve une sous-représentation des filles et filles de retraitées (1 point de pourcentage à Sciences Po, 2.5 points à UPCité) et de personnes sans activité professionnelle (3 points à Sciences Po, 4 points à UPCité). Concernant les deux dernières catégories, ces écarts découlent peut-être d’un report de la réponse à la dernière profession exercée par le parent concerné.
+
+Au global, le sous-échantillon de répondant·es de Sciences Po présente une proportion plus importante de fil·les de cadres, de professions intellectuelles supérieures et de professions intermédiaires. Ces différences semblent découler directement des différences de compositions entre les deux populations, la population de Sciences Po étant issue de milieux plus favorisés. L’échantillon de Sciences Po présente également une proportion moins importante de fils et filles d’employé·es, mais qui semble ici découler de défauts de l'échantillonnage à expliquer et à corriger.
+
+Un portrait similaire est dressé par la profession et catégorie socioprofessionnelles (PCS) renseignées sur le second parent (tri non présenté). Si des comparaisons avec les populations étudiantes ne sont ici pas possible, on retrouve les mêmes tendances avec des proportions différentes : la PCS modale reste celle des cadres (42 % à Sciences Po ; 35 % à UPCité), suivie des professions intermédiaires (24 % à Sciences Po, 19 % à UPCité), puis des employé·es – en proportion plus importantes à UPCité (11 % à Sciences Po, 17 % à UPCité).
+
+```{r}
+#| label: tableau-csp-rpz
+#| echo: false
+
+tableau.csp.rpz<- structure(list(Csp = structure(c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 
+8L, 9L, 10L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 1L, 2L, 
+3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L), levels = c("Exploitant agricole", 
+"Artisanat, commerce, gestion d'entreprise", "Cadres et professions intellectuelles superieures", 
+"Professions intermediaires", "Employe ou employee", "Ouvrier ou ouvriere", 
+"Retraite ou retraitee", "Sans activite remuneree", "Refus", 
+"NSP"), class = "factor"), Etab = structure(c(1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L), levels = c("Sciences Po", 
+"UPCite", "Sum"), class = "factor"), Eff.n = c(32, 170, 1445, 
+406, 181, 67, 96, 67, 82, 10, 9, 153, 991, 274, 294, 72, 105, 
+52, 127, 16, 41, 323, 2436, 680, 475, 139, 201, 119, 209, 26),
+prop.n = c(0.0125195618153365, 0.066510172143975, 0.565336463223787, 
+    0.158841940532081, 0.0708137715179969, 0.0262128325508607, 
+    0.0375586854460094, 0.0262128325508607, 0.0320813771517997, 
+    0.00391236306729264, 0.00430004777830865, 0.073100812231247, 
+    0.47348303870043, 0.130912565695174, 0.140468227424749, 0.0344003822264692, 
+    0.0501672240802676, 0.0248447204968944, 0.0606784519827998, 
+    0.00764452938365982, 0.00881910088191009, 0.0694773069477307, 
+    0.523983652398365, 0.146268014626801, 0.102172510217251, 
+    0.0298989029898903, 0.0432351043235104, 0.0255969025596903, 
+    0.0449559044955904, 0.00559260055926006), diff = c(0.00497086598733889, 
+    0.00295284923503111, 0.0666507450866974, 0.0301097170367656, 
+    -0.065669345014995, 0.00235356180879696, -0.0106990485972608, 
+    -0.0294587991806214, -0.0051229094290455, NA, -0.000789956122789232, 
+    -0.00460534221507575, 0.0561770254366972, 0.0328092423313134, 
+    -8.44958292300912e-06, -0.0208280177661002, -0.0256255347390002, 
+    -0.036811202670054, -0.00796229405572818, NA, 0.00319785080909597, 
+    -0.005171728993319, 0.0890940386044583, 0.0415467470785985, 
+    -0.0374412836896634, -0.0185516125340801, -0.0266081996900039, 
+    -0.0347660030149588, -0.0168924091293877, NA), tx.rep = c(0.285714285714286, 
+    0.180275715800636, 0.195296661711042, 0.212565445026178, 
+    0.0893827160493827, 0.189265536723164, 0.134078212290503, 
+    0.0811138014527845, 0.148550724637681, NA, 0.0328467153284672, 
+    0.0365766196509682, 0.0441150284900285, 0.0518841128574134, 
+    0.038878603544036, 0.024217961654894, 0.0257352941176471, 
+    0.0156673696896656, 0.0343707713125846, NA, 0.106217616580311, 
+    0.0630120952009364, 0.0815725144828048, 0.0945626477541371, 
+    0.0495462605611766, 0.0417793808235648, 0.0419099249374479, 
+    0.0287092882991556, 0.0492112079114669, NA), cote = c(0.4, 
+    0.219922380336352, 0.242693987235472, 0.269946808510638, 
+    0.0981561822125813, 0.233449477351916, 0.154838709677419, 
+    0.0882740447957839, 0.174468085106383, NA, 0.0339622641509434, 
+    0.0379652605459057, 0.0461509803008429, 0.054723387257839, 
+    0.0404512933406714, 0.0248190279214064, 0.0264150943396226, 
+    0.0159167431894705, 0.0355941704035874, NA, 0.118840579710145, 
+    0.0672496356443889, 0.0888175885076749, 0.10443864229765, 
+    0.0521290605794557, 0.0436010037641154, 0.0437431991294886, 
+    0.0295578738201689, 0.0517582961862308, NA), OR = c(1.6481660899654, 
+    0.90617152423712, 1, 1.11229293970404, 0.404444227608103, 
+    0.961908780728934, 0.637999776760799, 0.363725718141244, 
+    0.718880954133844, NA, 0.735894750871047, 0.822631725229297, 
+    1, 1.1857470177473, 0.876499113929604, 0.537778997534167, 
+    0.572362584010814, 0.344884184164984, 0.77125491531406, NA, 
+    1.3380297946265, 0.757165745820466, 1, 1.17587793197769, 
+    0.586922719422303, 0.490905061674218, 0.492506043729262, 
+    0.332793023508117, 0.582748271551622, NA), OR2 = c(1.66685533167308, 
+    1.04976982201762, 1.3074856613922, 1.278062096676, 0.482177413905133, 
+    1.10129882216215, 0.769641640550484, 0.456603243131765, 0.857739329607629, 
+    NA, 0.844132213458117, 0.936059800222304, 1.25567704051427, 
+    1.38481235801397, 0.999930020777654, 0.609439432877091, 0.644042564208782, 
+    0.387746289938455, 0.876507116239949, NA, 1.57394776374496, 
+    0.925546591136824, 1.43037570018312, 1.46470846459589, 0.701303933927857, 
+    0.605300781018303, 0.601814461691698, 0.408920399321505, 
+    0.714016942537074, NA)), row.names = c(NA, -30L), class = "data.frame")
+```
+
+```{r}
+#| label: fig-csp-rpz
+#| fig-cap: "sur ou sous représentation de la CSP déclarée du premier parent"
+#| echo: false
+
+tableau.csp.rpz |>
+  filter(Csp!="NSP")|>
+  ggplot()+
+  aes(y=Csp, x= diff, fill= Etab)+
+  geom_col(position = "dodge")+
+  scale_y_discrete(limits=rev)+
+  scale_fill_viridis_d(labels=c("Sciences Po","UPCité","Ensemble"))+
+  theme_bw()+
+  labs(fill="Etablissement", x= "Différence (en point de pourcentage)",y="")
+
+
+tableau.csp.rpz |>
+  filter(Csp!="NSP")|>
+  ggplot()+
+  geom_vline(xintercept = 1)+
+  aes(x=OR2, y= Csp, color= Etab)+
+  scale_y_discrete(limits=rev)+
+  geom_point(position = "dodge")+
+  scale_color_viridis_d()+
+  theme_bw()+
+  labs(color="Etablissement", x= "Odds ratio",y="")
+
+
+```
+
+## Distribution en termes de statut de Boursiers:
+
+La composition de l’échantillon en termes de bourses présente des écarts avec la population d’étude plus délicats à expliquer. En effet, d’après les données mises à disposition par les établissements, la proportion de Boursiers du CROUS est équivalente entre les deux établissements : elle est de 18.5% à UPcité et de 17% à Sciences Po. Les étudiant·es se disant boursiers sont cependant sur-représentés au sein de l’échantillon : 23% des répondant·es déclarent ainsi être boursier·e du CROUS (25 % à UPCité et 21 % à Sciences Po). Si on trouve donc un léger écart entre les proportions de boursiers CROUS au sein des deux sous-échantillons, ce dernier pourrait découler en bonne partie d’une surreprésentation d’étudiant·es boursiers dans l’échantillon d’Université Paris Cité . Les échantillons des deux établissements diffèrent sur deux autres points : d’abord, une part conséquente des répondant·es de Sciences Po (9 %) déclarent des bourses hors Crous (par exemple, des bourses à la mobilité internationale) contre 2 % des étudiant·es d’Université Paris Cité. Cet écart tient probablement à la part importante d’étudiant·es étrangers à Sciences Po, bénéficiant éventuellement d’une bourse à la mobilité internationale. Ensuite, les répondant·es boursier·es CROUS ne déclarent pas les mêmes échelons. Pour rappel, plus l’échelon de bourse est élevé, plus le montant associé est important (l’échelon 0 bis correspondant au montant le moins élevé, l’échelon 7 le plus élevé). En bref, plus l’échelon est élevé, plus il traduit une situation sociale de moins en moins favorisée. Or, la proportion de répondant·es déclarant une bourse d’échelon 1 à 7 est plus importante à Université Paris Cité qu’à Sciences Po (16 % contre 12 %).
+
+```{r}
+#| label: tab-bourse
+#| echo: false
+tableau.bourse <- structure(list(Etab = c("UPCite", "UPCite", "UPCite", "Sciences Po", 
+                                          "Sciences Po", "Sciences Po", "Ensemble", "Ensemble", "Ensemble"),
+                                 Bourse = c("Boursier CROUS", "Autre bourse", "Non", "Boursier CROUS", "Autre bourse", "Non", "Boursier CROUS","Autre bourse", "Non"), Eff.n = c(545, 47, 1483, 536, 221, 1776, 1081, 268, 3259), 
+    Eff.n.red = c(592, NA, 1483, 757, NA, 1776, 1349, NA, 3259
+    ), Eff.N = c(9944, NA, 43887, 2521, NA, 12316, 12465, NA, 
+    56203), prob.n = c(0.262650602409639, 0.0226506024096386, 
+    0.714698795180723, 0.211606790367154, 0.087248322147651, 
+    0.701144887485195, 0.234592013888889, 0.0581597222222222, 
+    0.707248263888889), prob.n.red = c(0.285301204819277, NA, 
+    0.714698795180723, 0.298855112514805, NA, 0.701144887485195, 
+    0.292751736111111, NA, 0.707248263888889), prob.N = c(0.184726272965392, 
+    NA, 0.815273727034608, 0.169913055199838, NA, 0.830086944800162, 
+    0.181525601444632, NA, 0.818474398555368), diff = c(0.100574931853885, 
+    NA, -0.100574931853885, 0.128942057314966, NA, -0.128942057314966, 
+    0.111226134666479, NA, -0.111226134666479), OR1 = c(1.76179484411423, 
+    NA, 0.567602977918105, 2.08233094260464, NA, 0.480231061998805, 
+    1.86635736244362, NA, 0.535803067581172)), row.names = c(NA,-9L), class = "data.frame")
+
+```
+
+```{r}
+ggplot(tableau.bourse)+
+  aes(x=Etab, y=Eff.n, fill=Bourse)+
+  geom_col(position="fill")+
+  scale_fill_viridis_d()+
+  scale_x_discrete(limits=rev, labels=c("UPCité\n(n=2075)","Sciences Po\n(n=2533)","Ensemble\n(n=4608)"))+
+  scale_y_continuous(labels = scales::percent)+
+  labs(x="",y="Pourcentage",fill="Statut de boursier")
+
+ggplot(tableau.bourse)+
+  aes(x=diff, y=Bourse, fill=Etab)+
+  geom_col(position="dodge")+
+  scale_fill_viridis_d()+
+  labs(x="Différence de point de pourcentages",y="",fill="Etablissement")
+
+ggplot(tableau.bourse[tableau.bourse$Bourse!="Autre bourse",])+
+  aes(x=OR1, y= Bourse, color=Etab)+
+  geom_point()+
+  scale_colour_viridis_d()+
+  scale_x_continuous(limits = c(0,2.25))+
+  geom_vline(xintercept = 1)+
+  theme_bw()+
+  labs(x="Odds ratios",y="",color="Établissement")
+
 ```
