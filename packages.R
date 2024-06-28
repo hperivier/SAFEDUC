@@ -10,5 +10,7 @@ library(gmodels)
 library(gtsummary)
 library(gt)
 library(ggplot2)
-library(pak) #Necessaire pour le package R et la présentation Quarto de l'OFCE
+library(pak) #Necessaire pour le package R et la pr?sentation Quarto de l'OFCE
 library(ofce) #Pour tout faire comme l'ofce veut
+
+
