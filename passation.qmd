@@ -17,15 +17,26 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
+<<<<<<< Updated upstream
 source('response_rate.r')
 
 ```
 
 ```{r}
+=======
+
+#import packages 
+source("packages.R")
+
+#import fonctions
+source("fonctions.R")
+
+>>>>>>> Stashed changes
 #import bases
 d_all <- readRDS("safeduc_all.rds")
 d_f <- readRDS("safeduc_finished.rds")
 
+<<<<<<< Updated upstream
 d_abandons <- d_all[d_all$Progress<100,]
 
 questionnaire_variables <- names(d_all)[1:(which(names(d_all) == "I_ETAB_RC") - 1)]
@@ -103,6 +114,10 @@ gt(data) %>%
     upc = "Université Paris Cité",
     ensemble = "Total"
   )
+=======
+
+source("response_rate.R", encoding = "utf-8")
+>>>>>>> Stashed changes
 ```
 
 ## Analyse du taux de réponse et de la passation de l'enquête à Sciences Po et Université Paris Cité
@@ -121,6 +136,57 @@ Nous étudions ici les 901 questionnaires d'étudiant.es qui ont passé l'étape
 
 Tout d'abord, nous observons que la majorité des personnes ayant entamé la complétion ne s'arrête pas aux premières questions puisque la majorité s'arrête plutôt vers le milieu du questionnaire, entre 40 et 50% de complétion. Il faut noter que la mesure du taux de progression diffère selon les personnes et leurs réponses aux questions filtres. Par exemple, une personne qui déclare des violences aura à répondre à plus de questions qu'une personne qui n'en déclare pas. Ainsi, une personne qui déclare des violences aura atteint un niveau de progression moindre car elle accède à de nouvelles questions supplémentaires.
 
+```{r}
+
+d_abandons <- d_all %>%
+  filter(Progress < 100) 
+```
+
+```{r}
+data <- tibble(
+  Catégories = c("Etudiant.es contacté.es", 
+                 "Etudiant.es authentifié.es", 
+                 "Etudiant.es participant.es", 
+                 "Abandons (parmi les authentifié.es)"),
+  scpo = c(14837, 2958, 2556, 402),
+  upc = c(53831, 2592, 2093, 499)
+  ) %>%
+  mutate(total = scpo + upc) # Ajouter une colonne Ensemble
+
+# Calculer les pourcentages
+data <- data %>%
+  mutate(
+    scpo = case_when(
+      Catégories == "Etudiant.es contacté.es" ~ as.character(scpo),
+      Catégories == "Abandons (parmi les authentifié.es)" ~ paste0(scpo, " (", round(scpo / data$scpo[2] * 100, 2), "%)"), # Pourcentage basé sur les étudiants authentifiés
+      TRUE ~ paste0(scpo, " (", round(scpo / data$scpo[1] * 100, 2), "%)") # Pourcentage basé sur les étudiants contactés
+    ),
+    upc = case_when(
+      Catégories == "Etudiant.es contacté.es" ~ as.character(upc),
+      Catégories == "Abandons (parmi les authentifié.es)" ~ paste0(upc, " (", round(upc / data$upc[2] * 100, 2), "%)"), # Pourcentage basé sur les étudiants authentifiés
+      TRUE ~ paste0(upc, " (", round(upc / data$upc[1] * 100, 2), "%)") # Pourcentage basé sur les étudiants contactés
+    ),
+    total = case_when(
+      Catégories == "Etudiant.es contacté.es" ~ as.character(total),
+      Catégories == "Abandons (parmi les authentifié.es)" ~ paste0(total, " (", round(total / data$total[2] * 100, 2), "%)"), # Pourcentage basé sur les étudiants authentifiés
+      TRUE ~ paste0(total, " (", round(total / data$total[1] * 100, 2), "%)") # Pourcentage basé sur les étudiants contactés
+    )
+  )
+
+# Créer le tableau gt
+gt(data) %>%
+  cols_label(
+    Catégories = "",
+    scpo = "Sciences Po",
+    upc = "Paris Cité",
+    total = "Total"
+  ) %>% 
+  tab_header(
+    title = "Taux de participation à l'enquête SAFEDUC"
+  )
+
+```
+
 ```{r, fig.width=8, fig.height=4}
 hist(d_all[d_all$Progress < 100,]$Progress,
      main = "Histogramme du taux de progression parmi les abandons (n = 901) ",
@@ -131,6 +197,7 @@ hist(d_all[d_all$Progress < 100,]$Progress,
 
 ```
 
+<<<<<<< Updated upstream
 ```{r}
 freq_last_question[, c("Dernière Question", "Effectif", "Proportion", "Question d'abandon")] %>%
   gt() %>% 
@@ -140,12 +207,190 @@ freq_last_question[, c("Dernière Question", "Effectif", "Proportion", "Question
   tab_row_group(group = "Identité", rows = c(14,7)) 
 ```
 
+=======
+>>>>>>> Stashed changes
 ```{r}
 freq_last_question[, c("Dernière Question", "Effectif", "Proportion", "Question d'abandon")] %>%
-  gt()
+  gt()%>% 
+  tab_row_group(group = "Contexte et conséquences des violences", rows = c(10,12,13,15)) %>%
+  tab_row_group(group = "Prévalence des violences", rows = c(3,5,11)) %>%
+  tab_row_group(group = "Conditions étudiantes", rows = c(8,6,1,9,4,2)) %>%
+  tab_row_group(group = "Identité", rows = c(14,7)) 
+```
+
+```{r}
+questionnaire_variables <- names(d_abandons)[1:(which(names(d_abandons) == "I_ETAB_RC") - 1)]
+d_abandons$LastQuestion<- apply(d_abandons, 1, find_last_question)
+d_abandons$Abandon <- apply(d_abandons, 1, find_first_unanswered)
+```
+
+```{r}
+
+d_abandons <- d_abandons %>%
+  mutate(Module = case_when(
+    grepl("^I_", Abandon) ~ "Informations personnelles",
+    grepl("^C_", Abandon) ~ "Conditions de vie étudiante",
+    grepl("^P_", Abandon) ~ "Prévalence des violences",
+    grepl("^(V_|Q_)", Abandon) ~ "Contexte et conséquences des violences",
+    TRUE ~ "Autre"  # Par défaut, assigner "Autre"
+  ))
+
 
 ```
 
+<<<<<<< Updated upstream
+=======
+```{r}
+total_global <- nrow(d_abandons)
+
+module_summary <- d_abandons %>%
+  filter(!is.na(Abandon)) %>%
+  group_by(Module) %>%
+  summarize(
+    Total = n()
+  ) %>%
+  mutate(
+    Proportion = paste0("(", round((Total / total_global) * 100, 2), "%)")
+  )
+
+gender_distribution <- d_abandons %>%
+  filter(!is.na(Abandon)) %>%
+  group_by(Module, I_IDGENRE_RC) %>%
+  summarize(Count = n()) %>%
+  pivot_wider(names_from = I_IDGENRE_RC, values_from = Count, values_fill = 0)
+
+year_distribution <- d_abandons %>%
+  filter(!is.na(Abandon)) %>%
+  group_by(Module) %>%
+  summarize(
+    Year1 = sum(I_S_ANNEE_1 == 1 | I_U_ANNEE == 1, na.rm = TRUE),
+    Year2 = sum(I_S_ANNEE_2 == 1 | I_U_ANNEE == 2, na.rm = TRUE),
+    Year3 = sum(I_S_ANNEE_3 == 1 | I_U_ANNEE == 3, na.rm = TRUE),
+    Year4 = sum(I_S_ANNEE_4 == 1 | I_U_ANNEE == 4, na.rm = TRUE),
+    Year5 = sum(I_S_ANNEE_5 == 1 | I_U_ANNEE == 5 | I_S_ANNEE_7 == 1, na.rm = TRUE),
+    Year6 = sum(I_S_ANNEE_6 == 1 | I_U_ANNEE == 6, na.rm = TRUE),
+    No_year = sum(I_S_ANNEE_98 == 1 | I_U_ANNEE == 98 | I_U_ANNEE == 7, na.rm = TRUE)
+  )
+
+combined_summary <- module_summary %>%
+  left_join(gender_distribution, by = "Module") %>%
+  left_join(year_distribution, by = "Module") %>%
+  mutate(
+    Total = paste(Total, Proportion)
+  ) %>%
+  select(-Proportion)
+```
+
+```{r}
+transposed_data <- as.data.frame(t(as.matrix(combined_summary)))
+
+# Ajuster les noms des colonnes et des lignes
+colnames(transposed_data) <- transposed_data[1, ]
+transposed_data <- transposed_data[-1, ]
+
+# Ajouter une colonne pour les noms des lignes
+transposed_data <- transposed_data %>%
+  rownames_to_column(var = "Catégories")
+
+
+
+transposed_data %>%
+  gt(rowname_col = "Catégories") %>%
+  cols_move_to_start(
+    columns = vars(
+      "Informations personnelles",
+      "Conditions de vie étudiante",
+      "Prévalence des violences",
+      "Contexte et conséquences des violences"
+    )
+  ) %>%
+  tab_header(title = "Module d'abandon dans le questionnaire")
+
+```
+
+```{r}
+
+d_f <- d_f %>%
+  mutate(EndDate = ymd_hms(EndDate))
+
+d_f <- d_f %>%
+  mutate(period = case_when(
+    wday(EndDate) %in% c(1, 7) ~ "Week-end",
+    hour(EndDate) < 8 | hour(EndDate) > 18 ~ "Hors cours (avant 8h - après 17h)",
+    (hour(EndDate) >= 11 & hour(EndDate) < 14) ~ "Midi (11h-14h)",
+    TRUE ~ "Pendant les heures de cours"
+  ))
+
+result_scpo <- d_f %>%
+  filter(I_ETAB == 1) %>%
+  group_by(period) %>%
+  summarise(count = n()) %>%
+  mutate(percentage_scpo = round(count / sum(count) * 100, 2)) %>%
+  mutate(percentage_scpo = paste0(percentage_scpo, "%")) %>%
+  select(period, percentage_scpo)
+
+result_upc <- d_f %>%
+  filter(I_ETAB == 2) %>%
+  group_by(period) %>%
+  summarise(count = n()) %>%
+  mutate(percentage_upc = round(count / sum(count) * 100, 2)) %>%
+  mutate(percentage_upc = paste0(percentage_upc, "%")) %>%
+  select(period, percentage_upc)
+
+result_total <- d_f %>%
+  group_by(period) %>%
+  summarise(count = n()) %>%
+  mutate(percentage_total = round(count / sum(count) * 100, 2)) %>%
+  mutate(percentage_total = paste0(percentage_total, "%")) %>%
+  select(period, percentage_total)
+
+
+final_result <- result_total %>%
+  left_join(result_scpo, by = "period") %>%
+  left_join(result_upc, by = "period") %>% 
+  select(period, percentage_scpo, percentage_upc, percentage_total)
+
+gt(final_result) %>%
+  cols_label(
+    period = "Période",
+    percentage_scpo = "Sciences Po",
+    percentage_upc = "Paris Cité",
+    percentage_total = "Total"
+  ) %>% 
+  tab_header(
+    title = "Créneaux de réponse à l'enquête")
+
+```
+
+```{r}
+# Extraire l'heure de EndDate
+d_f <- d_f %>%
+  mutate(hour = hour(EndDate))
+
+# Créer un tableau de distribution des réponses par heure
+hour_distribution <- d_f %>%
+  group_by(hour, I_ETAB) %>%
+  summarise(count = n()) 
+
+viridis_colors <- viridis(5)[2:4]
+
+# Visualiser la distribution avec un graphique en utilisant la palette Viridis personnalisée
+ggplot(hour_distribution, aes(x = hour, y = count, fill = factor(I_ETAB))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = viridis_colors, 
+                    labels = c("1" = "Sciences Po", "2" = "Paris Cité"),
+                    name = "Établissement") +
+  labs(title = "Distribution des réponses par heure et par établissement",
+       x = "Heure de la journée",
+       y = "Nombre de réponses") +
+  theme_minimal()
+```
+
+```{r, fig.width=8, fig.height=6}
+print(plot_passation)
+```
+
+>>>>>>> Stashed changes
 ```{r, fig.width=8, fig.height=6}
 print(plot_scpo)
 ```

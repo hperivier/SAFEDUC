@@ -38,7 +38,7 @@ freq_last_question$Progression <- round(freq_last_question$Progression,0)
 freq_last_question <- freq_last_question %>%
   mutate(Abandon = d_all$Abandon[match(LastQuestion, d_all$LastQuestion)])
 
-freq_last_question <- head(freq_last_question,10)
+freq_last_question <- head(freq_last_question,15)
 
 labels_lastquestion <- sapply(freq_last_question$LastQuestion, function(x) {
   if (x %in% colnames(d_all)) {
@@ -68,6 +68,92 @@ freq_last_question <- freq_last_question %>%
 
 freq_last_question <- freq_last_question %>% rename("Effectif" = "n")
 freq_last_question <- freq_last_question %>% rename("Proportion" = "val%")
+
+
+#### Evolution de la passation et des relances a Sciences Po ####
+
+
+
+# Creer une sequence de dates entre le 25 mars et le 20 mai (jours seulement)
+date_seq <- seq(from = as.Date("2024-03-25"), to = as.Date("2024-05-20"), by = "day")
+
+# Calculer l'effectif simple pour chaque jour
+daily_counts <- d_f %>%
+  mutate(open_day = as.Date(StartDate)) %>%
+  group_by(open_day) %>%
+  summarise(daily_count = n(), .groups = 'drop')
+
+# Joindre la sequence de dates avec les Resultats pour inclure les jours sans reponses
+daily_counts <- data.frame(open_day = date_seq) %>%
+  left_join(daily_counts, by = "open_day") %>%
+  replace_na(list(daily_count = 0))
+
+# Calculer l'Effectif cumule
+daily_counts <- daily_counts %>%
+  mutate(cumulative_count = cumsum(daily_count))
+
+# Calculer le pourcentage simple et cumule du taux de reponses
+total_responses <- sum(daily_counts$daily_count)
+
+daily_counts <- daily_counts %>%
+  mutate(
+    daily_percentage = daily_count / total_responses * 100,
+    cumulative_percentage = cumulative_count / total_responses * 100
+  )
+
+# Creation des groupes de dates correspondant a differents relais de relances
+relances_mail <- as.Date(c("2024-03-25", "2024-04-04", "2024-05-06", "2024-05-16", "2024-04-22", "2024-05-15"))
+relances_campus <- as.Date(c("2024-04-19", "2024-04-24", "2024-04-26"))
+relances_flyers <- as.Date(c("2024-04-11", "2024-04-15", "2024-04-18", "2024-04-22", "2024-05-13", "2024-05-14", "2024-05-16",
+                             "2024-04-22", "2024-04-23", "2024-04-24", "2024-04-25", "2024-04-29", "2024-04-30",
+                             "2024-05-03", "2024-05-13", "2024-05-14", "2024-05-15", "2024-05-16", "2024-05-17"))
+
+# Creer un dataframe pour les lignes verticales
+vertical_lines <- data.frame(
+  date = c(relances_mail, relances_campus, relances_flyers),
+  group = factor(rep(c("Relances Mails", "Relances Campus (Sciences Po)", "Relances Flyers"),
+                     times = c(length(relances_mail), length(relances_campus), length(relances_flyers))))
+)
+
+# Creer un dataframe pour la periode de vacances
+vacances <- data.frame(
+  xmin = as.Date("2024-04-14"),
+  xmax = as.Date("2024-04-21"),
+  ymin = -Inf,
+  ymax = Inf,
+  label = "Période de vacances"
+)
+
+plot_passation <- ggplot(daily_counts, aes(x = open_day)) +
+  geom_rect(data = vacances, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "blue", color = NA, alpha = 0.2, inherit.aes = FALSE) +
+  geom_line(aes(y = daily_count, color = "Effectif journalier"), size = 1) +
+  geom_vline(data = vertical_lines, aes(xintercept = as.numeric(date), color = group, linetype = group),
+             size = 0.5, show.legend = FALSE) + 
+  scale_y_continuous(name = "Effectif") +
+  labs(title = "Évolution de la passation dans les deux établissements",
+       x = "Date",
+       y = "Effectif") +
+  theme_minimal(base_size = 15) +  # Appliquer le thème minimal avec un fond blanc
+  scale_color_manual(name = "NULL",
+                     values = c("Effectif journalier" = "#0072B2","Effectif cumulé" = "#D55E00",
+                                "Relances Mails" = "#009E73", "Relances Campus (Sciences Po)" = "#E69F00", "Relances Flyers" = "#999999")) +
+  scale_fill_manual(name = NULL, values = c("Période de vacances" = "blue")) +
+  scale_linetype_manual(name = NULL,
+                        values = c("Relances Mails" = "solid", "Relances Flyers" = "dotted", "Relances Campus (Sciences Po)" = "dashed")) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_blank(),
+    legend.position = "bottom",
+    legend.text = element_text(size = 8),
+    legend.background = element_rect(fill = "white", color = NA),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  guides(color = guide_legend(ncol = 2, byrow = TRUE))  # Diviser la légende en plusieurs colonnes
+
+
+#print(plot_passation)
+
 
 
 
@@ -111,16 +197,15 @@ relances_flyers <- as.Date(c("2024-04-11", "2024-04-15", "2024-04-18", "2024-04-
 # Creer un dataframe pour les lignes verticales
 vertical_lines <- data.frame(
   date = c(relances_mail, relances_campus, relances_flyers),
-  group = factor(rep(c("Relances Mail", "Relances Campus", "Relances Flyers"),
+  group = factor(rep(c("Relances Mails", "Relances Campus", "Relances Flyers"),
                      times = c(length(relances_mail), length(relances_campus), length(relances_flyers))))
 )
 
 # Creer le plot avec ggplot2
 plot_scpo <- ggplot(daily_counts, aes(x = open_day)) +
   geom_line(aes(y = daily_count, color = "Effectif journalier"), size = 1) +
-  geom_line(aes(y = cumulative_count, color = "Effectif cumule"), size = 1) +
   scale_y_continuous(name = "Effectif") +
-  labs(title = "Evolution de la passation a Sciences Po",
+  labs(title = "Évolution de la passation à Sciences Po",
        x = "Date",
        y = "Effectif") +
   theme_minimal(base_size = 15) +
@@ -139,7 +224,7 @@ plot_scpo <- ggplot(daily_counts, aes(x = open_day)) +
              show.legend = TRUE) +
   scale_color_manual(name = "legende",
                      values = c("Effectif journalier" = "#0072B2", "Effectif cumule" = "#D55E00",
-                                "Relances Mail" = "#009E73", "Relances Campus" = "#E69F00", "Relances Flyers" = "#999999")) +
+                                "Relances Mails" = "#009E73", "Relances Campus" = "#E69F00", "Relances Flyers" = "#999999")) +
   guides(color = guide_legend(ncol = 2, byrow = TRUE))  # Diviser la legende en plusieurs colonnes
 
 # Afficher le plot
@@ -177,7 +262,7 @@ relances_flyers <- as.Date(c("2024-04-11", "2024-04-15", "2024-04-18", "2024-04-
 # Creer un dataframe pour les lignes verticales avec linetype approprie
 vertical_lines <- data.frame(
   date = c(relances_mail, relances_campus, relances_flyers),
-  group = factor(rep(c("Relances Mail", "Relances Campus", "Relances Flyers"),
+  group = factor(rep(c("Relances Mails", "Relances Campus", "Relances Flyers"),
                      times = c(length(relances_mail), length(relances_campus), length(relances_flyers))))
 )
 
@@ -185,7 +270,7 @@ vertical_lines <- data.frame(
 plot_scpo_campus <- ggplot(daily_counts_campus, aes(x = open_day, y = daily_count)) +
   geom_line(aes(color = Campus_Group), size = 1) +  # Lignes originales
   scale_y_continuous(name = "Effectif") +
-  labs(title = "Evolution de la passation a Sciences Po par campus",
+  labs(title = "Évolution de la passation à Sciences Po par campus",
        x = "Date",
        y = "Effectif") +
   theme_minimal(base_size = 15) +
@@ -200,9 +285,9 @@ plot_scpo_campus <- ggplot(daily_counts_campus, aes(x = open_day, y = daily_coun
              size = 0.5, show.legend = F) +
   scale_color_manual(name = "Legende",
                      values = c("Campus de Paris" = "#0072B2", "Autres Campus" = "#D55E00",
-                                "Relances Mail" = "#009E73", "Relances Campus" = "#E69F00", "Relances Flyers" = "#999999")) +
+                                "Relances Mails" = "#009E73", "Relances Campus" = "#E69F00", "Relances Flyers" = "#999999")) +
   scale_linetype_manual(name = "Legende",
-                        values = c("Relances Mail" = "solid", "Relances Campus" = "dashed", "Relances Flyers" = "dotted")) +
+                        values = c("Relances Mails" = "solid", "Relances Campus" = "dashed", "Relances Flyers" = "dotted")) +
   guides(color = guide_legend(ncol = 2, byrow = TRUE)) +
   facet_wrap(~ Campus_Group, ncol = 1, scales = "free_y")  # Diviser horizontalement
 
@@ -250,16 +335,15 @@ relances_flyers <- as.Date(c("2024-04-22", "2024-04-23", "2024-04-24", "2024-04-
 # Creer un dataframe pour les lignes verticales
 vertical_lines <- data.frame(
   date = c(relances_mail, relances_flyers),
-  group = factor(rep(c("Relances Mail", "Relances Flyers"),
+  group = factor(rep(c("Relances Mails", "Relances Flyers"),
                      times = c(length(relances_mail), length(relances_flyers))))
 )
 
 # Creer le plot avec ggplot2
 plot_upcite <- ggplot(daily_counts, aes(x = open_day)) +
   geom_line(aes(y = daily_count, color = "Effectif journalier"), size = 1) +
-  geom_line(aes(y = cumulative_count, color = "Effectif cumule"), size = 1) +
   scale_y_continuous(name = "Effectif") +
-  labs(title = "Evolution de la passation a Universite Paris Cite",
+  labs(title = "Évolution de la passation à Université Paris Cité",
        x = "Date",
        y = "Effectif") +
   theme_minimal(base_size = 15) +
@@ -277,7 +361,7 @@ plot_upcite <- ggplot(daily_counts, aes(x = open_day)) +
              show.legend = TRUE) +
   scale_color_manual(name = "legende",
                      values = c("Effectif journalier" = "#0072B2", "Effectif cumule" = "#D55E00",
-                                "Relances Mail" = "#009E73", "Relances Flyers" = "#999999")) +
+                                "Relances Mails" = "#009E73", "Relances Flyers" = "#999999")) +
   guides(color = guide_legend(ncol = 2, byrow = TRUE))  # Diviser la legende en plusieurs colonnes
 
 # Afficher le plot
@@ -330,7 +414,7 @@ relances_flyers <- as.Date(c("2024-04-22", "2024-04-23", "2024-04-24", "2024-04-
 # Creer un dataframe pour les lignes verticales avec linetype approprie
 vertical_lines <- data.frame(
   date = c(relances_mail, relances_flyers),
-  group = rep(c("Relances Mail", "Relances Flyers"), times = c(length(relances_mail), length(relances_flyers))),
+  group = rep(c("Relances Mails", "Relances Flyers"), times = c(length(relances_mail), length(relances_flyers))),
   linetype = rep(c("solid", "dotted"), times = c(length(relances_mail), length(relances_flyers)))
 )
 
@@ -349,14 +433,14 @@ population <- data.frame(
 faculte_info <- echantillon %>%
   left_join(population, by = "faculte") %>%
   mutate(taux_reponse = repondants / population * 100,
-         info_label = paste0("Echantillon: ", repondants, "\nPopulation: ", population, "\nTaux de reponse: ", round(taux_reponse, 2), "%"))
+         info_label = paste0("Échantillon: ", repondants, "\nPopulation: ", population, "\nTaux de réponse: ", round(taux_reponse, 2), "%"))
 
 
 # Custom labels for facets
 facet_labels <- c(
-  I_U_FACULTE_1 = "faculte de Sante",
-  I_U_FACULTE_2 = "faculte des Sciences",
-  I_U_FACULTE_3 = "faculte des Humanites"
+  I_U_FACULTE_1 = "Faculté de Santé",
+  I_U_FACULTE_2 = "Faculté des Sciences",
+  I_U_FACULTE_3 = "Faculté Sociétés et Humanités"
 )
 
 # Creer un dataframe pour la periode de vacances
@@ -365,7 +449,7 @@ vacances <- data.frame(
   xmax = as.Date("2024-04-21"),
   ymin = -Inf,
   ymax = Inf,
-  label = "periode de vacances"
+  label = "Période de vacances"
 )
 
 
@@ -377,16 +461,16 @@ plot_facultes <- ggplot(daily_counts, aes(x = open_day)) +
   geom_vline(data = vertical_lines, aes(xintercept = as.numeric(date), color = group, linetype = group),
              size = 0.5, show.legend = FALSE) +  # Ne pas montrer les lignes verticales dans la legende
   scale_y_continuous(name = "Effectif") +
-  labs(title = "Evolution de la passation a Universite Paris Cite par faculte",
+  labs(title = "Evolution de la passation à Université Paris Cite par faculté",
        x = "Date",
        y = "Effectif") +
   theme_minimal(base_size = 15) +
   scale_color_manual(name = NULL,
                      values = c("Effectif journalier" = "#0072B2",
-                                "Relances Mail" = "#009E73", "Relances Flyers" = "#999999")) +
-  scale_fill_manual(name = NULL, values = c("periode de vacances" = "blue")) +
+                                "Relances Mails" = "#009E73", "Relances Flyers" = "#999999")) +
+  scale_fill_manual(name = NULL, values = c("Période de vacances" = "blue")) +
   scale_linetype_manual(name = NULL,
-                        values = c("Relances Mail" = "solid", "Relances Flyers" = "dotted")) +
+                        values = c("Relances Mails" = "solid", "Relances Flyers" = "dotted")) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     legend.position = "bottom",
